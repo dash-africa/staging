@@ -227,46 +227,57 @@ userController.resendTokenPost = (req, res) => {
 };
 
 userController.resendForgottenToken = (req, res) => {
-    const { email, token } = req.body;
+    const { email } = req.body;
     // Check user with the email
     db.User.findOne({email}).then(user => {
         // Check if user returned is not null
         if (user !== null) {
             // Generate jwt for email confirmation token
-            const transporter = nodemailer.createTransport({
-                service: 'Sendgrid',
-                auth: {
-                    user: process.env.SENDGRID_USERNAME,
-                    pass: process.env.SENDGRID_PASSWORD
-                }
-            });
+            signUser(user._id).then((token)=>{
+                // Save new token in the database
+                const tokenise = new db.Token({
+                    _userId: user._id,
+                    token
+                });
+                tokenise.save(err => {
+                    // If there is an error when saving the token
+                    if (err) { return res.status(500).send({ msg: err.message }); }
 
-            sendMail('forgotten.ejs', {
-                lastname: user.lastname,
-                token,
-                host: req.headers.host,
-                protocol: req.protocol
-            }).then(data => {
-                const mailOptions = {
-                    from: 'dash@yourwebapplication.com',
-                    to: user.email,
-                    subject: 'Forgotten Password Token',
-                    html: data
-                };
+                    // If no error is generated
+                    // Send the confirmation email
+                    const transporter = nodemailer.createTransport({
+                        service: 'Sendgrid',
+                        auth: {
+                            user: process.env.SENDGRID_USERNAME,
+                            pass: process.env.SENDGRID_PASSWORD
+                        }
+                    });
 
-                transporter.sendMail(mailOptions, (err) => {
-                    if (err) {
-                        return res.status(500).send({
-                            msg: err.message
+                    sendMail('forgotten.ejs', {lastname: user.lastname, token: tokenise.token, host: req.headers.host, protocol: req.protocol}).then(data => {
+                        const mailOptions = {
+                            from: 'kana-insight@yourwebapplication.com',
+                            to: user.email,
+                            subject: 'Forgotten Password Token',
+                            html: data
+                        };
+
+                        transporter.sendMail(mailOptions, (err) => {
+                            if (err) {
+                                return res.status(500).send({
+                                    msg: err.message
+                                });
+                            }
+                            res.status(200).json({
+                                status: true,
+                                message: 'A verification email has been sent to ' + user.email + '.',
+                                token: tokenise.token,
+                                data: user.email
+                            });
                         });
-                    }
-                    res.status(200).json({
-                        status: true,
-                        message: 'A verification email has been sent to ' + user.email + '.',
-                        token: tokenise.token,
-                        data: user.email
                     });
                 });
+            }).catch((err)=>{
+                res.status(500).json({status: false, message: err.message});
             });
         } else {
             res.status(401).json({status: false, message: 'The user is not found, please enter a registered email'});
@@ -315,6 +326,18 @@ userController.getUserInfo = (req, res) => {
             res.status(404).json({status: false, message: 'This user was not found'});
         }
     }).catch(err => res.status(500).json({status: false, message: err.message}));
+}
+
+userController.fetchUserCart = (req, res) => {
+    db.User.findById(req.user).populate('carts').then(user => {
+        if (user === undefined) {
+            res.status(404).json({status: false, message: 'User not found'})
+        } else {
+            res.status(200).json({status: true, message: 'Found', data: user});
+        }
+    }).catch(err => {
+        res.status(500).json({status: false, message: err.message});
+    })
 }
 
 export default userController;

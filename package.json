@@ -9,7 +9,8 @@
     "clean": "rm -r dist && mkdir dist",
     "build": "npm run clean && babel server -s -d dist",
     "start_a": "cd angular-src && ng serve --watch",
-    "build_": "cd angular-src && ng build --prod --configuration=production --aot && cd .."
+    "build_": "cd angular-src && ng build --prod --configuration=production --aot && cd ..",
+    "push": "git push staging master && git push heroku master"
   },
   "author": "junaid babatunde",
   "license": "ISC",

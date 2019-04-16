@@ -43,6 +43,7 @@ routes.post('/sendForget', controllers.userController.resendForgottenToken);
 routes.post('/forgot_password', controllers.userController.changePassword);
 routes.get('/user/all', controllers.userController.getAllUsers);
 routes.post('/user/getInfo', verifyToken, controllers.userController.getUserInfo);
+routes.get('/user/fetchCart', verifyToken, controllers.userController.fetchUserCart);
 
 // Cart Routes
 routes.post('/cart/create', verifyToken, controllers.cartController.createCart);
