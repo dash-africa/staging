@@ -1,0 +1,1193 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "version": "1.0.0",
+        "title": "Dash Documentation",
+        "description": "Documentation for Dash endpoints",
+        "license": {
+            "name": "Dash",
+            "url": "https://dashstaging.herokuapp.com/api-docs/#/"
+        }
+    },
+    "host": "localhost:3000",
+    "basePath": "/api/v1",
+    "tags": [{
+        "name": "Users",
+        "description": "API for dash users"
+    }],
+    "schemes": [
+        "http",
+        "https"
+    ],
+    "consumes": [
+        "application/json"
+    ],
+    "produces": [
+        "application/json"
+    ],
+    "paths": {
+        "/api/v1/user/login": {
+            "parameters": [{
+                "name": "login",
+                "in": "body",
+                "description": "These can be passed, click on Model to see which ones are required",
+                "schema": {
+                    "$ref": "#/definitions/UserLogin"
+                }
+            }],
+            "description": "Logs users in",
+            "produces": [
+                "application/json"
+            ],
+            "post": {
+                "tags": [
+                    "Users"
+                ],
+                "summary": "Logs users into the system",
+                "responses": {
+                    "200": {
+                        "description": "User saved and logged in successfully"
+                    },
+                    "400": {
+                        "description": "Wrong Login Details"
+                    },
+                    "401": {
+                        "description": "The user account has not been verified"
+                    },
+                    "500": {
+                        "description": "There was an error setting up your pin"
+                    }
+                }
+            }
+        },
+        "/api/v1/user/register": {
+            "post": {
+                "tags": [
+                    "Users"
+                ],
+                "description": "Allows user registration and send them a verification email, please save token in local storage, in case of resending purpose",
+                "summary": "Used to create a vefiable user account",
+                "parameters": [{
+                    "name": "user",
+                    "in": "body",
+                    "description": "These can be passed, click on Model to see which ones are required, _token should be passed as header for authorization",
+                    "schema": {
+                        "$ref": "#/definitions/UserRegister"
+                    }
+                }],
+                "produces": [
+                    "application/json"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Account has been created and a verification email has been sent"
+                    },
+                    "409": {
+                        "description": "The user already exists"
+                    },
+                    "500": {
+                        "description": "An error occured while creating the user account"
+                    }
+                }
+            }
+        },
+        "/api/v1/confirmation": {
+            "post": {
+                "tags": [
+                    "Users"
+                ],
+                "description": "Confirms the token sent to the user's email",
+                "summary": "Used to verify user's account",
+                "parameters": [{
+                    "name": "user",
+                    "in": "body",
+                    "description": "These can be passed, click on Model to see which ones are required",
+                    "schema": {
+                        "$ref": "#/definitions/Confirmation"
+                    }
+                }],
+                "produces": [
+                    "application/json"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "The user's account have been verified"
+                    },
+                    "400": {
+                        "description": "Token not found"
+                    },
+                    "500": {
+                        "description": "Please, inspect all parameters"
+                    }
+                }
+            }
+        },
+        "/api/v1/resend": {
+            "post": {
+                "tags": [
+                    "Users"
+                ],
+                "description": "Resend the verification email to the user",
+                "summary": "Used to send another verification message to the user, just incase they didnt receive it in the first place",
+                "parameters": [{
+                    "name": "user",
+                    "in": "body",
+                    "description": "These will be passed",
+                    "schema": {
+                        "$ref": "#/definitions/Confirmation"
+                    }
+                }],
+                "produces": [
+                    "application/json"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Found"
+                    },
+                    "401": {
+                        "description": "The user was not found"
+                    },
+                    "400": {
+                        "description": "Please, inspect all parameters"
+                    },
+                    "500": {
+                        "description": "An unexpected error occured"
+                    }
+                }
+            }
+        },
+        "/api/v1/sendForget": {
+            "post": {
+                "tags": [
+                    "Users"
+                ],
+                "description": "Resends the forgotten email to the user",
+                "summary": "Used to send another verification forgotten message to the user, just incase they didnt receive it in the first place",
+                "parameters": [{
+                    "name": "user",
+                    "in": "body",
+                    "description": "These will be passed",
+                    "schema": {
+                        "$ref": "#/definitions/Confirmation"
+                    }
+                }],
+                "produces": [
+                    "application/json"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Found"
+                    },
+                    "401": {
+                        "description": "The user was not found"
+                    },
+                    "400": {
+                        "description": "Please, inspect all parameters"
+                    },
+                    "500": {
+                        "description": "An unexpected error occured"
+                    }
+                }
+            }
+        },
+        "/api/v1/forgot_password": {
+            "post": {
+                "tags": [
+                    "Users"
+                ],
+                "description": "Changes the user's password after forgotten email verification has been received",
+                "summary": "Used to change the user's password, just after the forgotten verification message has been received",
+                "parameters": [{
+                    "name": "user",
+                    "in": "body",
+                    "description": "These will be passed",
+                    "schema": {
+                        "$ref": "#/definitions/ChangePass"
+                    }
+                }],
+                "produces": [
+                    "application/json"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "The password have been changed successfully"
+                    },
+                    "401": {
+                        "description": "The user was not found"
+                    },
+                    "400": {
+                        "description": "Please, inspect all parameters"
+                    },
+                    "500": {
+                        "description": "An unexpected error occured"
+                    }
+                }
+            }
+        },
+        "/api/v1/user/getInfo": {
+            "post": {
+                "tags": [
+                    "Users"
+                ],
+                "description": "Gets all the details for a particular user",
+                "summary": "Used to get all details for a specific user",
+                "parameters": [{
+                    "name": "user",
+                    "in": "body",
+                    "description": "Only the user's token should be passed as header"
+                }],
+                "produces": [
+                    "application/json"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "The details have been returned successfully"
+                    },
+                    "404": {
+                        "description": "The user was not found"
+                    },
+                    "500": {
+                        "description": "An unexpected error occured"
+                    }
+                }
+            }
+        },
+        "/api/v1/user/all": {
+            "get": {
+                "tags": [
+                    "Users"
+                ],
+                "summary": "Get all users",
+                "responses": {
+                    "200": {
+                        "description": "Succesfully gotten the list of users"
+                    },
+                    "500": {
+                        "description": "Unable to get the list of all users"
+                    }
+                }
+            }
+        },
+        "/api/v1//cart/create": {
+            "post": {
+                "tags": [
+                    "Carts"
+                ],
+                "description": "Creates a new cart",
+                "summary": "Used to create a new cart",
+                "parameters": [{
+                    "name": "cart",
+                    "in": "body",
+                    "description": "Just pass the user's token as authorization header"
+                }],
+                "produces": [
+                    "application/json"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "A new cart has been created"
+                    },
+                    "404": {
+                        "description": "The user was not found"
+                    },
+                    "500": {
+                        "description": "Unable to create cart, an unexpected error occured"
+                    }
+                }
+            }
+        },
+        "/api/v1/cart/fetch": {
+            "put": {
+                "summary": "Returns the created cart with the id passed",
+                "tags": [
+                    "Carts"
+                ],
+                "parameters": [{
+                    "name": "cart",
+                    "in": "body",
+                    "description": "Just pass the cart's id",
+                    "schema": {
+                        "$ref": "#/definitions/Cart"
+                    }
+                }],
+                "responses": {
+                    "200": {
+                        "description": "Successfully updated this merchant"
+                    },
+                    "400": {
+                        "description": "This merchant does not exist"
+                    },
+                    "500": {
+                        "description": "There was an error updating this merchant"
+                    }
+                }
+            }
+        },
+        "/api/v1/category/create": {
+            "post": {
+                "tags": [
+                    "Categories"
+                ],
+                "description": "Creates a new category",
+                "summary": "Used to create a new category",
+                "parameters": [{
+                    "name": "category",
+                    "in": "body",
+                    "description": "These should be passed",
+                    "schema": {
+                        "$ref": "#/definitions/Category"
+                    }
+                }],
+                "produces": [
+                    "application/json"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "A new category has been created"
+                    },
+                    "404": {
+                        "description": "The store was not found"
+                    },
+                    "500": {
+                        "description": "Unable to create category, an unexpected error occured"
+                    }
+                }
+            }
+        },
+        "/api/v1/category/addItem": {
+            "post": {
+                "tags": [
+                    "Categories"
+                ],
+                "description": "Adds a created item in a created category",
+                "summary": "Used to add a new item, in a category",
+                "parameters": [{
+                    "name": "category",
+                    "in": "body",
+                    "description": "These should be passed",
+                    "schema": {
+                        "$ref": "#/definitions/CategoryItem"
+                    }
+                }],
+                "produces": [
+                    "application/json"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "The item has been added to the category"
+                    },
+                    "404": {
+                        "description": "The category/item was not found"
+                    },
+                    "500": {
+                        "description": "Unable to add the item, an unexpected error occured"
+                    }
+                }
+            }
+        },
+        "/api/v1/category/all": {
+            "get": {
+                "tags": [
+                    "Categories"
+                ],
+                "summary": "Get all categories",
+                "responses": {
+                    "200": {
+                        "description": "Succesfully gotten the list of categories"
+                    },
+                    "500": {
+                        "description": "Unable to get the list of all categories"
+                    }
+                }
+            }
+        },
+        "/api/v1/category/edit": {
+            "put": {
+                "summary": "Update the category",
+                "tags": [
+                    "Categories"
+                ],
+                "parameters": [{
+                    "name": "category",
+                    "in": "body",
+                    "description": "Updates the category with the newly passed parameters",
+                    "schema": {
+                        "$ref": "#/definitions/CategoryEdit"
+                    }
+                }],
+                "responses": {
+                    "200": {
+                        "description": "Successfully updated this category"
+                    },
+                    "500": {
+                        "description": "There was an error updating this category"
+                    }
+                }
+            }
+        },
+        "/api/v1/category/delete/{id}": {
+            "delete": {
+                "summary": "Delete category with given the {id}",
+                "tags": [
+                    "Categories"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successfully deleted this category"
+                    },
+                    "500": {
+                        "description": "An error occured when deleting this category"
+                    }
+                }
+            }
+        },
+        "/api/v1/category/removeItem": {
+            "post": {
+                "tags": [
+                    "Categories"
+                ],
+                "description": "Removes an item already in the category",
+                "summary": "Used to remove an item from a category",
+                "parameters": [{
+                    "name": "category",
+                    "in": "body",
+                    "description": "These can be passed, click on Model to see which ones are required",
+                    "schema": {
+                        "$ref": "#/definitions/CategoryItem"
+                    }
+                }],
+                "produces": [
+                    "application/json"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "The item have been successfully removed"
+                    },
+                    "404": {
+                        "description": "Please, inspect all parameters"
+                    },
+                    "500": {
+                        "description": "An unexpected error occured"
+                    }
+                }
+            }
+        },
+        "/api/v1/city/create": {
+            "post": {
+                "tags": [
+                    "Cities"
+                ],
+                "description": "Creates a new city",
+                "summary": "Used to create a new city",
+                "parameters": [{
+                    "name": "city",
+                    "in": "body",
+                    "description": "These should be passed",
+                    "schema": {
+                        "$ref": "#/definitions/City"
+                    }
+                }],
+                "produces": [
+                    "application/json"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "A new city has been created"
+                    },
+                    "500": {
+                        "description": "Unable to create city, an unexpected error occured"
+                    }
+                }
+            }
+        },
+        "/api/v1/city/addStore": {
+            "post": {
+                "tags": [
+                    "Cities"
+                ],
+                "description": "Adds an already created store to a city",
+                "summary": "Used to add a new store, to a category",
+                "parameters": [{
+                    "name": "city",
+                    "in": "body",
+                    "description": "These should be passed",
+                    "schema": {
+                        "$ref": "#/definitions/CityStore"
+                    }
+                }],
+                "produces": [
+                    "application/json"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "The store has been added to the city"
+                    },
+                    "404": {
+                        "description": "The city/store was not found"
+                    },
+                    "500": {
+                        "description": "Unable to add the store, an unexpected error occured"
+                    }
+                }
+            }
+        },
+        "/api/v1/city/all": {
+            "get": {
+                "tags": [
+                    "Cities"
+                ],
+                "summary": "Get all cities",
+                "responses": {
+                    "200": {
+                        "description": "Succesfully gotten the list of cities"
+                    },
+                    "500": {
+                        "description": "Unable to get the list of all cities"
+                    }
+                }
+            }
+        },
+        "/api/v1/city/edit": {
+            "put": {
+                "summary": "Update the city",
+                "tags": [
+                    "Cities"
+                ],
+                "parameters": [{
+                    "name": "city",
+                    "in": "body",
+                    "description": "Updates the city with the newly passed parameters",
+                    "schema": {
+                        "$ref": "#/definitions/CityEdit"
+                    }
+                }],
+                "responses": {
+                    "200": {
+                        "description": "Successfully updated this city"
+                    },
+                    "500": {
+                        "description": "There was an error updating this city"
+                    }
+                }
+            }
+        },
+        "/api/v1/city/delete/{id}": {
+            "delete": {
+                "summary": "Delete city with given the {id}",
+                "tags": [
+                    "Cities"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successfully deleted the city"
+                    },
+                    "500": {
+                        "description": "An error occured when deleting this city"
+                    }
+                }
+            }
+        },
+        "/api/v1/city/removeStore": {
+            "post": {
+                "tags": [
+                    "Cities"
+                ],
+                "description": "Removes a store already in the city",
+                "summary": "Used to remove a from a city",
+                "parameters": [{
+                    "name": "city",
+                    "in": "body",
+                    "description": "These can be passed, click on Model to see which ones are required",
+                    "schema": {
+                        "$ref": "#/definitions/CityStore"
+                    }
+                }],
+                "produces": [
+                    "application/json"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "The store have been successfully removed"
+                    },
+                    "404": {
+                        "description": "Please, inspect all parameters"
+                    },
+                    "500": {
+                        "description": "An unexpected error occured"
+                    }
+                }
+            }
+        },
+        "/api/v1/item/create": {
+            "post": {
+                "tags": [
+                    "Items"
+                ],
+                "description": "Creates a new item",
+                "summary": "Used to create a new item",
+                "parameters": [{
+                    "name": "item",
+                    "in": "body",
+                    "description": "These should be passed",
+                    "schema": {
+                        "$ref": "#/definitions/Item"
+                    }
+                }],
+                "produces": [
+                    "application/json"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "A new city has been created"
+                    },
+                    "500": {
+                        "description": "Unable to create city, an unexpected error occured"
+                    }
+                }
+            }
+        },
+        "/api/v1/item/addToCart": {
+            "post": {
+                "tags": [
+                    "Items"
+                ],
+                "description": "Adds an already created item to a cart",
+                "summary": "Used to add an item, to a cart",
+                "parameters": [{
+                    "name": "item",
+                    "in": "body",
+                    "description": "These should be passed",
+                    "schema": {
+                        "$ref": "#/definitions/ItemCart"
+                    }
+                }],
+                "produces": [
+                    "application/json"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "The item has been added to the cart"
+                    },
+                    "404": {
+                        "description": "The cart/item was not found"
+                    },
+                    "500": {
+                        "description": "Unable to add the item, an unexpected error occured"
+                    }
+                }
+            }
+        },
+        "/api/v1/item/all": {
+            "get": {
+                "tags": [
+                    "Items"
+                ],
+                "summary": "Get all items",
+                "responses": {
+                    "200": {
+                        "description": "Succesfully gotten the list of items"
+                    },
+                    "500": {
+                        "description": "Unable to get the list of all items"
+                    }
+                }
+            }
+        },
+        "/api/v1/item/edit": {
+            "put": {
+                "summary": "Update the item",
+                "tags": [
+                    "Items"
+                ],
+                "parameters": [{
+                    "name": "item",
+                    "in": "body",
+                    "description": "Updates the item with the newly passed parameters",
+                    "schema": {
+                        "$ref": "#/definitions/ItemEdit"
+                    }
+                }],
+                "responses": {
+                    "200": {
+                        "description": "Successfully updated this city"
+                    },
+                    "500": {
+                        "description": "There was an error updating this city"
+                    }
+                }
+            }
+        },
+        "/api/v1/item/delete/{id}": {
+            "delete": {
+                "summary": "Delete item with given the {id}",
+                "tags": [
+                    "Items"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successfully deleted the item"
+                    },
+                    "500": {
+                        "description": "An error occured when deleting this item"
+                    }
+                }
+            }
+        },
+        "/api/v1/item/fetch": {
+            "post": {
+                "tags": [
+                    "Items"
+                ],
+                "description": "Fetches all the details for the specified item",
+                "summary": "Get all item's details",
+                "parameters": [{
+                    "name": "item",
+                    "in": "body",
+                    "description": "These can be passed, click on Model to see which ones are required",
+                    "schema": {
+                        "$ref": "#/definitions/FetchItem"
+                    }
+                }],
+                "produces": [
+                    "application/json"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "The store have been successfully removed"
+                    },
+                    "404": {
+                        "description": "Please, inspect all parameters"
+                    },
+                    "500": {
+                        "description": "An unexpected error occured"
+                    }
+                }
+            }
+        },
+        "/api/v1/store/create": {
+            "post": {
+                "tags": [
+                    "Stores"
+                ],
+                "description": "Creates a new store",
+                "summary": "Used to create a new store",
+                "parameters": [{
+                    "name": "store",
+                    "in": "body",
+                    "description": "These should be passed",
+                    "schema": {
+                        "$ref": "#/definitions/Store"
+                    }
+                }],
+                "produces": [
+                    "application/json"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "A new store has been created"
+                    },
+                    "500": {
+                        "description": "Unable to create store, an unexpected error occured"
+                    }
+                }
+            }
+        },
+        "/api/v1/store/addCategory": {
+            "post": {
+                "tags": [
+                    "Stores"
+                ],
+                "description": "Adds an already created category to a store",
+                "summary": "Used to add a category, to a store",
+                "parameters": [{
+                    "name": "store",
+                    "in": "body",
+                    "description": "These should be passed",
+                    "schema": {
+                        "$ref": "#/definitions/StoreCategory"
+                    }
+                }],
+                "produces": [
+                    "application/json"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "The store has been added to the city"
+                    },
+                    "404": {
+                        "description": "The city/store was not found"
+                    },
+                    "500": {
+                        "description": "Unable to add the store, an unexpected error occured"
+                    }
+                }
+            }
+        },
+        "/api/v1/store/all": {
+            "get": {
+                "tags": [
+                    "Stores"
+                ],
+                "summary": "Get all stores",
+                "responses": {
+                    "200": {
+                        "description": "Succesfully gotten the list of stores"
+                    },
+                    "500": {
+                        "description": "Unable to get the list of all stores"
+                    }
+                }
+            }
+        },
+        "/api/v1/store/edit": {
+            "put": {
+                "summary": "Update the store",
+                "tags": [
+                    "Stores"
+                ],
+                "parameters": [{
+                    "name": "store",
+                    "in": "body",
+                    "description": "Updates the store with the newly passed parameters",
+                    "schema": {
+                        "$ref": "#/definitions/StoreEdit"
+                    }
+                }],
+                "responses": {
+                    "200": {
+                        "description": "Successfully updated this store"
+                    },
+                    "500": {
+                        "description": "There was an error updating this store"
+                    }
+                }
+            }
+        },
+        "/api/v1/store/delete/{id}": {
+            "delete": {
+                "summary": "Delete store with given the {id}",
+                "tags": [
+                    "Stores"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successfully deleted the store"
+                    },
+                    "500": {
+                        "description": "An error occured when deleting this store"
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "UserLogin": {
+            "required": [
+                "email",
+                "password"
+            ],
+            "properties": {
+                "email": {
+                    "type": "string",
+                    "uniqueItems": true
+                },
+                "password": {
+                    "type": "string"
+                }
+            }
+        },
+        "UserRegister": {
+            "required": [
+                "firstname",
+                "lastname",
+                "email",
+                "password",
+                "phone"
+            ],
+            "properties": {
+                "firstname": {
+                    "type": "string"
+                },
+                "lastname": {
+                    "type": "string"
+                },
+                "email": {
+                    "type": "string",
+                    "uniqueItems": true
+                },
+                "password": {
+                    "type": "string"
+                },
+                "phone": {
+                    "type": "string"
+                }
+            }
+        },
+        "Confirmation": {
+            "required": [
+                "email",
+                "token"
+            ],
+            "properties": {
+                "email": {
+                    "type": "string",
+                    "uniqueItems": true
+                },
+                "token": {
+                    "type": "string",
+                    "uniqueItems": true
+                }
+            }
+        },
+        "ChangePass": {
+            "required": [
+                "email",
+                "password",
+                "token"
+            ],
+            "properties": {
+                "email": {
+                    "type": "string",
+                    "uniqueItems": true
+                },
+                "password": {
+                    "type": "string"
+                },
+                "token": {
+                    "type": "string",
+                    "uniqueItems": true
+                }
+            }
+        },
+        "Cart": {
+            "required": [
+                "id"
+            ],
+            "properties": {
+                "id": {
+                    "type": "string",
+                    "uniqueItems": true
+                }
+            }
+        },
+        "Category": {
+            "required": [
+                "name",
+                "store_id"
+            ],
+            "properties": {
+                "name": {
+                    "type": "string"
+                },
+                "store_id": {
+                    "type": "string"
+                }
+            }
+        },
+        "CategoryItem": {
+            "required": [
+                "category_id",
+                "item_id"
+            ],
+            "properties": {
+                "category_id": {
+                    "type": "string"
+                },
+                "item_id": {
+                    "type": "string"
+                }
+            }
+        },
+        "CategoryEdit": {
+            "required": [
+                "category_id",
+                "name"
+            ],
+            "properties": {
+                "category_id": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                }
+            }
+        },
+        "City": {
+            "required": [
+                "name",
+                "image",
+                "coordinates"
+            ],
+            "properties": {
+                "name": {
+                    "type": "string"
+                },
+                "image": {
+                    "type": "string"
+                },
+                "coordinates": {
+                    "type": "string"
+                }
+            }
+        },
+        "CityStore": {
+            "required": [
+                "city_id",
+                "store_id"
+            ],
+            "properties": {
+                "city_id": {
+                    "type": "string"
+                },
+                "store_id": {
+                    "type": "string"
+                }
+            }
+        },
+        "CityEdit": {
+            "required": [
+                "city_id",
+                "name",
+                "image",
+                "coordinates"
+            ],
+            "properties": {
+                "city_id": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "image": {
+                    "type": "string"
+                },
+                "coordinates": {
+                    "type": "string"
+                }
+            }
+        },
+        "Item": {
+            "required": [
+                "name",
+                "image",
+                "price"
+            ],
+            "properties": {
+                "name": {
+                    "type": "string"
+                },
+                "image": {
+                    "type": "string"
+                },
+                "price": {
+                    "type": "string"
+                }
+            }
+        },
+        "ItemCart": {
+            "required": [
+                "cart_id",
+                "item_id"
+            ],
+            "properties": {
+                "cart_id": {
+                    "type": "string"
+                },
+                "item_id": {
+                    "type": "string"
+                }
+            }
+        },
+        "ItemEdit": {
+            "required": [
+                "item_id",
+                "name",
+                "image",
+                "price"
+            ],
+            "properties": {
+                "item_id": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "image": {
+                    "type": "string"
+                },
+                "price": {
+                    "type": "string"
+                }
+            }
+        },
+        "FetchItem": {
+            "required": [
+                "item_id"
+            ],
+            "properties": {
+                "item_id": {
+                    "type": "string"
+                }
+            }
+        },
+        "Store": {
+            "required": [
+                "name",
+                "city_id",
+                "delivery_time",
+                "tags"
+            ],
+            "properties": {
+                "name": {
+                    "type": "string"
+                },
+                "city_id": {
+                    "type": "string",
+                    "uniqueItems": true
+                },
+                "delivery_time": {
+                    "type": "string"
+                },
+                "tags": {
+                    "type": "string"
+                }
+            }
+        },
+        "StoreCategory": {
+            "required": [
+                "store_id",
+                "category_id"
+            ],
+            "properties": {
+                "store_id": {
+                    "type": "string"
+                },
+                "category_id": {
+                    "type": "string"
+                }
+            }
+        },
+        "StoreEdit": {
+            "required": [
+                "name",
+                "store_id",
+                "delivery_time",
+                "tags"
+            ],
+            "properties": {
+                "store_id": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "delivery_time": {
+                    "type": "string"
+                },
+                "tags": {
+                    "type": "string"
+                }
+            }
+        }
+    }
+}
