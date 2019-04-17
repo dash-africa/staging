@@ -96,7 +96,7 @@
                 "tags": [
                     "Users"
                 ],
-                "description": "Confirms the token sent to the user's email",
+                "description": "Confirms the otp sent to the user's email",
                 "summary": "Used to verify user's account",
                 "parameters": [{
                     "name": "user",

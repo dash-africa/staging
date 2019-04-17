@@ -4,8 +4,16 @@ import bcrypt from 'bcryptjs';
 import nodemailer from 'nodemailer';
 import ejs from 'ejs';
 import path from 'path';
+// import otplib from 'otplib';
+import crypto from 'crypto';
+import authenticator from 'otplib/authenticator';
+
+authenticator.options = {
+    crypto
+};
 
 const userController = {};
+const secret = 'KbE/eZ-:M4z]PI%pESY%Y!-6P@H?zVCb99)J9Ah4srt8JduM)%d:jo!@<mLPIXD';
 
 let sendMail = (dir_path, object) => {
     return new Promise((resolve, reject) => {
@@ -40,52 +48,49 @@ userController.registerUser = (req, res) => {
                             password: hash,
                             phone,
                         });
+                        const otp = authenticator.generate(secret);
                         user.save().then((User) => {
-                            signUser(User._id).then((token)=>{
-                                const tokenise = new db.Token({
-                                    _userId: User._id,
-                                    token
+                            const tokenise = new db.Token({
+                                _userId: User._id,
+                                token: otp
+                            });
+                            tokenise.save((err) => {
+                                if (err) { return res.status(500).send({ msg: err.message }); }
+
+                                // Send the email
+                                const transporter = nodemailer.createTransport({
+                                    service: 'Sendgrid',
+                                    auth: {
+                                        user: process.env.SENDGRID_USERNAME,
+                                        pass: process.env.SENDGRID_PASSWORD
+                                    }
                                 });
-                                tokenise.save((err) => {
-                                    if (err) { return res.status(500).send({ msg: err.message }); }
+                                // const mailOptions = { from: 'kana-insight@yourwebapplication.com', to: User.email, subject: 'Account Verification Token', text: 'Hello,\n\n' + 'Please verify your account by clicking the link: \nhttps:\/\/' + req.headers.host + '\/confirmation\/' + tokenise.token + '.\n' };
 
-                                    // Send the email
-                                    const transporter = nodemailer.createTransport({ 
-                                        service: 'Sendgrid', 
-                                        auth: { 
-                                            user: process.env.SENDGRID_USERNAME, 
-                                            pass: process.env.SENDGRID_PASSWORD 
-                                        } 
-                                    });
-                                    // const mailOptions = { from: 'kana-insight@yourwebapplication.com', to: User.email, subject: 'Account Verification Token', text: 'Hello,\n\n' + 'Please verify your account by clicking the link: \nhttps:\/\/' + req.headers.host + '\/confirmation\/' + tokenise.token + '.\n' };
-                                    
-                                    sendMail('verification.ejs', {lastname: User.lastname, token: tokenise.token, host: req.headers.host, protocol: req.protocol}).then(data => {
-                                        const mailOptions = {
-                                            from: 'dash@yourwebapplication.com',
-                                            to: User.email,
-                                            subject: 'Account Verification Token',
-                                            html: data
-                                        };
+                                sendMail('verification.ejs', { lastname: User.lastname, token: tokenise.token, host: req.headers.host, protocol: req.protocol }).then(data => {
+                                    const mailOptions = {
+                                        from: 'dash@yourwebapplication.com',
+                                        to: User.email,
+                                        subject: 'Account Verification Token',
+                                        html: data
+                                    };
 
-                                        // console.log('here');
+                                    // console.log('here');
 
-                                        transporter.sendMail(mailOptions, (err) => {
-                                            if (err) {
-                                                return res.status(500).send({
-                                                    msg: err.message
-                                                });
-                                            }
-                                            res.status(200).json({
-                                                status: true,
-                                                message: 'A verification email has been sent to ' + User.email + '.',
-                                                token: tokenise.token,
-                                                data: User.email
+                                    transporter.sendMail(mailOptions, (err) => {
+                                        if (err) {
+                                            return res.status(500).send({
+                                                msg: err.message
                                             });
+                                        }
+                                        res.status(200).json({
+                                            status: true,
+                                            message: 'A verification email has been sent to ' + User.email + '.',
+                                            token: tokenise.token,
+                                            data: User.email
                                         });
                                     });
                                 });
-                            }).catch((err)=>{
-                                res.status(500).json({status: false, message: err.message + 'error'});
                             });
                         });
                     }
@@ -142,6 +147,7 @@ let signUser = (user) => {
 
 userController.confirmationPost = (req, res) => {
     const { email, token } = req.body;
+    // console.log(authenticator.check(token, secret));
 
     // Look for the token with the jwt saved in the localstorage
     db.Token.findOne({token}).then(tokens => {
@@ -166,6 +172,8 @@ userController.confirmationPost = (req, res) => {
                     // Not user
                     res.status(400).json({ status: false, message: 'We were unable to find a user for this token.' });
                 }
+            }).catch(err => {
+                res.status(500).json({status: false, message: 'Unable to find the account this token is linked to'})
             });
         } else {
             res.status(400).json({status: false, message: 'We were unable to find a valid token. Your token my have expired.'});
