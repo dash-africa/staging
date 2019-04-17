@@ -223,7 +223,7 @@ userController.resendTokenPost = (req, res) => {
                     res.status(200).json({
                         status: true,
                         message: 'A verification email has been sent to ' + user.email + '.',
-                        token: tokenise.token,
+                        token: token,
                         data: user.email
                     });
                 });
