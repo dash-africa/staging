@@ -130,6 +130,8 @@ userController.loginUser = (req, res) => {
         } else {
             res.status(400).json({status: false, message: 'Wrong login details'});
         }
+    }).catch(err => {
+        res.status(500).json({status: false, message: err.message});
     });
 };
 
