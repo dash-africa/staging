@@ -13,7 +13,7 @@ cartController.createCart = (req, res) => {
 
             db.Cart.create(cart, (err, created) => {
                 if (err) {
-                res.status(500).json({status: false, message: "The cart was not created"});
+                    res.status(500).json({status: false, message: "The cart was not created " + err.message});
                 } else {
                     user.carts.push(created._id);
                     user.save().then(saved => {
@@ -22,6 +22,8 @@ cartController.createCart = (req, res) => {
                 }
             });
         }
+    }).catch(err => {
+        res.status(500).json({status: false, message: err.message});
     });
 };
 

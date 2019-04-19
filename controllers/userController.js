@@ -176,7 +176,7 @@ userController.confirmationPost = (req, res) => {
                 res.status(500).json({status: false, message: 'Unable to find the account this token is linked to'})
             });
         } else {
-            res.status(400).json({status: false, message: 'We were unable to find a valid token. Your token my have expired.'});
+            res.status(400).json({status: false, message: 'We were unable to find a valid token. Your token may have expired.'});
         }
     }).catch(err => {res.status(500).json({status: false, message: err.message});});
 };
@@ -240,52 +240,48 @@ userController.resendForgottenToken = (req, res) => {
     db.User.findOne({email}).then(user => {
         // Check if user returned is not null
         if (user !== null) {
-            // Generate jwt for email confirmation token
-            signUser(user._id).then((token)=>{
-                // Save new token in the database
-                const tokenise = new db.Token({
-                    _userId: user._id,
-                    token
+            // Save new token in the database
+            const otp = authenticator.generate(secret);
+            const tokenise = new db.Token({
+                _userId: user._id,
+                token: otp
+            });
+            tokenise.save(err => {
+                // If there is an error when saving the token
+                if (err) { return res.status(500).send({ msg: err.message }); }
+
+                // If no error is generated
+                // Send the confirmation email
+                const transporter = nodemailer.createTransport({
+                    service: 'Sendgrid',
+                    auth: {
+                        user: process.env.SENDGRID_USERNAME,
+                        pass: process.env.SENDGRID_PASSWORD
+                    }
                 });
-                tokenise.save(err => {
-                    // If there is an error when saving the token
-                    if (err) { return res.status(500).send({ msg: err.message }); }
 
-                    // If no error is generated
-                    // Send the confirmation email
-                    const transporter = nodemailer.createTransport({
-                        service: 'Sendgrid',
-                        auth: {
-                            user: process.env.SENDGRID_USERNAME,
-                            pass: process.env.SENDGRID_PASSWORD
-                        }
-                    });
+                sendMail('forgotten.ejs', {lastname: user.lastname, token: tokenise.token, host: req.headers.host, protocol: req.protocol}).then(data => {
+                    const mailOptions = {
+                        from: 'kana-insight@yourwebapplication.com',
+                        to: user.email,
+                        subject: 'Forgotten Password Token',
+                        html: data
+                    };
 
-                    sendMail('forgotten.ejs', {lastname: user.lastname, token: tokenise.token, host: req.headers.host, protocol: req.protocol}).then(data => {
-                        const mailOptions = {
-                            from: 'kana-insight@yourwebapplication.com',
-                            to: user.email,
-                            subject: 'Forgotten Password Token',
-                            html: data
-                        };
-
-                        transporter.sendMail(mailOptions, (err) => {
-                            if (err) {
-                                return res.status(500).send({
-                                    msg: err.message
-                                });
-                            }
-                            res.status(200).json({
-                                status: true,
-                                message: 'A verification email has been sent to ' + user.email + '.',
-                                token: tokenise.token,
-                                data: user.email
+                    transporter.sendMail(mailOptions, (err) => {
+                        if (err) {
+                            return res.status(500).send({
+                                msg: err.message
                             });
+                        }
+                        res.status(200).json({
+                            status: true,
+                            message: 'A verification email has been sent to ' + user.email + '.',
+                            token: tokenise.token,
+                            data: user.email
                         });
                     });
                 });
-            }).catch((err)=>{
-                res.status(500).json({status: false, message: err.message});
             });
         } else {
             res.status(401).json({status: false, message: 'The user is not found, please enter a registered email'});
