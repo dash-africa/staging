@@ -313,7 +313,7 @@
             }
         },
         "/api/v1/cart/fetch": {
-            "put": {
+            "post": {
                 "summary": "Returns the created cart with the id passed",
                 "tags": [
                     "Carts"
