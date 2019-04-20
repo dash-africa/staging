@@ -39,7 +39,7 @@ cityController.addStore = (req, res) => {
 
 cityController.allCities = (req, res) => {
     db.City.find().then(cities => {
-        if (citties === undefined || cities.length === 0) {
+        if (cities === undefined || cities.length === 0) {
             res.status(404).json({status: false, message: 'No cities were found'});
         } else {
             res.status(200).json({status: true, message: 'Found all cities', data: cities});
