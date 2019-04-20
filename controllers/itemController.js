@@ -17,7 +17,7 @@ itemController.create = (req, res) => {
         } else {
             res.status(200).json({status: true, message: 'Successfully created item', data: created});
         }
-    }).catch(err => res.status(500).json({status: false, message: err.message}));
+    });
 };
 
 itemController.addToCart = (req, res) => {

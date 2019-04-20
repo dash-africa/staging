@@ -20,7 +20,7 @@ categoryController.createCategory = (req, res) => {
                 } else {
                     res.status(200).json({status: true, message: 'Created the category', data: stored});
                 }
-            }).catch(err => res.status(500).json({status: false, message: err.message}));
+            });
         }
     }).catch(err => {
         res.status(500).json({status: false, message: err.message});

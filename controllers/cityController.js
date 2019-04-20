@@ -17,7 +17,7 @@ cityController.createCity = (req, res) => {
         } else {
             res.status(200).json({status: true, message: 'Created', data: created});
         }
-    }).catch(err => res.status(500).json({status: false, message: err.message}));
+    });
 };
 
 cityController.addStore = (req, res) => {
