@@ -49,6 +49,19 @@ cityController.allCities = (req, res) => {
     });
 };
 
+cityController.fetchCity = (req, res) => {
+    const {city_id} = req.body;
+    db.City.findById(id).populate('stores').then(city => {
+        if (city === undefined) {
+            res.status(404).json({status: false, message: 'The city with this id was not found'});
+        } else {
+            res.status(200).json({status: true, message: 'Found', data: city});
+        }
+    }).catch(err => {
+        res.status(500).json({status: false, message: err.message});
+    });
+};
+
 cityController.removeStore = (req, res) => {
     const {city_id, store_id} = req.body;
 

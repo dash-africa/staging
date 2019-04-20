@@ -328,13 +328,13 @@
                 }],
                 "responses": {
                     "200": {
-                        "description": "Successfully updated this merchant"
+                        "description": "Successfully returned this cart"
                     },
-                    "400": {
-                        "description": "This merchant does not exist"
+                    "404": {
+                        "description": "This cart was not found"
                     },
                     "500": {
-                        "description": "There was an error updating this merchant"
+                        "description": "An error occured when finding this cart"
                     }
                 }
             }
@@ -543,6 +543,35 @@
                     },
                     "500": {
                         "description": "Unable to add the store, an unexpected error occured"
+                    }
+                }
+            }
+        },
+        "/api/v1/city/fetch": {
+            "post": {
+                "summary": "Returns the created city with the id passed",
+                "tags": [
+                    "Cities"
+                ],
+                "parameters": [
+                    {
+                        "name": "city",
+                        "in": "body",
+                        "description": "Just pass the city's id",
+                        "schema": {
+                            "$ref": "#/definitions/CityId"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successfully returned the city and it's list of stores"
+                    },
+                    "404": {
+                        "description": "This city was not found"
+                    },
+                    "500": {
+                        "description": "There was an error when finding the city"
                     }
                 }
             }
@@ -1089,6 +1118,16 @@
                     "type": "string"
                 },
                 "coordinates": {
+                    "type": "string"
+                }
+            }
+        },
+        "CityId": {
+            "required": [
+                "city_id"
+            ],
+            "properties": {
+                "city_id": {
                     "type": "string"
                 }
             }

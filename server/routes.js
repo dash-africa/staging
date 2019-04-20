@@ -64,6 +64,7 @@ routes.get('/city/all', controllers.cityControler.allCities);
 routes.post('/city/removeStore', controllers.cityControler.removeStore);
 routes.put('/city/edit', controllers.cityControler.editCity);
 routes.delete('/city/delete/:id', controllers.cityControler.deleteCity);
+routes.post('/city/fetch', controllers.cityControler.fetchCity);
 
 // Item Routes
 routes.post('/item/create', controllers.itemController.create);
