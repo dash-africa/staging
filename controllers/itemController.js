@@ -63,9 +63,9 @@ itemController.addToCart = (req, res) => {
 };
 
 itemController.fetchItem = (req, res) => {
-    const {item_id} = req.body;
+    const itemId = req.params.id;
 
-    db.Item.findById(item_id).then(item => {
+    db.Item.findById(itemId).then(item => {
         if (item === undefined) {
             res.status(404).json({status: false, message: 'The item was not found'});
         } else {

@@ -547,31 +547,21 @@
                 }
             }
         },
-        "/api/v1/city/fetch": {
-            "post": {
-                "summary": "Returns the created city with the id passed",
+        "/api/v1/city/stores/:cityId": {
+            "get": {
                 "tags": [
                     "Cities"
                 ],
-                "parameters": [
-                    {
-                        "name": "city",
-                        "in": "body",
-                        "description": "Just pass the city's id",
-                        "schema": {
-                            "$ref": "#/definitions/CityId"
-                        }
-                    }
-                ],
+                "summary": "Get specific city",
                 "responses": {
                     "200": {
-                        "description": "Successfully returned the city and it's list of stores"
+                        "description": "Succesfully gotten the city"
                     },
                     "404": {
-                        "description": "This city was not found"
+                        "description": "The city with this id was not found"
                     },
                     "500": {
-                        "description": "There was an error when finding the city"
+                        "description": "Unable to get the city"
                     }
                 }
             }
@@ -778,33 +768,21 @@
                 }
             }
         },
-        "/api/v1/item/fetch": {
-            "post": {
+        "/api/v1/item/:itemId": {
+            "get": {
                 "tags": [
                     "Items"
                 ],
-                "description": "Fetches all the details for the specified item",
-                "summary": "Get all item's details",
-                "parameters": [{
-                    "name": "item",
-                    "in": "body",
-                    "description": "These can be passed, click on Model to see which ones are required",
-                    "schema": {
-                        "$ref": "#/definitions/FetchItem"
-                    }
-                }],
-                "produces": [
-                    "application/json"
-                ],
+                "summary": "Get specific items",
                 "responses": {
                     "200": {
-                        "description": "The store have been successfully removed"
+                        "description": "Succesfully gotten the item"
                     },
                     "404": {
-                        "description": "Please, inspect all parameters"
+                        "description": "The item was not found"
                     },
                     "500": {
-                        "description": "An unexpected error occured"
+                        "description": "Unable to get the item"
                     }
                 }
             }

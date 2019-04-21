@@ -50,8 +50,8 @@ cityController.allCities = (req, res) => {
 };
 
 cityController.fetchCity = (req, res) => {
-    const {city_id} = req.body;
-    db.City.findById(id).populate('stores').then(city => {
+    const cityId = req.params.id;
+    db.City.findById(cityId).populate('stores').then(city => {
         if (city === undefined) {
             res.status(404).json({status: false, message: 'The city with this id was not found'});
         } else {

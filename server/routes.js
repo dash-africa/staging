@@ -64,12 +64,12 @@ routes.get('/city/all', controllers.cityControler.allCities);
 routes.post('/city/removeStore', controllers.cityControler.removeStore);
 routes.put('/city/edit', controllers.cityControler.editCity);
 routes.delete('/city/delete/:id', controllers.cityControler.deleteCity);
-routes.post('/city/fetch', controllers.cityControler.fetchCity);
+routes.get('/city/stores/:cityId', controllers.cityControler.fetchCity);
 
 // Item Routes
 routes.post('/item/create', controllers.itemController.create);
 routes.post('/item/addToCart', controllers.itemController.addToCart);
-routes.post('/item/fetch', controllers.itemController.fetchItem);
+routes.get('/item/:itemId', controllers.itemController.fetchItem);
 routes.get('/item/all', controllers.itemController.getAll);
 routes.put('/item/edit', controllers.itemController.editItem);
 routes.delete('/item/delete/:id', controllers.itemController.deleteItem);
