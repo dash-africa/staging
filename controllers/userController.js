@@ -336,7 +336,7 @@ userController.getUserInfo = (req, res) => {
 
 userController.fetchUserCart = (req, res) => {
     db.User.findById(req.user).populate('carts').then(user => {
-        if (user === undefined) {
+        if (user === null) {
             res.status(404).json({status: false, message: 'User not found'})
         } else {
             res.status(200).json({status: true, message: 'Found', data: user});

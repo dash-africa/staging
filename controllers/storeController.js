@@ -6,7 +6,7 @@ storeController.createStore = (req, res) => {
     const {name, city_id, delivery_time, tags, image} = req.body;
 
     db.City.findById(city_id).then(city => {
-        if (city === undefined) {
+        if (city === null) {
             res.status(500).json({status: false, message: 'The city was not found'});
         } else {
             const store = new db.Store({
@@ -32,7 +32,7 @@ storeController.createStore = (req, res) => {
 
 storeController.allStores = (req, res) => {
     db.Store.find().then(stores => {
-        if (stores === undefined || stores.length === 0) {
+        if (stores === null || stores.length === 0) {
             res.status(404).json({status: false, message: 'No store was found'});
         } else {
             res.status(200).json({status: true, message: 'Found', data: stores});
@@ -66,7 +66,7 @@ storeController.addCategory = (req, res) => {
     const {store_id, category_id} = req.body;
 
     db.Store.findById(store_id).then(store => {
-        if (store === undefined) {
+        if (store === null) {
             res.status(404).json({status: false, message: 'The store was not found'});
         } else {
             store.categories.push(category_id);

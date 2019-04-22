@@ -24,15 +24,15 @@ itemController.addToCart = (req, res) => {
     const {cart_id, item_id} = req.body;
 
     db.User.findById(req.user).then(user => {
-        if (user === undefined) {
+        if (user === null) {
             res.status(404).json({status: false, message: 'User not found'});
         } else {
             db.Item.findById(item_id).then(item => {
-                if (item === undefined) {
+                if (item === null) {
                     res.status(404).json({status: false, message: 'The item was not found'});
                 } else {
                     db.Cart.findById(cart_id).then(cart => {
-                        if (cart === undefined) {
+                        if (cart === null) {
                             const ncart = new db.Cart({
                                 _userId: user._id,
                                 items: [item._id]
@@ -66,7 +66,7 @@ itemController.fetchItem = (req, res) => {
     const itemId = req.params.id;
 
     db.Item.findById(itemId).then(item => {
-        if (item === undefined) {
+        if (item === null) {
             res.status(404).json({status: false, message: 'The item was not found'});
         } else {
             res.status(200).json({status: true, message: 'Found', data: item});
@@ -78,7 +78,7 @@ itemController.fetchItem = (req, res) => {
 
 itemController.getAll = (req, res) => {
     db.Item.find().then(items => {
-        if (items === undefined || items.length === 0) {
+        if (items === null || items.length === 0) {
             res.status(404).json({status: false, message: 'No item was found'});
         } else {
             res.status(200).json({status: true, message: 'Found', data: items});

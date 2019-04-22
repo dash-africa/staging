@@ -24,7 +24,7 @@ cityController.addStore = (req, res) => {
     const {city_id, store_id} = req.body;
 
     db.City.findById(city_id).then(city => {
-        if (city === undefined) {
+        if (city === null) {
             res.status(404).json({status: false, message: 'City not found'});
         } else {
             city.stores.push(store_id);
@@ -39,7 +39,7 @@ cityController.addStore = (req, res) => {
 
 cityController.allCities = (req, res) => {
     db.City.find().then(cities => {
-        if (cities === undefined || cities.length === 0) {
+        if (cities === null || cities.length === 0) {
             res.status(404).json({status: false, message: 'No cities were found'});
         } else {
             res.status(200).json({status: true, message: 'Found all cities', data: cities});
@@ -50,9 +50,9 @@ cityController.allCities = (req, res) => {
 };
 
 cityController.fetchCity = (req, res) => {
-    const cityId = req.params.id;
+    const cityId = req.params.cityId;
     db.City.findById(cityId).populate('stores').then(city => {
-        if (city === undefined) {
+        if (city === null) {
             res.status(404).json({status: false, message: 'The city with this id was not found'});
         } else {
             res.status(200).json({status: true, message: 'Found', data: city});
@@ -66,7 +66,7 @@ cityController.removeStore = (req, res) => {
     const {city_id, store_id} = req.body;
 
     db.City.findById(city_id).then(city => {
-        if (city === undefined) {
+        if (city === null) {
             res.status(404).json({status: false, message: 'The city was not found'});
         } else {
             const idx = city.stores.indexOf(store_id);
