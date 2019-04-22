@@ -1179,7 +1179,8 @@
                 "name",
                 "city_id",
                 "delivery_time",
-                "tags"
+                "tags",
+                "image"
             ],
             "properties": {
                 "name": {
@@ -1193,6 +1194,9 @@
                     "type": "string"
                 },
                 "tags": {
+                    "type": "string"
+                },
+                "image": {
                     "type": "string"
                 }
             }

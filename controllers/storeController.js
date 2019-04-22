@@ -3,7 +3,7 @@ import db from '../models';
 const storeController = {};
 
 storeController.createStore = (req, res) => {
-    const {name, city_id, delivery_time, tags} = req.body;
+    const {name, city_id, delivery_time, tags, image} = req.body;
 
     db.City.findById(city_id).then(city => {
         if (city === undefined) {
@@ -13,7 +13,8 @@ storeController.createStore = (req, res) => {
                 name,
                 _cityId: city_id,
                 delivery_time,
-                tags
+                tags,
+                image
             });
 
             db.Store.create(store, (err, created) => {
@@ -40,8 +41,8 @@ storeController.allStores = (req, res) => {
 };
 
 storeController.editStore = (req, res) => {
-    const {store_id, name, delivery_time, tags} = req.body;
-    db.Item.findOneAndUpdate({_id: store_id}, {$set: {name, delivery_time, tags}}, {new: true}, (err, updated) => {
+    const {store_id, name, delivery_time, tags, image} = req.body;
+    db.Item.findOneAndUpdate({_id: store_id}, {$set: {name, delivery_time, tags, image}}, {new: true}, (err, updated) => {
         if (err) {
             res.status(500).json({status: false, message: err.message});
         } else {
