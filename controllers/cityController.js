@@ -104,14 +104,18 @@ cityController.deleteCity = (req, res) => {
 
 cityController.getAllTopCategories = (req, res) => {
     const cityId = req.params.cityId;
-    db.City.findById(cityId).populate({path: 'stores', populate: {
+    db.City.findById(cityId).populate({path: 'stores', model: 'Store', populate: {
         path: 'top_categories',
         model: 'TopCategories'
     }}).then(city => {
         if (city === null) {
             res.status(404).json({status: false, message: 'The city was not found'});
         } else {
-            res,status(200).json({status: false, message: 'Found', data: city});
+            if (city.stores.length === 0) {
+                res.status(401).json({status: false, message: 'There are no stores in this city'});
+            } else {
+                res.status(200).json({status: false, message: 'Found', data: city});
+            }
         }
     }).catch(err => {
         res.status(500).json({status: false, message: err.message});
