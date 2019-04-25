@@ -5,6 +5,7 @@ import cityControler from './cityController';
 import itemController from './itemController';
 import storeController from './storeController';
 import userController from './userController';
+import topCategoriesController from './topCategoriesController';
 
 export default {
     cartController,
@@ -12,5 +13,6 @@ export default {
     cityControler,
     itemController,
     storeController,
-    userController
+    userController,
+    topCategoriesController
 };

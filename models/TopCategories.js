@@ -1,8 +1,8 @@
 import mongoose from 'mongoose';
 const {Schema} = mongoose;
 
-const itemSchema = new Schema({
-    price: {
+const topCategoriesSchema = new Schema({
+    name: {
         type: String,
         required: true,
         help: 'This field is required'
@@ -12,15 +12,15 @@ const itemSchema = new Schema({
         required: true,
         help: 'This field is required'
     },
-    name: {
-        type: String,
-        required: 'This field is required'
-    },
     created_at: {
         type: Date,
         default: Date.now
     },
+    store: {
+        type: Schema.Types.ObjectId,
+        ref: 'Store'
+    }
 });
 
-const Item = mongoose.model('Item', itemSchema);
-export default Item;
+const TopCategories = mongoose.model('TopCategories', topCategoriesSchema);
+export default TopCategories;

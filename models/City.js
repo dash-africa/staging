@@ -20,7 +20,11 @@ const citySchema = new Schema({
     stores: [{
         type: Schema.Types.ObjectId,
         ref: 'Store'
-    }]
+    }],
+    created_at: {
+        type: Date,
+        default: Date.now
+    }
 });
 
 const City = mongoose.model('City', citySchema);

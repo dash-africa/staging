@@ -566,6 +566,25 @@
                 }
             }
         },
+        "/api/v1/city/topCategories:/cityId": {
+            "get": {
+                "tags": [
+                    "Cities"
+                ],
+                "summary": "Get the top categories belonging to the city",
+                "responses": {
+                    "200": {
+                        "description": "Succesfully gotten the top categories"
+                    },
+                    "404": {
+                        "description": "The city with this id was not found"
+                    },
+                    "500": {
+                        "description": "An error occured"
+                    }
+                }
+            }
+        },
         "/api/v1/city/all": {
             "get": {
                 "tags": [
@@ -901,7 +920,38 @@
                     }
                 }
             }
-        }
+        },
+        "/api/v1/top_category/create": {
+            "post": {
+                "tags": [
+                    "Top Category"
+                ],
+                "description": "Creates a top catgory in a store",
+                "summary": "Used to create a new top category in an already existing store",
+                "parameters": [{
+                    "name": "top_category",
+                    "in": "body",
+                    "description": "These should be passed",
+                    "schema": {
+                        "$ref": "#/definitions/Top"
+                    }
+                }],
+                "produces": [
+                    "application/json"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "The category has been found and added to the store successfully"
+                    },
+                    "404": {
+                        "description": "The store with the id provided was not found"
+                    },
+                    "500": {
+                        "description": "Unable to find the store, an unexpected error occured"
+                    }
+                }
+            }
+        },
     },
     "definitions": {
         "UserLogin": {
@@ -1233,6 +1283,24 @@
                     "type": "string"
                 },
                 "tags": {
+                    "type": "string"
+                }
+            }
+        },
+        "Top": {
+            "required": [
+                "storeId",
+                "name",
+                "image"
+            ],
+            "properties": {
+                "storeId": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "image": {
                     "type": "string"
                 }
             }

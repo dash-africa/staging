@@ -65,6 +65,7 @@ routes.post('/city/removeStore', controllers.cityControler.removeStore);
 routes.put('/city/edit', controllers.cityControler.editCity);
 routes.delete('/city/delete/:id', controllers.cityControler.deleteCity);
 routes.get('/city/stores/:cityId', controllers.cityControler.fetchCity);
+routes.get('/city/topCategories:/cityId', controllers.cityControler.getAllTopCategories);
 
 // Item Routes
 routes.post('/item/create', controllers.itemController.create);
@@ -80,5 +81,8 @@ routes.get('/store/all', controllers.storeController.allStores);
 routes.put('/store/edit', controllers.storeController.editStore);
 routes.delete('/store/delete/:id', controllers.storeController.deleteStore);
 routes.post('/store/addCategory', controllers.storeController.addCategory);
+
+// TopCategories Routes
+routes.post('/top_category/create', controllers.topCategoriesController.create);
 
 export default routes;

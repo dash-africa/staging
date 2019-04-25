@@ -25,6 +25,10 @@ const storeSchema = new Schema({
     categories: [{
         type: Schema.Types.ObjectId,
         ref: 'Category'
+    }],
+    top_categories: [{
+        type: Schema.Types.ObjectId,
+        ref: 'TopCategories'
     }]
 });
 

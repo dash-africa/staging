@@ -6,6 +6,7 @@ import Category from './Category';
 import City from './City';
 import Item from './Item';
 import Store from './Store';
+import TopCategories from './TopCategories';
 
 export default {
     User,
@@ -14,5 +15,6 @@ export default {
     Category,
     City,
     Item,
-    Store
+    Store,
+    TopCategories
 };
