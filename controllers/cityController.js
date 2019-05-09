@@ -114,7 +114,7 @@ cityController.getAllTopCategories = (req, res) => {
             if (city.stores.length === 0) {
                 res.status(401).json({status: false, message: 'There are no stores in this city'});
             } else {
-                res.status(200).json({status: false, message: 'Found', data: city});
+                res.status(200).json({status: false, message: 'Found', data: city.stores[0].top_categories});
             }
         }
     }).catch(err => {
