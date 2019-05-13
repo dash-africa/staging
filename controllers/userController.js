@@ -165,7 +165,11 @@ userController.confirmationPost = (req, res) => {
                     } else {
                         user.is_verified = true;
                         user.save().then(User => {
-                            res.status(200).json({status: true, message: 'Your account has been verified, please login'});
+                            signUser(User._id).then((token) => {
+                                res.status(200).json({ status: true, message: "The user's account has been verified", data: User, token });
+                            }).catch((err) => {
+                                res.status(500).json({ status: false, message: err.message });
+                            });
                         }).catch(err => {
                             res.status(500).json({status: false, message: err.message});
                         });
