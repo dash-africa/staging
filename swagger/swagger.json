@@ -921,6 +921,22 @@
                 }
             }
         },
+        "/api/v1/store/{id}": {
+            "get": {
+                "tags": [
+                    "Stores"
+                ],
+                "summary": "Get store contents",
+                "responses": {
+                    "200": {
+                        "description": "Succesfully gotten the content in the store"
+                    },
+                    "500": {
+                        "description": "Unable to get the content in the store"
+                    }
+                }
+            }
+        },
         "/api/v1/top_category/create": {
             "post": {
                 "tags": [

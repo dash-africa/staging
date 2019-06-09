@@ -81,6 +81,7 @@ routes.get('/store/all', controllers.storeController.allStores);
 routes.put('/store/edit', controllers.storeController.editStore);
 routes.delete('/store/delete/:id', controllers.storeController.deleteStore);
 routes.post('/store/addCategory', controllers.storeController.addCategory);
+routes.get('/store/:id', controllers.storeController.getStore);
 
 // TopCategories Routes
 routes.post('/top_category/create', controllers.topCategoriesController.create);

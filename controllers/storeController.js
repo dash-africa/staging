@@ -82,4 +82,16 @@ storeController.addCategory = (req, res) => {
     });
 };
 
+storeController.getStore = (req, res) => {
+    db.Store.findById(req.params.id).populate('categories').populate('top_categories').then(store => {
+        if (store === null) {
+            res.status(404).json({status: false, message: 'The store was not found'});
+        } else {
+            res.status(200).json({status: true, message: 'Added category', data: store});
+        }
+    }).catch(err => {
+        res.status(500).json({status: false, message: err.message});
+    });
+};
+
 export default storeController;
