@@ -829,7 +829,7 @@
                 }
             }
         },
-        "/api/v1/`store/`create": {
+        "/api/v1/store/create": {
             "post": {
                 "tags": [
                     "Stores"
