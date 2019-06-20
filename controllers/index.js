@@ -6,6 +6,7 @@ import itemController from './itemController';
 import storeController from './storeController';
 import userController from './userController';
 import topCategoriesController from './topCategoriesController';
+import historyController from './historyController'
 
 export default {
     cartController,
@@ -14,5 +15,6 @@ export default {
     itemController,
     storeController,
     userController,
-    topCategoriesController
+    topCategoriesController,
+    historyController
 };

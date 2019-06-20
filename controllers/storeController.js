@@ -94,4 +94,16 @@ storeController.getStore = (req, res) => {
     });
 };
 
+storeController.getCategoryItems = (req, res) => {
+    db.Store.findById(req.params.id).populate({path : 'categories', populate : {path : 'items'}}).then(store => {
+        if (store === null) {
+            res.status(404).json({status: false, message: 'The store was not found'});
+        } else {
+            res.status(200).json({status: true, message: 'items in the category', data: store});
+        }
+    }).catch(err => {
+        res.status(500).json({status: false, message: err.message});
+    });
+};
+
 export default storeController;

@@ -47,7 +47,8 @@ routes.get('/user/fetchCart', verifyToken, controllers.userController.fetchUserC
 
 // Cart Routes
 routes.post('/cart/create', verifyToken, controllers.cartController.createCart);
-routes.post('/cart/fetch', controllers.cartController.fetchCart);
+routes.get('/cart/:id', controllers.cartController.fetchCart);
+routes.post('/cart/addItem', controllers.cartController.addItems);
 
 // Category Routes
 routes.post('/category/create', controllers.categoryController.createCategory);
@@ -82,8 +83,12 @@ routes.put('/store/edit', controllers.storeController.editStore);
 routes.delete('/store/delete/:id', controllers.storeController.deleteStore);
 routes.post('/store/addCategory', controllers.storeController.addCategory);
 routes.get('/store/:id', controllers.storeController.getStore);
+routes.get('/store/items/:id', controllers.storeController.getCategoryItems);
 
 // TopCategories Routes
 routes.post('/top_category/create', controllers.topCategoriesController.create);
+
+// History Routes
+routes.post('/history/add', controllers.historyController.addToHistory);
 
 export default routes;

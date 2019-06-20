@@ -28,12 +28,28 @@ cartController.createCart = (req, res) => {
 };
 
 cartController.fetchCart = (req, res) => {
-    const {id} = req.body;
-    db.Cart.findById(id).sort({'created_at': -1}).populate('_userId').populate('items').then(cart => {
+    db.Cart.findById(req.params.id).sort({'created_at': -1}).populate('_userId').populate('items').then(cart => {
         if (cart === null) {
             res.status(404).json({status: false, message: 'Cart not found'});
         } else {
             res.status(200).json({status: true, message: 'Found', data: cart});
+        }
+    }).catch(err => {
+        res.status(500).json({status: false, message: err.message});
+    });
+};
+
+cartController.addItems = (req, res) => {
+    const {cart_id, item_id} = req.body;
+
+    db.Cart.findById(cart_id).then(cart => {
+        if (cart === null) {
+            res.status(404).json({status: false, message: 'Cart not found'});
+        } else {
+            cart.items.push(item_id);
+            cart.save().then(saved => {
+                res.status(200).json({status: true, message: 'Successfully added the item to the cart', data: saved});
+            });
         }
     }).catch(err => {
         res.status(500).json({status: false, message: err.message});
