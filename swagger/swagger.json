@@ -6,7 +6,7 @@
         "description": "Documentation for Dash endpoints",
         "license": {
             "name": "Dash",
-            "url": "https://dashstaging.herokuapp.com/api-docs/#/"
+            "url": "https://dash-africa-staging.herokuapp.com/api-docs/#/"
         }
     },
     "host": "localhost:3000",
@@ -1437,6 +1437,12 @@
                     "type": "string"
                 },
                 "status": {
+                    "type": "string"
+                },
+                "amount": {
+                    "type": "string"
+                },
+                "delivery_fee": {
                     "type": "string"
                 }
             }
