@@ -34,6 +34,14 @@ const userSchema = new Schema({
     carts: [{
         type: Schema.Types.ObjectId,
         ref: 'Cart'
+    }],
+    history: [{
+        type: Schema.Types.ObjectId,
+        ref: 'History'
+    }],
+    new_order_firebase_uid: [{
+        type: String,
+        default: ''
     }]
 });
 

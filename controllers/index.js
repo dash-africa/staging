@@ -6,7 +6,8 @@ import itemController from './itemController';
 import storeController from './storeController';
 import userController from './userController';
 import topCategoriesController from './topCategoriesController';
-import historyController from './historyController'
+import historyController from './historyController';
+import firebaseController from './firebaseController';
 
 export default {
     cartController,
@@ -16,5 +17,6 @@ export default {
     storeController,
     userController,
     topCategoriesController,
-    historyController
+    historyController,
+    firebaseController
 };

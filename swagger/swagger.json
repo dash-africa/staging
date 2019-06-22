@@ -1416,7 +1416,9 @@
                 "cart_id",
                 "user_id",
                 "paymentRef",
-                "status"
+                "status",
+                "amount",
+                "delivery_fee"
             ],
             "properties": {
                 "store_id": {
@@ -1435,6 +1437,12 @@
                     "type": "string"
                 },
                 "status": {
+                    "type": "string"
+                },
+                "amount": {
+                    "type": "string"
+                },
+                "delivery_fee": {
                     "type": "string"
                 }
             }

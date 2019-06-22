@@ -28,6 +28,8 @@
     "ejs": "^2.6.1",
     "express": "^4.16.4",
     "file-saver": "^2.0.0",
+    "firebase": "^6.2.1",
+    "firebase-admin": "^8.2.0",
     "jsonwebtoken": "^8.4.0",
     "mongodb": "^3.1.10",
     "mongoose": "^5.3.15",
@@ -36,7 +38,8 @@
     "nodemon": "^1.18.7",
     "otplib": "^11.0.0",
     "socket.io": "^2.2.0",
-    "swagger-ui-express": "^4.0.1"
+    "swagger-ui-express": "^4.0.1",
+    "uniqid": "^5.0.3"
   },
   "devDependencies": {}
 }
