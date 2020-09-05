@@ -1,5 +1,5 @@
 import mongoose from 'mongoose';
-const {Schema} = mongoose;
+const { Schema } = mongoose;
 
 const userSchema = new Schema({
     firstname: {
@@ -30,6 +30,14 @@ const userSchema = new Schema({
     is_verified: {
         type: Boolean,
         default: false
+    },
+    is_phone_verified: {
+        type: Boolean,
+        default: false
+    },
+    session_token: {
+        type: String,
+        default: ''
     },
     carts: [{
         type: Schema.Types.ObjectId,

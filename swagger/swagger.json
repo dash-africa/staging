@@ -11,10 +11,12 @@
     },
     "host": "localhost:3000",
     "basePath": "/api/v1",
-    "tags": [{
-        "name": "Users",
-        "description": "API for dash users"
-    }],
+    "tags": [
+        {
+            "name": "Users",
+            "description": "API for dash users"
+        }
+    ],
     "schemes": [
         "http",
         "https"
@@ -27,14 +29,16 @@
     ],
     "paths": {
         "/api/v1/user/login": {
-            "parameters": [{
-                "name": "login",
-                "in": "body",
-                "description": "These can be passed, click on Model to see which ones are required",
-                "schema": {
-                    "$ref": "#/definitions/UserLogin"
+            "parameters": [
+                {
+                    "name": "login",
+                    "in": "body",
+                    "description": "These can be passed, click on Model to see which ones are required",
+                    "schema": {
+                        "$ref": "#/definitions/UserLogin"
+                    }
                 }
-            }],
+            ],
             "description": "Logs users in",
             "produces": [
                 "application/json"
@@ -67,14 +71,16 @@
                 ],
                 "description": "Allows user registration and send them a verification email, please save token in local storage, in case of resending purpose",
                 "summary": "Used to create a verifiable user account",
-                "parameters": [{
-                    "name": "user",
-                    "in": "body",
-                    "description": "These can be passed, click on Model to see which ones are required, _token should be passed as header for authorization",
-                    "schema": {
-                        "$ref": "#/definitions/UserRegister"
+                "parameters": [
+                    {
+                        "name": "user",
+                        "in": "body",
+                        "description": "These can be passed, click on Model to see which ones are required, _token should be passed as header for authorization",
+                        "schema": {
+                            "$ref": "#/definitions/UserRegister"
+                        }
                     }
-                }],
+                ],
                 "produces": [
                     "application/json"
                 ],
@@ -98,14 +104,16 @@
                 ],
                 "description": "Confirms the otp sent to the user's email",
                 "summary": "Used to verify user's account",
-                "parameters": [{
-                    "name": "user",
-                    "in": "body",
-                    "description": "These can be passed, click on Model to see which ones are required",
-                    "schema": {
-                        "$ref": "#/definitions/Confirmation"
+                "parameters": [
+                    {
+                        "name": "user",
+                        "in": "body",
+                        "description": "These can be passed, click on Model to see which ones are required",
+                        "schema": {
+                            "$ref": "#/definitions/Confirmation"
+                        }
                     }
-                }],
+                ],
                 "produces": [
                     "application/json"
                 ],
@@ -129,14 +137,16 @@
                 ],
                 "description": "Resend the verification email to the user",
                 "summary": "Used to send another verification message to the user, just incase they didnt receive it in the first place",
-                "parameters": [{
-                    "name": "user",
-                    "in": "body",
-                    "description": "These will be passed",
-                    "schema": {
-                        "$ref": "#/definitions/Confirmation"
+                "parameters": [
+                    {
+                        "name": "user",
+                        "in": "body",
+                        "description": "These will be passed",
+                        "schema": {
+                            "$ref": "#/definitions/Confirmation"
+                        }
                     }
-                }],
+                ],
                 "produces": [
                     "application/json"
                 ],
@@ -163,14 +173,16 @@
                 ],
                 "description": "Resends the forgotten email to the user",
                 "summary": "Used to send another verification forgotten message to the user, just incase they didnt receive it in the first place",
-                "parameters": [{
-                    "name": "user",
-                    "in": "body",
-                    "description": "These will be passed",
-                    "schema": {
-                        "$ref": "#/definitions/SendForgot"
+                "parameters": [
+                    {
+                        "name": "user",
+                        "in": "body",
+                        "description": "These will be passed",
+                        "schema": {
+                            "$ref": "#/definitions/SendForgot"
+                        }
                     }
-                }],
+                ],
                 "produces": [
                     "application/json"
                 ],
@@ -197,14 +209,16 @@
                 ],
                 "description": "Changes the user's password after forgotten email verification has been received",
                 "summary": "Used to change the user's password, just after the forgotten verification message has been received",
-                "parameters": [{
-                    "name": "user",
-                    "in": "body",
-                    "description": "These will be passed",
-                    "schema": {
-                        "$ref": "#/definitions/ChangePass"
+                "parameters": [
+                    {
+                        "name": "user",
+                        "in": "body",
+                        "description": "These will be passed",
+                        "schema": {
+                            "$ref": "#/definitions/ChangePass"
+                        }
                     }
-                }],
+                ],
                 "produces": [
                     "application/json"
                 ],
@@ -231,11 +245,13 @@
                 ],
                 "description": "Gets all the details for a particular user",
                 "summary": "Used to get all details for a specific user",
-                "parameters": [{
-                    "name": "user",
-                    "in": "body",
-                    "description": "Only the user's token should be passed as header"
-                }],
+                "parameters": [
+                    {
+                        "name": "user",
+                        "in": "body",
+                        "description": "Only the user's token should be passed as header"
+                    }
+                ],
                 "produces": [
                     "application/json"
                 ],
@@ -245,6 +261,72 @@
                     },
                     "404": {
                         "description": "The user was not found"
+                    },
+                    "500": {
+                        "description": "An unexpected error occured"
+                    }
+                }
+            }
+        },
+        "/api/v1/sendOtp": {
+            "post": {
+                "tags": [
+                    "Users"
+                ],
+                "description": "Sends otp to verify the user's phone number",
+                "summary": "Used to send otp to user's phone number",
+                "parameters": [
+                    {
+                        "name": "user",
+                        "in": "body",
+                        "description": "Only the user's token should be passed as header",
+                        "schema": {
+                            "$ref": "#/definitions/SendOTP"
+                        }
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "The OTP have been sent successfully"
+                    },
+                    "401": {
+                        "description": "The user with this phone number is not found"
+                    },
+                    "500": {
+                        "description": "An unexpected error occured"
+                    }
+                }
+            }
+        },
+        "/api/v1/verifyPhoneNumber": {
+            "post": {
+                "tags": [
+                    "Users"
+                ],
+                "description": "Verifies the user's phone number with the otp passed",
+                "summary": "Used to verify the user's phone number with the OTP received",
+                "parameters": [
+                    {
+                        "name": "user",
+                        "in": "body",
+                        "description": "Only the user's token should be passed as header",
+                        "schema": {
+                            "$ref": "#/definitions/VerifyPhoneNumber"
+                        }
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "User's phone number have been verified"
+                    },
+                    "401": {
+                        "description": "The user with this phone number is not found"
                     },
                     "500": {
                         "description": "An unexpected error occured"
@@ -291,11 +373,13 @@
                 ],
                 "description": "Creates a new cart",
                 "summary": "Used to create a new cart",
-                "parameters": [{
-                    "name": "cart",
-                    "in": "body",
-                    "description": "Just pass the user's token as authorization header"
-                }],
+                "parameters": [
+                    {
+                        "name": "cart",
+                        "in": "body",
+                        "description": "Just pass the user's token as authorization header"
+                    }
+                ],
                 "produces": [
                     "application/json"
                 ],
@@ -338,14 +422,16 @@
                 ],
                 "description": "Adds new items to the cart",
                 "summary": "Used to add items to the cart",
-                "parameters": [{
-                    "name": "cart",
-                    "in": "body",
-                    "description": "These should be passed",
-                    "schema": {
-                        "$ref": "#/definitions/CartItems"
+                "parameters": [
+                    {
+                        "name": "cart",
+                        "in": "body",
+                        "description": "These should be passed",
+                        "schema": {
+                            "$ref": "#/definitions/CartItems"
+                        }
                     }
-                }],
+                ],
                 "produces": [
                     "application/json"
                 ],
@@ -369,14 +455,16 @@
                 ],
                 "description": "Creates a new category",
                 "summary": "Used to create a new category",
-                "parameters": [{
-                    "name": "category",
-                    "in": "body",
-                    "description": "These should be passed",
-                    "schema": {
-                        "$ref": "#/definitions/Category"
+                "parameters": [
+                    {
+                        "name": "category",
+                        "in": "body",
+                        "description": "These should be passed",
+                        "schema": {
+                            "$ref": "#/definitions/Category"
+                        }
                     }
-                }],
+                ],
                 "produces": [
                     "application/json"
                 ],
@@ -400,14 +488,16 @@
                 ],
                 "description": "Adds a created item in a created category",
                 "summary": "Used to add a new item, in a category",
-                "parameters": [{
-                    "name": "category",
-                    "in": "body",
-                    "description": "These should be passed",
-                    "schema": {
-                        "$ref": "#/definitions/CategoryItem"
+                "parameters": [
+                    {
+                        "name": "category",
+                        "in": "body",
+                        "description": "These should be passed",
+                        "schema": {
+                            "$ref": "#/definitions/CategoryItem"
+                        }
                     }
-                }],
+                ],
                 "produces": [
                     "application/json"
                 ],
@@ -446,14 +536,16 @@
                 "tags": [
                     "Categories"
                 ],
-                "parameters": [{
-                    "name": "category",
-                    "in": "body",
-                    "description": "Updates the category with the newly passed parameters",
-                    "schema": {
-                        "$ref": "#/definitions/CategoryEdit"
+                "parameters": [
+                    {
+                        "name": "category",
+                        "in": "body",
+                        "description": "Updates the category with the newly passed parameters",
+                        "schema": {
+                            "$ref": "#/definitions/CategoryEdit"
+                        }
                     }
-                }],
+                ],
                 "responses": {
                     "200": {
                         "description": "Successfully updated this category"
@@ -487,14 +579,16 @@
                 ],
                 "description": "Removes an item already in the category",
                 "summary": "Used to remove an item from a category",
-                "parameters": [{
-                    "name": "category",
-                    "in": "body",
-                    "description": "These can be passed, click on Model to see which ones are required",
-                    "schema": {
-                        "$ref": "#/definitions/CategoryItem"
+                "parameters": [
+                    {
+                        "name": "category",
+                        "in": "body",
+                        "description": "These can be passed, click on Model to see which ones are required",
+                        "schema": {
+                            "$ref": "#/definitions/CategoryItem"
+                        }
                     }
-                }],
+                ],
                 "produces": [
                     "application/json"
                 ],
@@ -518,14 +612,16 @@
                 ],
                 "description": "Creates a new city",
                 "summary": "Used to create a new city",
-                "parameters": [{
-                    "name": "city",
-                    "in": "body",
-                    "description": "These should be passed",
-                    "schema": {
-                        "$ref": "#/definitions/City"
+                "parameters": [
+                    {
+                        "name": "city",
+                        "in": "body",
+                        "description": "These should be passed",
+                        "schema": {
+                            "$ref": "#/definitions/City"
+                        }
                     }
-                }],
+                ],
                 "produces": [
                     "application/json"
                 ],
@@ -546,14 +642,16 @@
                 ],
                 "description": "Adds an already created store to a city",
                 "summary": "Used to add a new store, to a category",
-                "parameters": [{
-                    "name": "city",
-                    "in": "body",
-                    "description": "These should be passed",
-                    "schema": {
-                        "$ref": "#/definitions/CityStore"
+                "parameters": [
+                    {
+                        "name": "city",
+                        "in": "body",
+                        "description": "These should be passed",
+                        "schema": {
+                            "$ref": "#/definitions/CityStore"
+                        }
                     }
-                }],
+                ],
                 "produces": [
                     "application/json"
                 ],
@@ -630,14 +728,16 @@
                 "tags": [
                     "Cities"
                 ],
-                "parameters": [{
-                    "name": "city",
-                    "in": "body",
-                    "description": "Updates the city with the newly passed parameters",
-                    "schema": {
-                        "$ref": "#/definitions/CityEdit"
+                "parameters": [
+                    {
+                        "name": "city",
+                        "in": "body",
+                        "description": "Updates the city with the newly passed parameters",
+                        "schema": {
+                            "$ref": "#/definitions/CityEdit"
+                        }
                     }
-                }],
+                ],
                 "responses": {
                     "200": {
                         "description": "Successfully updated this city"
@@ -671,14 +771,16 @@
                 ],
                 "description": "Removes a store already in the city",
                 "summary": "Used to remove a from a city",
-                "parameters": [{
-                    "name": "city",
-                    "in": "body",
-                    "description": "These can be passed, click on Model to see which ones are required",
-                    "schema": {
-                        "$ref": "#/definitions/CityStore"
+                "parameters": [
+                    {
+                        "name": "city",
+                        "in": "body",
+                        "description": "These can be passed, click on Model to see which ones are required",
+                        "schema": {
+                            "$ref": "#/definitions/CityStore"
+                        }
                     }
-                }],
+                ],
                 "produces": [
                     "application/json"
                 ],
@@ -702,14 +804,16 @@
                 ],
                 "description": "Creates a new item",
                 "summary": "Used to create a new item",
-                "parameters": [{
-                    "name": "item",
-                    "in": "body",
-                    "description": "These should be passed",
-                    "schema": {
-                        "$ref": "#/definitions/Item"
+                "parameters": [
+                    {
+                        "name": "item",
+                        "in": "body",
+                        "description": "These should be passed",
+                        "schema": {
+                            "$ref": "#/definitions/Item"
+                        }
                     }
-                }],
+                ],
                 "produces": [
                     "application/json"
                 ],
@@ -730,14 +834,16 @@
                 ],
                 "description": "Adds an already created item to a cart",
                 "summary": "Used to add an item, to a cart",
-                "parameters": [{
-                    "name": "item",
-                    "in": "body",
-                    "description": "These should be passed",
-                    "schema": {
-                        "$ref": "#/definitions/ItemCart"
+                "parameters": [
+                    {
+                        "name": "item",
+                        "in": "body",
+                        "description": "These should be passed",
+                        "schema": {
+                            "$ref": "#/definitions/ItemCart"
+                        }
                     }
-                }],
+                ],
                 "produces": [
                     "application/json"
                 ],
@@ -776,14 +882,16 @@
                 "tags": [
                     "Items"
                 ],
-                "parameters": [{
-                    "name": "item",
-                    "in": "body",
-                    "description": "Updates the item with the newly passed parameters",
-                    "schema": {
-                        "$ref": "#/definitions/ItemEdit"
+                "parameters": [
+                    {
+                        "name": "item",
+                        "in": "body",
+                        "description": "Updates the item with the newly passed parameters",
+                        "schema": {
+                            "$ref": "#/definitions/ItemEdit"
+                        }
                     }
-                }],
+                ],
                 "responses": {
                     "200": {
                         "description": "Successfully updated this city"
@@ -836,14 +944,16 @@
                 ],
                 "description": "Creates a new store",
                 "summary": "Used to create a new store",
-                "parameters": [{
-                    "name": "store",
-                    "in": "body",
-                    "description": "These should be passed",
-                    "schema": {
-                        "$ref": "#/definitions/Store"
+                "parameters": [
+                    {
+                        "name": "store",
+                        "in": "body",
+                        "description": "These should be passed",
+                        "schema": {
+                            "$ref": "#/definitions/Store"
+                        }
                     }
-                }],
+                ],
                 "produces": [
                     "application/json"
                 ],
@@ -864,14 +974,16 @@
                 ],
                 "description": "Adds an already created category to a store",
                 "summary": "Used to add a category, to a store",
-                "parameters": [{
-                    "name": "store",
-                    "in": "body",
-                    "description": "These should be passed",
-                    "schema": {
-                        "$ref": "#/definitions/StoreCategory"
+                "parameters": [
+                    {
+                        "name": "store",
+                        "in": "body",
+                        "description": "These should be passed",
+                        "schema": {
+                            "$ref": "#/definitions/StoreCategory"
+                        }
                     }
-                }],
+                ],
                 "produces": [
                     "application/json"
                 ],
@@ -910,14 +1022,16 @@
                 "tags": [
                     "Stores"
                 ],
-                "parameters": [{
-                    "name": "store",
-                    "in": "body",
-                    "description": "Updates the store with the newly passed parameters",
-                    "schema": {
-                        "$ref": "#/definitions/StoreEdit"
+                "parameters": [
+                    {
+                        "name": "store",
+                        "in": "body",
+                        "description": "Updates the store with the newly passed parameters",
+                        "schema": {
+                            "$ref": "#/definitions/StoreEdit"
+                        }
                     }
-                }],
+                ],
                 "responses": {
                     "200": {
                         "description": "Successfully updated this store"
@@ -986,14 +1100,16 @@
                 ],
                 "description": "Creates a top catgory in a store",
                 "summary": "Used to create a new top category in an already existing store",
-                "parameters": [{
-                    "name": "top_category",
-                    "in": "body",
-                    "description": "These should be passed",
-                    "schema": {
-                        "$ref": "#/definitions/Top"
+                "parameters": [
+                    {
+                        "name": "top_category",
+                        "in": "body",
+                        "description": "These should be passed",
+                        "schema": {
+                            "$ref": "#/definitions/Top"
+                        }
                     }
-                }],
+                ],
                 "produces": [
                     "application/json"
                 ],
@@ -1017,14 +1133,16 @@
                 ],
                 "description": "Adds new purchase history",
                 "summary": "Used to create a new purchase history and empties cart",
-                "parameters": [{
-                    "name": "history",
-                    "in": "body",
-                    "description": "These should be passed",
-                    "schema": {
-                        "$ref": "#/definitions/History"
+                "parameters": [
+                    {
+                        "name": "history",
+                        "in": "body",
+                        "description": "These should be passed",
+                        "schema": {
+                            "$ref": "#/definitions/History"
+                        }
                     }
-                }],
+                ],
                 "produces": [
                     "application/json"
                 ],
@@ -1129,6 +1247,36 @@
                 "token": {
                     "type": "string",
                     "uniqueItems": true
+                }
+            }
+        },
+        "SendOTP": {
+            "required": [
+                "phone",
+                "recaptchaToken"
+            ],
+            "properties": {
+                "phone": {
+                    "type": "string",
+                    "uniqueItems": true
+                },
+                "recaptchaToken": {
+                    "type": "string"
+                }
+            }
+        },
+        "VerifyPhoneNumber": {
+            "required": [
+                "phone",
+                "verificationCode"
+            ],
+            "properties": {
+                "phone": {
+                    "type": "string",
+                    "uniqueItems": true
+                },
+                "verificationCode": {
+                    "type": "string"
                 }
             }
         },

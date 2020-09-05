@@ -4,7 +4,7 @@ import uniqid from 'uniqid';
 const firebase_id = uniqid();
 
 var config = {
-    apiKey: "AIzaSyCLCcDMey2l91ZTwuT3avheF5R85-klUcM",
+    apiKey: process.env.FIREBASE_APIKEY,
     authDomain: "dash-9893e.firebaseapp.com",
     databaseURL: "https://dash-9893e.firebaseio.com",
     projectId: "dash-9893e",

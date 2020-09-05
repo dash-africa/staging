@@ -5,21 +5,21 @@ import controllers from '../controllers';
 
 const routes = express();
 
-function verifyToken (req, res, next){
+function verifyToken(req, res, next) {
     // GET THE AUTH HEADER VALUE
     const bearerHeader = req.headers['authorization'];
     // check if bearer is undefined
     if (typeof bearerHeader !== 'undefined') {
         // verify jwt
-        jwt.verify(bearerHeader, process.env.SECRET_KEY, (err, data)=>{
-            db.User.findById(data.user).then((user)=>{
+        jwt.verify(bearerHeader, process.env.SECRET_KEY, (err, data) => {
+            db.User.findById(data.user).then((user) => {
                 if (user) {
-                    req.user = data.user   ; 
-                    next();             
-                }else{
+                    req.user = data.user;
+                    next();
+                } else {
                     res.status(403).json({ status: false, message: 'Unauthorized' });
                 }
-            }).catch((err)=>{
+            }).catch((err) => {
                 if (err) { res.status(403).json({ status: false, message: 'Unauthorized' }); }
             });
         });
@@ -30,8 +30,8 @@ function verifyToken (req, res, next){
 }
 
 
-routes.get('/', (req, res)=>{
-    res.json({status: true});
+routes.get('/', (req, res) => {
+    res.json({ status: true });
 });
 
 // user routes
@@ -41,6 +41,8 @@ routes.post('/confirmation', controllers.userController.confirmationPost);
 routes.post('/resend', controllers.userController.resendTokenPost);
 routes.post('/sendForget', controllers.userController.resendForgottenToken);
 routes.post('/forgot_password', controllers.userController.changePassword);
+routes.post('/sendOtp', verifyToken, controllers.userController.sendOtpToPhone);
+routes.post('/verifyPhoneNumber', verifyToken, controllers.userController.verifyPhoneNumber);
 routes.get('/user/all', controllers.userController.getAllUsers);
 routes.post('/user/getInfo', verifyToken, controllers.userController.getUserInfo);
 routes.get('/user/fetchCart', verifyToken, controllers.userController.fetchUserCart);
