@@ -86,6 +86,15 @@ routes.delete('/store/delete/:id', controllers.storeController.deleteStore);
 routes.post('/store/addCategory', controllers.storeController.addCategory);
 routes.get('/store/:id', controllers.storeController.getStore);
 routes.get('/store/items/:id', controllers.storeController.getCategoryItems);
+routes.get('/store/allCategorized/:city_id/:storeType_id', controllers.storeController.allCategorized);
+
+// Store Type Routes
+routes.post('/storeType/create', controllers.storeTypeController.create);
+routes.get('/storeType/all', controllers.storeTypeController.all);
+routes.put('/storeType/edit', controllers.storeTypeController.edit);
+routes.delete('/storeType/delete/:id', controllers.storeTypeController.delete);
+routes.post('/storeType/addStore', controllers.storeTypeController.addStore);
+routes.get('/storeType/getStores/:storeType_id', controllers.storeTypeController.getStores);
 
 // TopCategories Routes
 routes.post('/top_category/create', controllers.topCategoriesController.create);

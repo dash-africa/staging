@@ -8,6 +8,7 @@ import userController from './userController';
 import topCategoriesController from './topCategoriesController';
 import historyController from './historyController';
 import firebaseController from './firebaseController';
+import storeTypeController from './storeTypeController';
 
 export default {
     cartController,
@@ -18,5 +19,6 @@ export default {
     userController,
     topCategoriesController,
     historyController,
-    firebaseController
+    firebaseController,
+    storeTypeController
 };

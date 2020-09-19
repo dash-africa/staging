@@ -1,18 +1,8 @@
 import mongoose from 'mongoose';
 const { Schema } = mongoose;
 
-const citySchema = new Schema({
+const storeTypeSchema = new Schema({
     name: {
-        type: String,
-        required: true,
-        help: 'This field is required'
-    },
-    image: {
-        type: String,
-        required: true,
-        help: 'This field is required'
-    },
-    coordinates: {
         type: String,
         required: true,
         help: 'This field is required'
@@ -27,5 +17,5 @@ const citySchema = new Schema({
     }
 });
 
-const City = mongoose.model('City', citySchema);
-export default City;
+const StoreType = mongoose.model('StoreType', storeTypeSchema);
+export default StoreType;

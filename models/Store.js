@@ -1,5 +1,5 @@
 import mongoose from 'mongoose';
-const {Schema} = mongoose;
+const { Schema } = mongoose;
 
 const storeSchema = new Schema({
     name: {
@@ -15,6 +15,10 @@ const storeSchema = new Schema({
     _cityId: {
         type: Schema.Types.ObjectId,
         ref: 'City'
+    },
+    _storeTypeId: {
+        type: Schema.Types.ObjectId,
+        ref: 'StoreType'
     },
     delivery_time: {
         type: String

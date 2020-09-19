@@ -1093,6 +1093,168 @@
                 }
             }
         },
+        "/api/v1/store/allCategorized/{city_id}/{storeType_id}": {
+            "get": {
+                "tags": [
+                    "Stores"
+                ],
+                "summary": "Get all stores, under a city and a store category",
+                "responses": {
+                    "200": {
+                        "description": "Succesfully gotten the list of stores"
+                    },
+                    "404": {
+                        "description": "Store, City, Or StoreType not found"
+                    },
+                    "500": {
+                        "description": "Unable to get the list of all stores"
+                    }
+                }
+            }
+        },
+        "/api/v1/storeType/create": {
+            "post": {
+                "tags": [
+                    "Store Categories"
+                ],
+                "description": "Creates a new store type or store category",
+                "summary": "Used to create a new store type",
+                "parameters": [
+                    {
+                        "name": "storeType",
+                        "in": "body",
+                        "description": "These should be passed",
+                        "schema": {
+                            "$ref": "#/definitions/StoreType"
+                        }
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "A new store type has been created"
+                    },
+                    "500": {
+                        "description": "Unable to create store, an unexpected error occured"
+                    }
+                }
+            }
+        },
+        "/api/v1/storeType/all": {
+            "get": {
+                "tags": [
+                    "Store Categories"
+                ],
+                "summary": "Get all store types or store categories",
+                "responses": {
+                    "200": {
+                        "description": "Succesfully gotten the list of store types"
+                    },
+                    "404": {
+                        "description": "No store type was not found"
+                    },
+                    "500": {
+                        "description": "Unable to get the list of all store types"
+                    }
+                }
+            }
+        },
+        "/api/v1/storeType/edit": {
+            "put": {
+                "summary": "Update the store type",
+                "tags": [
+                    "Store Categories"
+                ],
+                "parameters": [
+                    {
+                        "name": "storeType",
+                        "in": "body",
+                        "description": "Updates the store type with the newly passed parameters",
+                        "schema": {
+                            "$ref": "#/definitions/StoreTypeEdit"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successfully updated this store"
+                    },
+                    "500": {
+                        "description": "There was an error updating this store"
+                    }
+                }
+            }
+        },
+        "/api/v1/storeType/delete/{id}": {
+            "delete": {
+                "summary": "Delete a store type with given the {id}",
+                "tags": [
+                    "Store Categories"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successfully deleted the store type"
+                    },
+                    "500": {
+                        "description": "An error occured when deleting this store type"
+                    }
+                }
+            }
+        },
+        "/api/v1/storeType/addStore": {
+            "post": {
+                "tags": [
+                    "Store Categories"
+                ],
+                "description": "Adds an already created store to a store type",
+                "summary": "Used to add a store, to a store type",
+                "parameters": [
+                    {
+                        "name": "storeType",
+                        "in": "body",
+                        "description": "These should be passed",
+                        "schema": {
+                            "$ref": "#/definitions/StoreTypeStores"
+                        }
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "The store has been added to the store type"
+                    },
+                    "404": {
+                        "description": "The store type was not found"
+                    },
+                    "500": {
+                        "description": "Unable to add the store, an unexpected error occured"
+                    }
+                }
+            }
+        },
+        "/api/v1/storeType/getStores/{storeType_id}": {
+            "get": {
+                "tags": [
+                    "Store Categories"
+                ],
+                "summary": "Get all stores under a store type or store category",
+                "responses": {
+                    "200": {
+                        "description": "Succesfully gotten the list of store"
+                    },
+                    "404": {
+                        "description": "No store was found"
+                    },
+                    "500": {
+                        "description": "Unable to get the list of all stores in the store type"
+                    }
+                }
+            }
+        },
         "/api/v1/top_category/create": {
             "post": {
                 "tags": [
@@ -1536,6 +1698,44 @@
                     "type": "string"
                 },
                 "tags": {
+                    "type": "string"
+                }
+            }
+        },
+        "StoreType": {
+            "required": [
+                "name"
+            ],
+            "properties": {
+                "name": {
+                    "type": "string"
+                }
+            }
+        },
+        "StoreTypeEdit": {
+            "required": [
+                "name",
+                "storeType_id"
+            ],
+            "properties": {
+                "storeType_id": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                }
+            }
+        },
+        "StoreTypeStores": {
+            "required": [
+                "store_id",
+                "storeType_id"
+            ],
+            "properties": {
+                "store_id": {
+                    "type": "string"
+                },
+                "storeType_id": {
                     "type": "string"
                 }
             }
