@@ -12,6 +12,24 @@ const storeSchema = new Schema({
         required: true,
         help: 'This field is required'
     },
+    address: {
+        type: String,
+        required: true,
+        help: 'This field is required'
+    },
+    delivery_time: {
+        type: String,
+        required: true,
+        help: 'This field is required'
+    },
+    schedule: [{
+        day: {
+            type: String
+        },
+        time: {
+            type: String
+        }
+    }],
     _cityId: {
         type: Schema.Types.ObjectId,
         ref: 'City'
@@ -19,9 +37,6 @@ const storeSchema = new Schema({
     _storeTypeId: {
         type: Schema.Types.ObjectId,
         ref: 'StoreType'
-    },
-    delivery_time: {
-        type: String
     },
     tags: [{
         type: String

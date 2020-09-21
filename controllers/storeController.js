@@ -3,7 +3,7 @@ import db from '../models';
 const storeController = {};
 
 storeController.createStore = (req, res) => {
-    const { name, city_id, storeType_id, delivery_time, tags, image } = req.body;
+    const { name, city_id, storeType_id, delivery_time, tags, image, address, schedule } = req.body;
 
     db.City.findById(city_id).then(city => {
         if (city === null) {
@@ -19,7 +19,9 @@ storeController.createStore = (req, res) => {
                         _storeTypeId: storeType_id,
                         delivery_time,
                         tags,
-                        image
+                        image,
+                        address,
+                        schedule
                     });
 
                     db.Store.create(store, (err, created) => {

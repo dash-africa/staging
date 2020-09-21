@@ -1639,13 +1639,29 @@
                 }
             }
         },
+        "Schedule": {
+            "required": [
+                "day",
+                "time"
+            ],
+            "properties": {
+                "day": {
+                    "type": "string"
+                },
+                "time": {
+                    "type": "string"
+                }
+            }
+        },
         "Store": {
             "required": [
                 "name",
                 "city_id",
                 "delivery_time",
                 "tags",
-                "image"
+                "image",
+                "address",
+                "schedule"
             ],
             "properties": {
                 "name": {
@@ -1663,6 +1679,15 @@
                 },
                 "image": {
                     "type": "string"
+                },
+                "address": {
+                    "type": "string"
+                },
+                "schedule": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/Schedule"
+                    }
                 }
             }
         },
