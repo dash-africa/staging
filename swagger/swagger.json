@@ -2003,10 +2003,14 @@
         },
         "StoreType": {
             "required": [
-                "name"
+                "name",
+                "image"
             ],
             "properties": {
                 "name": {
+                    "type": "string"
+                },
+                "image": {
                     "type": "string"
                 }
             }
@@ -2014,6 +2018,7 @@
         "StoreTypeEdit": {
             "required": [
                 "name",
+                "image",
                 "storeType_id"
             ],
             "properties": {
@@ -2021,6 +2026,9 @@
                     "type": "string"
                 },
                 "name": {
+                    "type": "string"
+                },
+                "image": {
                     "type": "string"
                 }
             }

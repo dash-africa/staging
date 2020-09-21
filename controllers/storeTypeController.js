@@ -3,10 +3,11 @@ import db from '../models';
 const storeTypeController = {};
 
 storeTypeController.create = (req, res) => {
-    const { name } = req.body;
+    const { name, image } = req.body;
 
     const storeType = new db.StoreType({
-        name
+        name,
+        image
     });
 
     db.StoreType.create(storeType, (err, created) => {
@@ -29,8 +30,8 @@ storeTypeController.all = (req, res) => {
 };
 
 storeTypeController.edit = (req, res) => {
-    const { storeType_id, name } = req.body;
-    db.StoreType.findOneAndUpdate({ _id: storeType_id }, { $set: { name } }, { new: true }, (err, updated) => {
+    const { storeType_id, name, image } = req.body;
+    db.StoreType.findOneAndUpdate({ _id: storeType_id }, { $set: { name, image } }, { new: true }, (err, updated) => {
         if (err) {
             res.status(500).json({ status: false, message: err.message });
         } else {

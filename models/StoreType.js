@@ -7,6 +7,11 @@ const storeTypeSchema = new Schema({
         required: true,
         help: 'This field is required'
     },
+    image: {
+        type: String,
+        required: true,
+        help: 'This field is required'
+    },
     stores: [{
         type: Schema.Types.ObjectId,
         ref: 'Store'
