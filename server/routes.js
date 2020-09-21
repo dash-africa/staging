@@ -74,6 +74,7 @@ routes.get('/city/topCategories/:cityId', controllers.cityControler.getAllTopCat
 routes.post('/item/create', controllers.itemController.create);
 routes.post('/item/addToCart', controllers.itemController.addToCart);
 routes.post('/item/addAddOn', controllers.itemController.addAddOn);
+routes.post('/item/removeAddOn', controllers.itemController.removeAddOn);
 routes.get('/item/:itemId', controllers.itemController.fetchItem);
 routes.get('/item/all', controllers.itemController.getAll);
 routes.put('/item/edit', controllers.itemController.editItem);

@@ -3,21 +3,36 @@ import db from '../models';
 const itemController = {};
 
 itemController.create = (req, res) => {
-    const { price, image, name } = req.body;
+    const { price, image, name, description, category_id, isAddOn, isSellable, addOns } = req.body;
 
-    const item = new db.Item({
-        price,
-        image,
-        name
-    });
-
-    db.Item.create(item, (err, created) => {
-        if (err) {
-            res.status(500).json({ status: false, message: "The item was not created" });
+    db.Category.findById(category_id).then(category => {
+        if (!category) {
+            res.status(404).json({ status: false, message: 'The category with this id was not found' });
         } else {
-            res.status(200).json({ status: true, message: 'Successfully created item', data: created });
+            const item = new db.Item({
+                price,
+                image,
+                name,
+                description,
+                _categoryId: category_id,
+                isAddOn,
+                isSellable,
+                addOns
+            });
+
+
+            db.Item.create(item, (err, created) => {
+                if (err) {
+                    res.status(500).json({ status: false, message: 'The item was not created' });
+                } else {
+                    category.items.push(created._id);
+                    category.save().then(saved => {
+                        res.status(200).json({ status: true, message: 'Successfully created item', data: created });
+                    });
+                }
+            });
         }
-    });
+    }).catch(err => res.status(500).json({ status: false, message: err.message }));
 };
 
 itemController.addToCart = (req, res) => {
@@ -87,8 +102,9 @@ itemController.getAll = (req, res) => {
 };
 
 itemController.editItem = (req, res) => {
-    const { item_id, price, image, name } = req.body;
-    db.Item.findOneAndUpdate({ _id: item_id }, { $set: { name, image, price } }, { new: true }, (err, updated) => {
+    const { item_id, price, image, name, description, isAddOn, isSellable } = req.body;
+
+    db.Item.findOneAndUpdate({ _id: item_id }, { $set: { name, image, price, description, isAddOn, isSellable } }, { new: true }, (err, updated) => {
         if (err) {
             res.status(500).json({ status: false, message: err.message });
         } else {
@@ -99,6 +115,7 @@ itemController.editItem = (req, res) => {
 
 itemController.deleteItem = (req, res) => {
     const id = req.params.id;
+
     db.Item.findByIdAndDelete(id, (err, deleted) => {
         if (err) {
             res.status(500).json({ status: false, message: err.message });
@@ -121,6 +138,24 @@ itemController.addAddOn = (req, res) => {
             });
         }
     }).catch(err => res.status(500).json({ status: false, message: err.message }));
+};
+
+itemController.removeAddOn = (req, res) => {
+    const { item_id, addOn_id } = req.body;
+
+    db.Item.findById(item_id).then(item => {
+        if (item === null) {
+            res.status(404).json({ status: false, message: 'The item was not found' });
+        } else {
+            const idx = item.stores.indexOf(addOn_id);
+            if (idx !== -1) {
+                item.addOns.splice(idx, 1);
+            }
+            res.status(200).json({ status: true, message: 'The add-on has been successfully removed', data: city });
+        }
+    }).catch(err => {
+        res.status(500).json({ status: false, message: err.message });
+    });
 };
 
 export default itemController;

@@ -893,6 +893,39 @@
                 }
             }
         },
+        "/api/v1/item/removeAddOn": {
+            "post": {
+                "tags": [
+                    "Items"
+                ],
+                "description": "Removes an already created add-on from an item",
+                "summary": "Used to remove an add-on, from an item",
+                "parameters": [
+                    {
+                        "name": "item",
+                        "in": "body",
+                        "description": "These should be passed",
+                        "schema": {
+                            "$ref": "#/definitions/ItemAddOn"
+                        }
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "The add-on has been removed from the item"
+                    },
+                    "404": {
+                        "description": "The item was not found"
+                    },
+                    "500": {
+                        "description": "Unable to remove the add-on, an unexpected error occured"
+                    }
+                }
+            }
+        },
         "/api/v1/item/all": {
             "get": {
                 "tags": [
@@ -1785,7 +1818,9 @@
             "required": [
                 "name",
                 "image",
-                "price"
+                "price",
+                "description",
+                "category_id"
             ],
             "properties": {
                 "name": {
@@ -1796,6 +1831,24 @@
                 },
                 "price": {
                     "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "category_id": {
+                    "type": "string"
+                },
+                "isAddOn": {
+                    "type": "boolean"
+                },
+                "isSellable": {
+                    "type": "boolean"
+                },
+                "addOns": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/AddOn"
+                    }
                 }
             }
         },

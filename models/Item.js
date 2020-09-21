@@ -17,6 +17,11 @@ const itemSchema = new Schema({
         required: true,
         help: 'This field is required'
     },
+    description: {
+        type: String,
+        required: true,
+        help: 'This field is required'
+    },
     _categoryId: {
         type: Schema.Types.ObjectId,
         ref: 'Category'
