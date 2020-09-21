@@ -1931,6 +1931,7 @@
             "required": [
                 "name",
                 "city_id",
+                "storeType_id",
                 "delivery_time",
                 "tags",
                 "image",
@@ -1942,6 +1943,10 @@
                     "type": "string"
                 },
                 "city_id": {
+                    "type": "string",
+                    "uniqueItems": true
+                },
+                "storeType_id": {
                     "type": "string",
                     "uniqueItems": true
                 },
