@@ -63,7 +63,7 @@ categoryController.addItem = (req, res) => {
 };
 
 categoryController.allCategories = (req, res) => {
-    db.Category.find().then(categories => {
+    db.Category.find().populate('items').then(categories => {
         if (categories === null || categories.length === 0) {
             res.status(404).json({ status: false, message: 'No item was found' });
         } else {

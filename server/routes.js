@@ -73,6 +73,7 @@ routes.get('/city/topCategories/:cityId', controllers.cityControler.getAllTopCat
 // Item Routes
 routes.post('/item/create', controllers.itemController.create);
 routes.post('/item/addToCart', controllers.itemController.addToCart);
+routes.post('/item/addAddOn', controllers.itemController.addAddOn);
 routes.get('/item/:itemId', controllers.itemController.fetchItem);
 routes.get('/item/all', controllers.itemController.getAll);
 routes.put('/item/edit', controllers.itemController.editItem);
@@ -101,5 +102,14 @@ routes.post('/top_category/create', controllers.topCategoriesController.create);
 
 // History Routes
 routes.post('/history/add', controllers.historyController.addToHistory);
+
+// Add-On Routes
+routes.post('/addOn/create', controllers.addOnController.create);
+routes.post('/addOn/addItem', controllers.addOnController.addItem);
+routes.get('/addOn/all', controllers.addOnController.allAddOns);
+routes.get('/addOn/:id', controllers.addOnController.fetchAddOn);
+routes.post('/addOn/removeItem', controllers.addOnController.removeItem);
+routes.put('/addOn/edit', controllers.addOnController.editAddOn);
+routes.delete('/addOn/delete/:id', controllers.addOnController.delete);
 
 export default routes;

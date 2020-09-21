@@ -1,15 +1,19 @@
 import mongoose from 'mongoose';
 const { Schema } = mongoose;
 
-const categorySchema = new Schema({
+const addOnSchema = new Schema({
     name: {
         type: 'String',
         required: true,
         help: 'This field is required'
     },
-    _storeId: {
-        type: Schema.Types.ObjectId,
-        ref: 'Store'
+    isRequired: {
+        type: Boolean,
+        default: false
+    },
+    canBuyMultiple: {
+        type: Boolean,
+        default: false
     },
     items: [{
         type: Schema.Types.ObjectId,
@@ -21,5 +25,5 @@ const categorySchema = new Schema({
     }
 });
 
-const Category = mongoose.model('Category', categorySchema);
-export default Category;
+const AddOns = mongoose.model('AddOns', addOnSchema);
+export default AddOns;

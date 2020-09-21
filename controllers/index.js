@@ -9,8 +9,10 @@ import topCategoriesController from './topCategoriesController';
 import historyController from './historyController';
 import firebaseController from './firebaseController';
 import storeTypeController from './storeTypeController';
+import addOnController from './addOnController';
 
 export default {
+    addOnController,
     cartController,
     categoryController,
     cityControler,

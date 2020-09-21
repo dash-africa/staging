@@ -860,6 +860,39 @@
                 }
             }
         },
+        "/api/v1/item/addAddOn": {
+            "post": {
+                "tags": [
+                    "Items"
+                ],
+                "description": "Adds an already created add-on to an item",
+                "summary": "Used to add an add-on, to an item",
+                "parameters": [
+                    {
+                        "name": "item",
+                        "in": "body",
+                        "description": "These should be passed",
+                        "schema": {
+                            "$ref": "#/definitions/ItemAddOn"
+                        }
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "The add-on has been added to the item"
+                    },
+                    "404": {
+                        "description": "The item was not found"
+                    },
+                    "500": {
+                        "description": "Unable to add the add-on, an unexpected error occured"
+                    }
+                }
+            }
+        },
         "/api/v1/item/all": {
             "get": {
                 "tags": [
@@ -872,6 +905,25 @@
                     },
                     "500": {
                         "description": "Unable to get the list of all items"
+                    }
+                }
+            }
+        },
+        "/api/v1/item/:itemId": {
+            "get": {
+                "tags": [
+                    "Items"
+                ],
+                "summary": "Get specific items",
+                "responses": {
+                    "200": {
+                        "description": "Succesfully gotten the item"
+                    },
+                    "404": {
+                        "description": "The item was not found"
+                    },
+                    "500": {
+                        "description": "Unable to get the item"
                     }
                 }
             }
@@ -918,21 +970,175 @@
                 }
             }
         },
-        "/api/v1/item/:itemId": {
-            "get": {
+        "/api/v1/addOn/create": {
+            "post": {
                 "tags": [
-                    "Items"
+                    "Add-Ons"
                 ],
-                "summary": "Get specific items",
+                "description": "Creates a new add-on",
+                "summary": "Used to create a new add-on",
+                "parameters": [
+                    {
+                        "name": "add-on",
+                        "in": "body",
+                        "description": "These should be passed",
+                        "schema": {
+                            "$ref": "#/definitions/AddOn"
+                        }
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
                 "responses": {
                     "200": {
-                        "description": "Succesfully gotten the item"
+                        "description": "A new add-on has been created"
+                    },
+                    "500": {
+                        "description": "Unable to create add-on, an unexpected error occured"
+                    }
+                }
+            }
+        },
+        "/api/v1/addOn/addItem": {
+            "post": {
+                "tags": [
+                    "Add-Ons"
+                ],
+                "description": "Adds an already created item to an add-on",
+                "summary": "Used to add an item, to an add-on",
+                "parameters": [
+                    {
+                        "name": "add-on",
+                        "in": "body",
+                        "description": "These should be passed",
+                        "schema": {
+                            "$ref": "#/definitions/ItemAddOn"
+                        }
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "The add-on has been added to the item"
                     },
                     "404": {
                         "description": "The item was not found"
                     },
                     "500": {
-                        "description": "Unable to get the item"
+                        "description": "Unable to add the add-on, an unexpected error occured"
+                    }
+                }
+            }
+        },
+        "/api/v1/addOn/all": {
+            "get": {
+                "tags": [
+                    "Add-Ons"
+                ],
+                "summary": "Get all add-ons",
+                "responses": {
+                    "200": {
+                        "description": "Succesfully gotten the list of add-ons"
+                    },
+                    "500": {
+                        "description": "Unable to get the list of all add-ons"
+                    }
+                }
+            }
+        },
+        "/api/v1/addOn/:id": {
+            "get": {
+                "tags": [
+                    "Add-Ons"
+                ],
+                "summary": "Get specific add-on",
+                "responses": {
+                    "200": {
+                        "description": "Succesfully gotten the add-on"
+                    },
+                    "404": {
+                        "description": "The add-on was not found"
+                    },
+                    "500": {
+                        "description": "Unable to get the add-on"
+                    }
+                }
+            }
+        },
+        "/api/v1/addOn/removeItem": {
+            "post": {
+                "tags": [
+                    "Add-Ons"
+                ],
+                "description": "Removes an item from the add-on",
+                "summary": "Used to remove an item from an add-on",
+                "parameters": [
+                    {
+                        "name": "add-on",
+                        "in": "body",
+                        "description": "These can be passed, click on Model to see which ones are required",
+                        "schema": {
+                            "$ref": "#/definitions/ItemAddOn"
+                        }
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "The item have been successfully removed"
+                    },
+                    "404": {
+                        "description": "Please, inspect all parameters"
+                    },
+                    "500": {
+                        "description": "An unexpected error occured"
+                    }
+                }
+            }
+        },
+        "/api/v1/addOn/edit": {
+            "put": {
+                "summary": "Update the add-on",
+                "tags": [
+                    "Add-Ons"
+                ],
+                "parameters": [
+                    {
+                        "name": "item",
+                        "in": "body",
+                        "description": "Updates the add-on with the newly passed parameters",
+                        "schema": {
+                            "$ref": "#/definitions/AddOnEdit"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successfully updated this city"
+                    },
+                    "500": {
+                        "description": "There was an error updating this city"
+                    }
+                }
+            }
+        },
+        "/api/v1/addOn/delete/:id": {
+            "delete": {
+                "summary": "Delete add-on with given the {id}",
+                "tags": [
+                    "Add-Ons"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successfully deleted the add-on"
+                    },
+                    "500": {
+                        "description": "An error occured when deleting this add-on"
                     }
                 }
             }
@@ -1593,6 +1799,20 @@
                 }
             }
         },
+        "ItemAddOn": {
+            "required": [
+                "addOn_id",
+                "item_id"
+            ],
+            "properties": {
+                "addOn_id": {
+                    "type": "string"
+                },
+                "item_id": {
+                    "type": "string"
+                }
+            }
+        },
         "ItemCart": {
             "required": [
                 "cart_id",
@@ -1636,6 +1856,60 @@
             "properties": {
                 "item_id": {
                     "type": "string"
+                }
+            }
+        },
+        "AddOn": {
+            "required": [
+                "name",
+                "isRequired",
+                "canBuyMultiple",
+                "items"
+            ],
+            "properties": {
+                "name": {
+                    "type": "string"
+                },
+                "isRequired": {
+                    "type": "boolean"
+                },
+                "canBuyMultiple": {
+                    "type": "boolean"
+                },
+                "items": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                }
+            }
+        },
+        "AddOnEdit": {
+            "required": [
+                "addOn_id",
+                "name",
+                "isRequired",
+                "canBuyMultiple",
+                "items"
+            ],
+            "properties": {
+                "addOn_id": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "isRequired": {
+                    "type": "boolean"
+                },
+                "canBuyMultiple": {
+                    "type": "boolean"
+                },
+                "items": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
                 }
             }
         },
