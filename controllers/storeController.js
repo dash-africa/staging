@@ -28,9 +28,12 @@ storeController.createStore = (req, res) => {
                         if (err) {
                             res.status(500).json({ status: false, message: 'An error while creating the store' });
                         } else {
-                            city.stores.push(created._id);
-                            city.save().then(saved => {
-                                res.status(200).json({ status: true, message: 'Created the store successfully', data: created });
+                            storeType.stores.push(created._id);
+                            storeType.save().then(stored => {
+                                city.stores.push(created._id);
+                                city.save().then(saved => {
+                                    res.status(200).json({ status: true, message: 'Created the store successfully', data: created });
+                                });
                             });
                         }
                     });
