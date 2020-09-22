@@ -68,12 +68,7 @@ storeController.allCategorized = (req, res) => {
                 if (storeType === null) {
                     res.status(404).json({ status: false, message: 'The store type with this id was not found' });
                 } else {
-                    db.Store.find({ _cityId: city_id, _storeTypeId: storeType_id }).populate({
-                        path: 'categories', model: 'Category', populate: {
-                            path: 'items',
-                            model: 'Item'
-                        }
-                    }).populate('top_categories').then(stores => {
+                    db.Store.find({ _cityId: city_id, _storeTypeId: storeType_id }).populate('categories').populate('top_categories').then(stores => {
                         if (stores === null || stores.length === 0) {
                             res.status(404).json({ status: false, message: 'No store was found' });
                         } else {
@@ -126,7 +121,12 @@ storeController.addCategory = (req, res) => {
 };
 
 storeController.getStore = (req, res) => {
-    db.Store.findById(req.params.id).populate('categories').populate('top_categories').then(store => {
+    db.Store.findById(req.params.id).populate({
+        path: 'categories', model: 'Category', populate: {
+            path: 'items',
+            model: 'Item'
+        }
+    }).populate('top_categories').then(store => {
         if (store === null) {
             res.status(404).json({ status: false, message: 'The store was not found' });
         } else {
