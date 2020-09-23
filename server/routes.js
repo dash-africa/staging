@@ -49,7 +49,7 @@ routes.get('/user/fetchCart', verifyToken, controllers.userController.fetchUserC
 
 // Cart Routes
 routes.post('/cart/create', verifyToken, controllers.cartController.createCart);
-routes.get('/cart/:id', controllers.cartController.fetchCart);
+routes.get('/cart/getCart/:id', controllers.cartController.fetchCart);
 routes.post('/cart/addItem', controllers.cartController.addItems);
 
 // Category Routes
@@ -75,7 +75,7 @@ routes.post('/item/create', controllers.itemController.create);
 routes.post('/item/addToCart', controllers.itemController.addToCart);
 routes.post('/item/addAddOn', controllers.itemController.addAddOn);
 routes.post('/item/removeAddOn', controllers.itemController.removeAddOn);
-routes.get('/item/:itemId', controllers.itemController.fetchItem);
+routes.get('/item/getItem/:itemId', controllers.itemController.fetchItem);
 routes.get('/item/all', controllers.itemController.getAll);
 routes.put('/item/edit', controllers.itemController.editItem);
 routes.delete('/item/delete/:id', controllers.itemController.deleteItem);
@@ -108,7 +108,7 @@ routes.post('/history/add', controllers.historyController.addToHistory);
 routes.post('/addOn/create', controllers.addOnController.create);
 routes.post('/addOn/addItem', controllers.addOnController.addItem);
 routes.get('/addOn/all', controllers.addOnController.allAddOns);
-routes.get('/addOn/:id', controllers.addOnController.fetchAddOn);
+routes.get('/addOn/getAddOn/:id', controllers.addOnController.fetchAddOn);
 routes.post('/addOn/removeItem', controllers.addOnController.removeItem);
 routes.put('/addOn/edit', controllers.addOnController.editAddOn);
 routes.delete('/addOn/delete/:id', controllers.addOnController.delete);

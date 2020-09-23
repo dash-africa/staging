@@ -396,7 +396,7 @@
                 }
             }
         },
-        "/api/v1/cart/{id}": {
+        "/api/v1/cart/getCart/{id}": {
             "get": {
                 "summary": "Returns the created cart with the id passed",
                 "tags": [
@@ -942,7 +942,7 @@
                 }
             }
         },
-        "/api/v1/item/:itemId": {
+        "/api/v1/item/getItem/{itemId}": {
             "get": {
                 "tags": [
                     "Items"
@@ -1082,7 +1082,7 @@
                 }
             }
         },
-        "/api/v1/addOn/:id": {
+        "/api/v1/addOn/getAddOn/{id}": {
             "get": {
                 "tags": [
                     "Add-Ons"

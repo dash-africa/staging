@@ -78,7 +78,7 @@ itemController.addToCart = (req, res) => {
 };
 
 itemController.fetchItem = (req, res) => {
-    const itemId = req.params.id;
+    const itemId = req.params.itemId;
 
     db.Item.findById(itemId).populate('addOns').then(item => {
         if (item === null) {
