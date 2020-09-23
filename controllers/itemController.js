@@ -80,7 +80,12 @@ itemController.addToCart = (req, res) => {
 itemController.fetchItem = (req, res) => {
     const itemId = req.params.itemId;
 
-    db.Item.findById(itemId).populate('addOns').then(item => {
+    db.Item.findById(itemId).populate({
+        path: 'addOns', model: 'AddOns', populate: {
+            path: 'items',
+            model: 'Item'
+        }
+    }).then(item => {
         if (item === null) {
             res.status(404).json({ status: false, message: 'The item was not found' });
         } else {
