@@ -34,6 +34,10 @@ routes.get('/', (req, res) => {
     res.json({ status: true });
 });
 
+// admin routes
+routes.post('/admin/login', controllers.adminController.login);
+routes.post('/admin/register', controllers.adminController.register);
+
 // user routes
 routes.post('/user/login', controllers.userController.loginUser);
 routes.post('/user/register', controllers.userController.registerUser);

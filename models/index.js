@@ -10,6 +10,7 @@ import StoreType from './StoreType';
 import TopCategories from './TopCategories';
 import History from './History';
 import AddOns from './AddOns';
+import Admin from './Admin';
 
 export default {
     User,
@@ -22,5 +23,6 @@ export default {
     StoreType,
     TopCategories,
     History,
-    AddOns
+    AddOns,
+    Admin
 };

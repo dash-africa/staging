@@ -14,7 +14,7 @@ authenticator.options = {
 };
 
 const userController = {};
-const secret = 'KbE/eZ-:M4z]PI%pESY%Y!-6P@H?zVCb99)J9Ah4srt8JduM)%d:jo!@<mLPIXD';
+const secret = process.env.SECRET;
 
 let sendMail = (dir_path, object) => {
     return new Promise((resolve, reject) => {
