@@ -15,6 +15,10 @@ const addOnSchema = new Schema({
         type: Boolean,
         default: false
     },
+    isFree: {
+        type: Boolean,
+        default: false
+    },
     items: [{
         type: Schema.Types.ObjectId,
         ref: 'Item'

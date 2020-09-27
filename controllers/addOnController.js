@@ -3,11 +3,12 @@ import db from '../models';
 const addOnController = {};
 
 addOnController.create = (req, res) => {
-    const { name, isRequired, canBuyMultiple, items } = req.body;
+    const { name, isRequired, isFree, canBuyMultiple, items } = req.body;
 
     const addOn = new db.AddOns({
         name,
         isRequired,
+        isFree,
         canBuyMultiple,
         items
     });
@@ -74,7 +75,7 @@ addOnController.removeItem = (req, res) => {
 
 addOnController.editAddOn = (req, res) => {
     const { addOn_id, name, isRequired, canBuyMultiple, items } = req.body;
-    db.AddOns.findOneAndUpdate({ _id: addOn_id }, { $set: { name, isRequired, canBuyMultiple, items } }, { new: true }, (err, updated) => {
+    db.AddOns.findOneAndUpdate({ _id: addOn_id }, { $set: { name, isRequired, isFree, canBuyMultiple, items } }, { new: true }, (err, updated) => {
         if (err) {
             res.status(500).json({ status: false, message: err.message });
         } else {

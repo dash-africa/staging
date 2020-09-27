@@ -58,7 +58,7 @@ adminController.login = (req, res) => {
                     bcrypt.compare(password, admin.password, function (err, response) {
                         if (response === true) {
                             signUser(admin._id).then((token) => {
-                                res.status(200).json({ status: true, message: "Admin logged in succesfully", data: admin, token });
+                                res.status(200).json({ status: true, message: "Admin logged in succesfully", token });
                             }).catch((err) => {
                                 res.status(500).json({ status: false, message: err.message });
                             });

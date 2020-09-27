@@ -1695,16 +1695,63 @@
         "CartItems": {
             "required": [
                 "cart_id",
-                "item_id"
+                "items"
             ],
             "properties": {
                 "cart_id": {
                     "type": "string",
                     "uniqueItems": true
                 },
-                "item_id": {
+                "items": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/CartItemsAddons"
+                    }
+                }
+            }
+        },
+        "CartItemsAddons": {
+            "required": [
+                "id",
+                "name",
+                "price",
+                "addOns"
+            ],
+            "properties": {
+                "id": {
                     "type": "string",
                     "uniqueItems": true
+                },
+                "name": {
+                    "type": "string"
+                },
+                "price": {
+                    "type": "string"
+                },
+                "addOns": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/CartAddons"
+                    }
+                }
+            }
+        },
+        "CartAddons": {
+            "required": [
+                "id",
+                "name",
+                "price"
+            ],
+            "properties": {
+                "id": {
+                    "type": "string",
+                    "uniqueItems": true
+                },
+                "name": {
+                    "type": "string"
+                },
+                "price": {
+                    "type": "string"
                 }
             }
         },
@@ -1916,6 +1963,7 @@
             "required": [
                 "name",
                 "isRequired",
+                "isFree",
                 "canBuyMultiple",
                 "items"
             ],
@@ -1924,6 +1972,9 @@
                     "type": "string"
                 },
                 "isRequired": {
+                    "type": "boolean"
+                },
+                "isFree": {
                     "type": "boolean"
                 },
                 "canBuyMultiple": {
@@ -1942,6 +1993,7 @@
                 "addOn_id",
                 "name",
                 "isRequired",
+                "isFree",
                 "canBuyMultiple",
                 "items"
             ],
@@ -1953,6 +2005,9 @@
                     "type": "string"
                 },
                 "isRequired": {
+                    "type": "boolean"
+                },
+                "isFree": {
                     "type": "boolean"
                 },
                 "canBuyMultiple": {
