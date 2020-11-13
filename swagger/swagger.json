@@ -1811,7 +1811,15 @@
                     "type": "string"
                 },
                 "coordinates": {
-                    "type": "string"
+                    "type": "object",
+                    "properties": {
+                        "long": {
+                            "type": "string"
+                        },
+                        "lat": {
+                            "type": "string"
+                        }
+                    }
                 }
             }
         },
@@ -1847,7 +1855,15 @@
                     "type": "string"
                 },
                 "coordinates": {
-                    "type": "string"
+                    "type": "object",
+                    "properties": {
+                        "long": {
+                            "type": "string"
+                        },
+                        "lat": {
+                            "type": "string"
+                        }
+                    }
                 }
             }
         },

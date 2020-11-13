@@ -13,9 +13,16 @@ const citySchema = new Schema({
         help: 'This field is required'
     },
     coordinates: {
-        type: String,
-        required: true,
-        help: 'This field is required'
+        long: {
+            type: String,
+            required: true,
+            help: 'This field is required'
+        },
+        lat: {
+            type: String,
+            required: true,
+            help: 'This field is required'
+        }
     },
     stores: [{
         type: Schema.Types.ObjectId,
