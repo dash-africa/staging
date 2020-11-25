@@ -2060,7 +2060,8 @@
                 "tags",
                 "image",
                 "address",
-                "schedule"
+                "schedule",
+                "coordinates"
             ],
             "properties": {
                 "name": {
@@ -2091,6 +2092,17 @@
                     "items": {
                         "$ref": "#/definitions/Schedule"
                     }
+                },
+                "coordinates": {
+                    "type": "object",
+                    "properties": {
+                        "long": {
+                            "type": "string"
+                        },
+                        "lat": {
+                            "type": "string"
+                        }
+                    }
                 }
             }
         },
@@ -2113,7 +2125,8 @@
                 "name",
                 "store_id",
                 "delivery_time",
-                "tags"
+                "tags",
+                "coordinates"
             ],
             "properties": {
                 "store_id": {
@@ -2127,6 +2140,17 @@
                 },
                 "tags": {
                     "type": "string"
+                },
+                "coordinates": {
+                    "type": "object",
+                    "properties": {
+                        "long": {
+                            "type": "string"
+                        },
+                        "lat": {
+                            "type": "string"
+                        }
+                    }
                 }
             }
         },

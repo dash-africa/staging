@@ -3,7 +3,7 @@ import db from '../models';
 const storeController = {};
 
 storeController.createStore = (req, res) => {
-    const { name, city_id, storeType_id, delivery_time, tags, image, address, schedule } = req.body;
+    const { name, city_id, storeType_id, delivery_time, tags, image, address, schedule, coordinates } = req.body;
 
     db.City.findById(city_id).then(city => {
         if (city === null) {
@@ -21,7 +21,8 @@ storeController.createStore = (req, res) => {
                         tags,
                         image,
                         address,
-                        schedule
+                        schedule,
+                        coordinates
                     });
 
                     db.Store.create(store, (err, created) => {
@@ -82,8 +83,8 @@ storeController.allCategorized = (req, res) => {
 };
 
 storeController.editStore = (req, res) => {
-    const { store_id, name, delivery_time, tags, image } = req.body;
-    db.Store.findOneAndUpdate({ _id: store_id }, { $set: { name, delivery_time, tags, image } }, { new: true }, (err, updated) => {
+    const { store_id, name, delivery_time, tags, image, coordinates } = req.body;
+    db.Store.findOneAndUpdate({ _id: store_id }, { $set: { name, delivery_time, tags, image, coordinates } }, { new: true }, (err, updated) => {
         if (err) {
             res.status(500).json({ status: false, message: err.message });
         } else {

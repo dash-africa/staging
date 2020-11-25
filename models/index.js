@@ -11,6 +11,7 @@ import TopCategories from './TopCategories';
 import History from './History';
 import AddOns from './AddOns';
 import Admin from './Admin';
+import Card from './Card';
 
 export default {
     User,
@@ -24,5 +25,6 @@ export default {
     TopCategories,
     History,
     AddOns,
-    Admin
+    Admin,
+    Card
 };

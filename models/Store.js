@@ -30,6 +30,18 @@ const storeSchema = new Schema({
             type: String
         }
     }],
+    coordinates: {
+        long: {
+            type: String,
+            required: true,
+            help: 'This field is required'
+        },
+        lat: {
+            type: String,
+            required: true,
+            help: 'This field is required'
+        }
+    },
     _cityId: {
         type: Schema.Types.ObjectId,
         ref: 'City'

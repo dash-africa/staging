@@ -1,6 +1,11 @@
-const test = t => {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+var test = function test(t) {
     console.log(process.env.SECRET);
 };
 
-export default test;
+exports.default = test;
 //# sourceMappingURL=test.js.map

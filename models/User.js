@@ -39,6 +39,10 @@ const userSchema = new Schema({
         type: String,
         default: ''
     },
+    cards: [{
+        type: Schema.Types.ObjectId,
+        ref: 'Card'
+    }],
     carts: [{
         type: Schema.Types.ObjectId,
         ref: 'Cart'

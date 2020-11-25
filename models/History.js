@@ -19,6 +19,34 @@ const historySchema = new Schema({
         required: true,
         help: "This field is required"
     },
+    deliveryFee: {
+        type: Number,
+        required: true,
+        help: "This field is required"
+    },
+    serviceFee: {
+        type: Number,
+        required: true,
+        help: "This field is required"
+    },
+    totalItemAmount: {
+        type: Number,
+        required: true,
+        help: "This field is required"
+    },
+    deliveryAddress: {
+        type: String,
+        required: true,
+        help: "This field is required"
+    },
+    driverAcceptedTime: {
+        type: String,
+        default: null
+    },
+    deliveryTime: {
+        type: String,
+        default: null
+    },
     status: {
         type: String,
         required: true,
