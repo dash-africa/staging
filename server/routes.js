@@ -50,6 +50,7 @@ routes.post('/verifyPhoneNumber', verifyToken, controllers.userController.verify
 routes.get('/user/all', controllers.userController.getAllUsers);
 routes.post('/user/getInfo', verifyToken, controllers.userController.getUserInfo);
 routes.get('/user/fetchCart', verifyToken, controllers.userController.fetchUserCart);
+routes.get('/user/fetchCards', verifyToken, controllers.userController.fetchUserCards);
 
 // Cart Routes
 routes.post('/cart/create', verifyToken, controllers.cartController.createCart);

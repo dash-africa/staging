@@ -9,8 +9,22 @@ const verifyPayment = async (paymentReference) => {
         }
     });
 
-    console.log(response);
-    return response.data;
+    return response;
 };
 
-export default { verifyPayment };
+const chargeCard = async (authorization_code, email, amount) => {
+    const data = {
+        authorization_code,
+        email,
+        amount
+    };
+    const response = await axios.post(`${paystackUrl}/charge_authorization`, data, {
+        headers: {
+            Authorization: `Bearer ${process.env.PAYSTACK_SECRET_KEY}`
+        }
+    });
+
+    return response;
+};
+
+export default { verifyPayment, chargeCard };

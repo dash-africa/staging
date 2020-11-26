@@ -366,6 +366,22 @@
                 }
             }
         },
+        "/api/v1/user/fetchCards": {
+            "get": {
+                "tags": [
+                    "Users"
+                ],
+                "summary": "Get all user's cards, please send user token via authorization header",
+                "responses": {
+                    "200": {
+                        "description": "Succesfully gotten user's cards"
+                    },
+                    "500": {
+                        "description": "Unable to get user's cards"
+                    }
+                }
+            }
+        },
         "/api/v1/cart/create": {
             "post": {
                 "tags": [
@@ -1532,7 +1548,7 @@
                 "tags": [
                     "History"
                 ],
-                "description": "Adds new purchase history",
+                "description": "Adds new purchase history, creates a new order of firebase, verifies payment and carries out recurrent charges",
                 "summary": "Used to create a new purchase history and empties cart",
                 "parameters": [
                     {
@@ -2226,7 +2242,12 @@
                 "paymentRef",
                 "status",
                 "amount",
-                "delivery_fee"
+                "delivery_fee",
+                "service_fee",
+                "delivery_address",
+                "is_new_payment",
+                "last4",
+                "card_type"
             ],
             "properties": {
                 "store_id": {
@@ -2248,9 +2269,24 @@
                     "type": "string"
                 },
                 "amount": {
-                    "type": "string"
+                    "type": "number"
                 },
                 "delivery_fee": {
+                    "type": "string"
+                },
+                "service_fee": {
+                    "type": "string"
+                },
+                "delivery_address": {
+                    "type": "string"
+                },
+                "is_new_payment": {
+                    "type": "string"
+                },
+                "last4": {
+                    "type": "string"
+                },
+                "card_type": {
                     "type": "string"
                 }
             }

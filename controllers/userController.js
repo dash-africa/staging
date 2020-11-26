@@ -411,7 +411,19 @@ userController.fetchUserCart = (req, res) => {
         }
     }).catch(err => {
         res.status(500).json({ status: false, message: err.message });
-    })
+    });
+}
+
+userController.fetchUserCards = (req, res) => {
+    db.User.findById(req.user).populate('cards').then(user => {
+        if (user === null) {
+            res.status(404).json({ status: false, message: 'User not found' })
+        } else {
+            res.status(200).json({ status: true, message: 'Found', data: user });
+        }
+    }).catch(err => {
+        res.status(500).json({ status: false, message: err.message });
+    });
 }
 
 export default userController;
