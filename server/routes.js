@@ -12,16 +12,20 @@ function verifyToken(req, res, next) {
     if (typeof bearerHeader !== 'undefined') {
         // verify jwt
         jwt.verify(bearerHeader, process.env.SECRET_KEY, (err, data) => {
-            db.User.findById(data.user).then((user) => {
-                if (user) {
-                    req.user = data.user;
-                    next();
-                } else {
-                    res.status(403).json({ status: false, message: 'Unauthorized' });
-                }
-            }).catch((err) => {
-                if (err) { res.status(403).json({ status: false, message: 'Unauthorized' }); }
-            });
+            if (data) {
+                db.User.findById(data.user).then((user) => {
+                    if (user) {
+                        req.user = data.user;
+                        next();
+                    } else {
+                        res.status(403).json({ status: false, message: 'Unauthorized' });
+                    }
+                }).catch((err) => {
+                    if (err) { res.status(403).json({ status: false, message: 'Unauthorized' }); }
+                });
+            } else {
+                res.status(403).json({ status: false, message: 'Unauthorized' });
+            }
         });
     } else {
         //forbiden
@@ -58,7 +62,7 @@ routes.get('/cart/getCart/:id', controllers.cartController.fetchCart);
 routes.post('/cart/addItem', controllers.cartController.addItems);
 
 // Category Routes
-routes.post('/category/create', controllers.categoryController.createCategory);
+routes.post('/category/create', verifyToken, controllers.categoryController.createCategory);
 routes.post('/category/addItem', controllers.categoryController.addItem);
 routes.get('/category/all', controllers.categoryController.allCategories);
 routes.put('/category/edit', controllers.categoryController.editCategory);

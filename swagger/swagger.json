@@ -2272,10 +2272,10 @@
                     "type": "number"
                 },
                 "delivery_fee": {
-                    "type": "string"
+                    "type": "number"
                 },
                 "service_fee": {
-                    "type": "string"
+                    "type": "number"
                 },
                 "delivery_address": {
                     "type": "string"
