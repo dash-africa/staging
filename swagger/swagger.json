@@ -2281,7 +2281,7 @@
                     "type": "string"
                 },
                 "is_new_payment": {
-                    "type": "string"
+                    "type": "boolean"
                 },
                 "last4": {
                     "type": "string"
