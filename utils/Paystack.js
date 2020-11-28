@@ -9,14 +9,14 @@ const verifyPayment = async (paymentReference) => {
         }
     });
 
-    return response;
+    return response.data;
 };
 
 const chargeCard = async (authorization_code, email, amount) => {
     const data = {
         authorization_code,
         email,
-        amount
+        amount: amount * 100
     };
     const response = await axios.post(`${paystackUrl}/charge_authorization`, data, {
         headers: {
@@ -24,7 +24,7 @@ const chargeCard = async (authorization_code, email, amount) => {
         }
     });
 
-    return response;
+    return response.data;
 };
 
-export default { verifyPayment, chargeCard };
+export { verifyPayment, chargeCard };

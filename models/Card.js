@@ -63,7 +63,6 @@ const cardSchema = new Schema({
     },
     account_name: {
         type: String,
-        required: true,
         help: "This field is required"
     },
     customer_code: {

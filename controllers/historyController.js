@@ -25,7 +25,7 @@ historyController.addToHistory = (req, res) => {
 
                         const { authorization, customer, amount: paidAmount } = paymentVerification.data;
 
-                        if (amount !== paidAmount) {
+                        if (amount !== (paidAmount/100)) {
                             return res.status(400).json({status: false, message: 'Payment verification failure, amounts do not match'});
                         }
 
@@ -46,42 +46,48 @@ historyController.addToHistory = (req, res) => {
 
                         const { customer_code, email } = customer;
 
-                        const card = new db.Card({
-                            user: user_id,
-                            authorization_code,
-                            card_type,
-                            last4,
-                            exp_month,
-                            exp_year,
-                            bin,
-                            bank,
-                            channel,
-                            signature,
-                            reusable,
-                            country_code,
-                            account_name,
-                            customer_code,
-                            email
-                        });
+                        db.Card.findOne({ email, last4, bank }).then(card => {
+                            if (!card) {
+                                const card = new db.Card({
+                                    user: user_id,
+                                    authorization_code,
+                                    card_type,
+                                    last4,
+                                    exp_month,
+                                    exp_year,
+                                    bin,
+                                    bank,
+                                    channel,
+                                    signature,
+                                    reusable,
+                                    country_code,
+                                    account_name,
+                                    customer_code,
+                                    email
+                                });
 
-                        user.cards.push(card);
-                        card.save();
+                                user.cards.push(card);
+                                card.save();
+                            }
+                        }).catch(err => {
+                            res.status(404).json({ status: false, message: err.message });
+                        });
                     } else {
                         // get card
-                        db.Card.findOne({ user: user_id, last4, card_type }).then(async card => {
+                        await db.Card.findOne({ user: user_id, last4 }).then(async card => {
                             if (card) {
                                 const charge = await chargeCard(card.authorization_code, card.email, amount);
 
                                 if (charge.status) {
                                     paymentRef = charge.data.reference;
                                 } else {
-                                    res.status(401).json({ status: false, message: 'Unauthorized, Recurrent charge was not successful' });
+                                    return res.status(401).json({ status: false, message: 'Unauthorized, Recurrent charge was not successful' });
                                 }
                             } else {
-                                res.status(404).json({ status: false, message: 'Card not found!' });
+                                return res.status(404).json({ status: false, message: 'Card not found!' });
                             }
                         }).catch(err => {
-                            res.status(404).json({ status: false, message: err.message });
+                            return res.status(404).json({ status: false, message: err.message });
                         });
                     }
 

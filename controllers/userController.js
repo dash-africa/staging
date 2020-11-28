@@ -407,7 +407,7 @@ userController.fetchUserCart = (req, res) => {
         if (user === null) {
             res.status(404).json({ status: false, message: 'User not found' })
         } else {
-            res.status(200).json({ status: true, message: 'Found', data: user });
+            res.status(200).json({ status: true, message: 'Found', data: user.carts });
         }
     }).catch(err => {
         res.status(500).json({ status: false, message: err.message });
@@ -415,11 +415,11 @@ userController.fetchUserCart = (req, res) => {
 }
 
 userController.fetchUserCards = (req, res) => {
-    db.User.findById(req.user).populate('cards').then(user => {
+    db.User.findById(req.user).populate('cards', ['card_type', 'last4']).then(user => {
         if (user === null) {
             res.status(404).json({ status: false, message: 'User not found' })
         } else {
-            res.status(200).json({ status: true, message: 'Found', data: user });
+            res.status(200).json({ status: true, message: 'Found', data: user.cards });
         }
     }).catch(err => {
         res.status(500).json({ status: false, message: err.message });

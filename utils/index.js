@@ -1,5 +1,6 @@
-import { verifyPayment } from './Paystack';
+import { chargeCard, verifyPayment } from './Paystack';
 
-export default {
+export {
+    chargeCard,
     verifyPayment
 };
