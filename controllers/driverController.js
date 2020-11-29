@@ -4,7 +4,8 @@ import bcrypt from 'bcryptjs';
 import nodemailer from 'nodemailer';
 import ejs from 'ejs';
 import path from 'path';
-// import otplib from 'otplib';
+import controllers from './index';
+
 import { google } from 'googleapis';
 import crypto from 'crypto';
 import authenticator from 'otplib/authenticator';
@@ -13,7 +14,8 @@ authenticator.options = {
     crypto
 };
 
-const userController = {};
+const driverController = {};
+
 const secret = process.env.SECRET;
 
 let sendMail = (dir_path, object) => {
@@ -28,31 +30,46 @@ let sendMail = (dir_path, object) => {
     });
 };
 
+let signUser = (user) => {
+    return new Promise((resolve, reject) => {
+        jwt.sign({ user: user }, process.env.SECRET_KEY, { expiresIn: '1yr' }, (err, token) => {
+            if (err) {
+                reject(err);
+            } else {
+                resolve(token);
+            }
+        });
+    });
+};
 
-userController.registerUser = (req, res) => {
-    const { firstname, lastname, email, password, phone } = req.body;
+driverController.register = (req, res) => {
+    const { firstname, lastname, address, email, phone, password, drivers_license, id_card, account_number, photo } = req.body;
 
-    db.User.findOne({ $or: [{ phone: phone }, { email: email }] }).then((u) => {
-        if (u !== null) {
-            // This user already exists
-            res.status(409).json({ status: false, message: "User already exists" });
+    db.Driver.findOne({ $or: [{  phone: phone }, { email: email }] }).then((d) => {
+        if (!d) {
+            res.status(409).json({ status: false, message: "Driver already exists" });
         } else {
             bcrypt.genSalt(10, function (err, salt) {
                 bcrypt.hash(password, salt, function (err, hash) {
                     if (err) {
                         res.status(500).json({ status: false, message: 'There was an error setting up your password' });
                     } else {
-                        const user = new db.User({
+                        const driver = new db.Driver({
                             firstname,
                             lastname,
+                            address,
                             email,
                             password: hash,
                             phone,
+                            drivers_license,
+                            id_card,
+                            account_number,
+                            photo
                         });
                         const otp = authenticator.generate(secret);
-                        user.save().then((User) => {
+                        driver.save().then((courier) => {
                             const tokenise = new db.Token({
-                                _userId: User._id,
+                                _userId: courier._id,
                                 token: otp
                             });
 
@@ -68,11 +85,12 @@ userController.registerUser = (req, res) => {
                                         pass: process.env.GMAIL_PASSWORD
                                     }
                                 });
+                                // const mailOptions = { from: 'kana-insight@yourwebapplication.com', to: User.email, subject: 'Account Verification Token', text: 'Hello,\n\n' + 'Please verify your account by clicking the link: \nhttps:\/\/' + req.headers.host + '\/confirmation\/' + tokenise.token + '.\n' };
 
-                                sendMail('verification.ejs', { lastname: User.lastname, token: tokenise.token, host: req.headers.host, protocol: req.protocol }).then(data => {
+                                sendMail('verification.ejs', { lastname: courier.lastname, token: tokenise.token, host: req.headers.host, protocol: req.protocol }).then(data => {
                                     const mailOptions = {
                                         from: 'dash@yourwebapplication.com',
-                                        to: User.email,
+                                        to: courier.email,
                                         subject: 'Account Verification Token',
                                         html: data
                                     };
@@ -85,9 +103,9 @@ userController.registerUser = (req, res) => {
                                         }
                                         res.status(200).json({
                                             status: true,
-                                            message: 'A verification email has been sent to ' + User.email + '.',
+                                            message: 'A verification email has been sent to ' + courier.email + '.',
                                             token: tokenise.token,
-                                            data: User.email
+                                            data: courier.email
                                         });
                                     });
                                 });
@@ -100,23 +118,21 @@ userController.registerUser = (req, res) => {
     });
 };
 
-userController.loginUser = (req, res) => {
+driverController.login = (req, res) => {
     const { email, password } = req.body;
-    // console.log(req.protocol);
-    db.User.findOne({ email: email }).then((user) => {
-        if (user !== null) {
-            // The user has registered
-            // Check user password against the hashed
+    db.Driver.findOne({ email: email }).then((driver) => {
+        if (driver) {
+            // The driver has registered
             bcrypt.genSalt(10, function (err, salt) {
                 bcrypt.hash(password, salt, function (err, hash) {
                     bcrypt.compare(password, user.password, function (err, response) {
                         if (response === true) {
                             // Check if the user is verified
-                            if (user.is_verified === false) {
+                            if (!driver.is_verified && !driver.is_email_verified && !driver.is_phone_verified) {
                                 res.status(401).json({ status: false, message: 'This account has not been verified' });
                             } else {
                                 signUser(user._id).then((token) => {
-                                    res.status(200).json({ status: true, message: "User logged in succesfully", data: user, token });
+                                    res.status(200).json({ status: true, message: "Driver logged in succesfully", data: user, token });
                                 }).catch((err) => {
                                     res.status(500).json({ status: false, message: err.message });
                                 });
@@ -135,38 +151,25 @@ userController.loginUser = (req, res) => {
     });
 };
 
-let signUser = (user) => {
-    return new Promise((resolve, reject) => {
-        jwt.sign({ user: user }, process.env.SECRET_KEY, { expiresIn: '1yr' }, (err, token) => {
-            if (err) {
-                reject(err);
-            } else {
-                resolve(token);
-            }
-        });
-    });
-};
-
-userController.confirmationPost = (req, res) => {
+driverController.confirmationPost = (req, res) => {
     const { email, token } = req.body;
-    // console.log(authenticator.check(token, secret));
 
     // Look for the token with the jwt saved in the localstorage
     db.Token.findOne({ token }).then(tokens => {
         // Check if token has expired
-        if (tokens !== null) {
+        if (tokens) {
             // Token has been found, now confirmation begins
             // Find the user with that token
-            db.User.findOne({ _id: tokens._userId, email: email }).then(user => {
-                // Check of user is found
-                if (user !== null) {
-                    if (user.is_verified) {
-                        res.status(400).json({ status: false, message: 'This user has already been verified' });
+            db.Driver.findOne({ _id: tokens._userId, email: email }).then(driver => {
+                // Check of driver is found
+                if (driver) {
+                    if (driver.is_verified) {
+                        res.status(400).json({ status: false, message: 'This driver has already been verified' });
                     } else {
-                        user.is_verified = true;
-                        user.save().then(User => {
-                            signUser(User._id).then((token) => {
-                                res.status(200).json({ status: true, message: "The user's account has been verified", data: User, token });
+                        driver.is_verified = true;
+                        driver.save().then(courier => {
+                            signUser(courier._id).then((token) => {
+                                res.status(200).json({ status: true, message: "The driver's account has been verified", data: courier, token });
                             }).catch((err) => {
                                 res.status(500).json({ status: false, message: err.message });
                             });
@@ -175,8 +178,7 @@ userController.confirmationPost = (req, res) => {
                         });
                     }
                 } else {
-                    // Not user
-                    res.status(400).json({ status: false, message: 'We were unable to find a user for this token.' });
+                    res.status(400).json({ status: false, message: 'We were unable to find a driver for this token.' });
                 }
             }).catch(err => {
                 res.status(500).json({ status: false, message: 'Unable to find the account this token is linked to' })
@@ -187,22 +189,22 @@ userController.confirmationPost = (req, res) => {
     }).catch(err => { res.status(500).json({ status: false, message: err.message }); });
 };
 
-userController.getAllUsers = (req, res) => {
-    db.User.find().then(users => {
-        if (users === null) {
-            res.status(404).json({ status: false, message: 'No user is in the database', data: [] });
+driverController.getAllDrivers = (req, res) => {
+    db.Driver.find().then(drivers => {
+        if (!drivers || !drivers.length) {
+            res.status(404).json({ status: false, message: 'No driver is in the database', data: [] });
         } else {
-            res.status(200).json({ status: true, message: 'All users have been gotten', data: users });
+            res.status(200).json({ status: true, message: 'All drivers have been gotten', data: drivers });
         }
     }).catch(err => res.status(500).json({ status: false, message: err.mesaage }));
 };
 
-userController.resendTokenPost = (req, res) => {
+driverController.resendTokenPost = (req, res) => {
     const { email, token } = req.body;
     // Check user with the email
-    db.User.findOne({ email }).then(user => {
+    db.Driver.findOne({ email }).then(driver => {
         // Check if user returned is not null
-        if (user !== null) {
+        if (driver) {
             // Generate jwt for email confirmation token
             const transporter = nodemailer.createTransport({
                 service: 'gmail',
@@ -213,7 +215,7 @@ userController.resendTokenPost = (req, res) => {
                 }
             });
 
-            sendMail('verification.ejs', { lastname: user.lastname, token, host: req.headers.host, protocol: req.protocol }).then(data => {
+            sendMail('verification.ejs', { lastname: driver.lastname, token, host: req.headers.host, protocol: req.protocol }).then(data => {
                 const mailOptions = {
                     from: 'dash@yourwebapplication.com',
                     to: user.email,
@@ -229,28 +231,27 @@ userController.resendTokenPost = (req, res) => {
                     }
                     res.status(200).json({
                         status: true,
-                        message: 'A verification email has been sent to ' + user.email + '.',
+                        message: 'A verification email has been sent to ' + driver.email + '.',
                         token: token,
-                        data: user.email
+                        data: driver.email
                     });
                 });
             });
         } else {
-            res.status(401).json({ status: false, mesaage: 'The user is not found, please enter a registered email' });
+            res.status(401).json({ status: false, mesaage: 'The driver is not found, please enter a registered email' });
         }
     });
 };
 
-userController.resendForgottenToken = (req, res) => {
+driverController.resendForgottenToken = (req, res) => {
     const { email } = req.body;
     // Check user with the email
-    db.User.findOne({ email }).then(user => {
-        // Check if user returned is not null
-        if (user !== null) {
+    db.Driver.findOne({ email }).then(driver => {
+        if (driver) {
             // Save new token in the database
             const otp = authenticator.generate(secret);
             const tokenise = new db.Token({
-                _userId: user._id,
+                _userId: driver._id,
                 token: otp
             });
             tokenise.save(err => {
@@ -268,7 +269,7 @@ userController.resendForgottenToken = (req, res) => {
                     }
                 });
 
-                sendMail('forgotten.ejs', { lastname: user.lastname, token: tokenise.token, host: req.headers.host, protocol: req.protocol }).then(data => {
+                sendMail('forgotten.ejs', { lastname: driver.lastname, token: tokenise.token, host: req.headers.host, protocol: req.protocol }).then(data => {
                     const mailOptions = {
                         from: 'dash@yourwebapplication.com',
                         to: user.email,
@@ -284,24 +285,24 @@ userController.resendForgottenToken = (req, res) => {
                         }
                         res.status(200).json({
                             status: true,
-                            message: 'A verification email has been sent to ' + user.email + '.',
+                            message: 'A verification email has been sent to ' + driver.email + '.',
                             token: tokenise.token,
-                            data: user.email
+                            data: driver.email
                         });
                     });
                 });
             });
         } else {
-            res.status(401).json({ status: false, message: 'The user is not found, please enter a registered email' });
+            res.status(401).json({ status: false, message: 'The driver is not found, please enter a registered email' });
         }
     }).catch(err => res.status(500).json({ status: false, message: err.message }));
 };
 
-userController.sendOtpToPhone = (req, res) => {
+driverController.sendOtpToPhone = (req, res) => {
     const { phone, recaptchaToken } = req.body;
 
-    db.User.findOne({ phone }).then(user => {
-        if (user !== null) {
+    db.Driver.findOne({ phone }).then(driver => {
+        if (driver) {
             const identityToolkit = google.identitytoolkit({
                 auth: process.env.GOOGLE_SERVER_APIKEY,
                 version: 'v3',
@@ -312,9 +313,9 @@ userController.sendOtpToPhone = (req, res) => {
                 recaptchaToken
             }).then(response => {
                 // save sessionInfo into db. You will need this to verify the SMS code
-                user.session_token = response.data.sessionInfo;
-                user.save(err => {
-                    // If there is an error when saving the user
+                driver.session_token = response.data.sessionInfo;
+                driver.save(err => {
+                    // If there is an error when saving the driver
                     if (err) { return res.status(500).send({ msg: err.message }); };
 
                     // If successful
@@ -322,16 +323,16 @@ userController.sendOtpToPhone = (req, res) => {
                 });
             });
         } else {
-            res.status(401).json({ status: false, mesaage: 'The user with this phone number is not found' });
+            res.status(401).json({ status: false, mesaage: 'The driver with this phone number is not found' });
         }
     }).catch(err => res.status(500).json({ status: false, message: err.message }));
 };
 
-userController.verifyPhoneNumber = (req, res) => {
+driverController.verifyPhoneNumber = (req, res) => {
     const { phone, verificationCode } = req.body;
 
-    db.User.findOne({ phone }).then(user => {
-        if (user !== null) {
+    db.Driver.findOne({ phone }).then(driver => {
+        if (driver) {
             const identityToolkit = google.identitytoolkit({
                 auth: process.env.GOOGLE_SERVER_APIKEY,
                 version: 'v3',
@@ -339,38 +340,38 @@ userController.verifyPhoneNumber = (req, res) => {
 
             identityToolkit.relyingparty.verifyPhoneNumber({
                 code: verificationCode,
-                sessionInfo: user.session_token,
+                sessionInfo: driver.session_token,
             }).then(response => {
-                user.is_phone_verified = true;
-                user.save(err => {
-                    // If there is an error when saving the user
+                driver.is_phone_verified = true;
+                driver.save(err => {
+                    // If there is an error when saving the driver
                     if (err) { return res.status(500).send({ msg: err.message }); };
 
                     // If successful
-                    res.status(200).json({ status: true, message: 'User phone number have been verified' });
+                    res.status(200).json({ status: true, message: 'Driver phone number have been verified' });
                 });
             });
         } else {
-            res.status(401).json({ status: false, mesaage: 'The user with this phone number is not found' });
+            res.status(401).json({ status: false, mesaage: 'The driver with this phone number is not found' });
         }
     }).catch(err => res.status(500).json({ status: false, message: err.message }));
 };
 
-userController.changePassword = (req, res) => {
+driverController.changePassword = (req, res) => {
     const { email, password, token } = req.body;
 
     // Check the sent token first
     db.Token.findOne({ token }).then(tokens => {
         if (tokens) {
-            // Find the user with email
-            db.User.findOne({ _id: tokens._userId, email: email }).then(user => {
-                if (user !== null) {
+            // Find the driver with email
+            db.Driver.findOne({ _id: tokens._userId, email: email }).then(driver => {
+                if (driver) {
                     // Hash the password
                     bcrypt.genSalt(10, function (err, salt) {
                         bcrypt.hash(password, salt, function (err, hash) {
-                            user.password = hash;
-                            user.save(err => {
-                                // If there is an error when saving the user
+                            driver.password = hash;
+                            driver.save(err => {
+                                // If there is an error when saving the driver
                                 if (err) { return res.status(500).send({ msg: err.message }); };
 
                                 // If successful
@@ -379,7 +380,7 @@ userController.changePassword = (req, res) => {
                         });
                     });
                 } else {
-                    res.status(401).json({ status: false, mesaage: 'The user is not found, please enter a registered email' });
+                    res.status(401).json({ status: false, mesaage: 'The driver is not found, please enter a registered email' });
                 }
             });
         } else {
@@ -388,39 +389,15 @@ userController.changePassword = (req, res) => {
     }).catch(err => res.status(500).json({ status: false, message: err.message }));
 }
 
-userController.getUserInfo = (req, res) => {
-    // Find User
-    db.User.findById(req.user).then(user => {
-        if (user !== null) {
-            res.status(200).json({ status: true, message: 'Found', data: user });
+driverController.getDriverInfo = (req, res) => {
+    // Find Driver
+    db.Driver.findById(req.user).then(driver => {
+        if (driver) {
+            res.status(200).json({ status: true, message: 'Found', data: driver });
         } else {
-            res.status(404).json({ status: false, message: 'This user was not found' });
+            res.status(404).json({ status: false, message: 'This driver was not found' });
         }
     }).catch(err => res.status(500).json({ status: false, message: err.message }));
 }
 
-userController.fetchUserCart = (req, res) => {
-    db.User.findById(req.user).populate('carts').then(user => {
-        if (user === null) {
-            res.status(404).json({ status: false, message: 'User not found' })
-        } else {
-            res.status(200).json({ status: true, message: 'Found', data: user.carts });
-        }
-    }).catch(err => {
-        res.status(500).json({ status: false, message: err.message });
-    });
-}
-
-userController.fetchUserCards = (req, res) => {
-    db.User.findById(req.user).populate('cards', ['card_type', 'last4']).then(user => {
-        if (user === null) {
-            res.status(404).json({ status: false, message: 'User not found' })
-        } else {
-            res.status(200).json({ status: true, message: 'Found', data: user.cards });
-        }
-    }).catch(err => {
-        res.status(500).json({ status: false, message: err.message });
-    });
-}
-
-export default userController;
+export default driverController;

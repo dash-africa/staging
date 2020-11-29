@@ -122,4 +122,16 @@ routes.post('/addOn/removeItem', controllers.addOnController.removeItem);
 routes.put('/addOn/edit', controllers.addOnController.editAddOn);
 routes.delete('/addOn/delete/:id', controllers.addOnController.delete);
 
+// Driver Routes
+routes.post('/driver/login', controllers.driverController.login);
+routes.post('/driver/register', controllers.driverController.register);
+routes.post('/driver/confirmation', controllers.driverController.confirmationPost);
+routes.post('/driver/resend', controllers.driverController.resendTokenPost);
+routes.post('/driver/sendForget', controllers.driverController.resendForgottenToken);
+routes.post('/driver/forgot_password', controllers.driverController.changePassword);
+routes.post('/driver/sendOtp', verifyToken, controllers.driverController.sendOtpToPhone);
+routes.post('/driver/verifyPhoneNumber', verifyToken, controllers.driverController.verifyPhoneNumber);
+routes.get('/driver/all', controllers.driverController.getAllDrivers);
+routes.post('/driver/getInfo', verifyToken, controllers.driverController.getDriverInfo);
+
 export default routes;

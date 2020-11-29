@@ -1575,6 +1575,328 @@
                     }
                 }
             }
+        },
+        "/api/v1/driver/login": {
+            "parameters": [
+                {
+                    "name": "driver_login",
+                    "in": "body",
+                    "description": "These can be passed, click on Model to see which ones are required",
+                    "schema": {
+                        "$ref": "#/definitions/UserLogin"
+                    }
+                }
+            ],
+            "description": "Logs drivers in",
+            "produces": [
+                "application/json"
+            ],
+            "post": {
+                "tags": [
+                    "Drivers"
+                ],
+                "summary": "Logs drivers into the system",
+                "responses": {
+                    "200": {
+                        "description": "Driver saved and logged in successfully"
+                    },
+                    "400": {
+                        "description": "Wrong Login Details"
+                    },
+                    "401": {
+                        "description": "The driver account has not been verified"
+                    },
+                    "500": {
+                        "description": "There was an error setting up your pin"
+                    }
+                }
+            }
+        },
+        "/api/v1/driver/register": {
+            "post": {
+                "tags": [
+                    "Drivers"
+                ],
+                "description": "Allows driver registration and send them a verification email, please save token in local storage, in case of resending purpose",
+                "summary": "Used to create a verifiable user account",
+                "parameters": [
+                    {
+                        "name": "user",
+                        "in": "body",
+                        "description": "These can be passed, click on Model to see which ones are required, _token should be passed as header for authorization",
+                        "schema": {
+                            "$ref": "#/definitions/DriverRegister"
+                        }
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Account has been created and a verification email has been sent"
+                    },
+                    "409": {
+                        "description": "The driver already exists"
+                    },
+                    "500": {
+                        "description": "An error occured while creating the driver account"
+                    }
+                }
+            }
+        },
+        "/api/v1/driver/confirmation": {
+            "post": {
+                "tags": [
+                    "Drivers"
+                ],
+                "description": "Confirms the otp sent to the driver's email",
+                "summary": "Used to verify driver's account",
+                "parameters": [
+                    {
+                        "name": "driver_confirmation",
+                        "in": "body",
+                        "description": "These can be passed, click on Model to see which ones are required",
+                        "schema": {
+                            "$ref": "#/definitions/Confirmation"
+                        }
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "The driver's account have been verified"
+                    },
+                    "400": {
+                        "description": "Token not found"
+                    },
+                    "500": {
+                        "description": "Please, inspect all parameters"
+                    }
+                }
+            }
+        },
+        "/api/v1/driver/resend": {
+            "post": {
+                "tags": [
+                    "Drivers"
+                ],
+                "description": "Resend the verification email to the driver",
+                "summary": "Used to send another verification message to the driver, just incase they didnt receive it in the first place",
+                "parameters": [
+                    {
+                        "name": "driver_resend",
+                        "in": "body",
+                        "description": "These will be passed",
+                        "schema": {
+                            "$ref": "#/definitions/Confirmation"
+                        }
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Found"
+                    },
+                    "401": {
+                        "description": "The driver was not found"
+                    },
+                    "400": {
+                        "description": "Please, inspect all parameters"
+                    },
+                    "500": {
+                        "description": "An unexpected error occured"
+                    }
+                }
+            }
+        },
+        "/api/v1/driver/sendForget": {
+            "post": {
+                "tags": [
+                    "Drivers"
+                ],
+                "description": "Resends the forgotten email to the driver",
+                "summary": "Used to send another verification forgotten message to the driver, just incase they didnt receive it in the first place",
+                "parameters": [
+                    {
+                        "name": "driver",
+                        "in": "body",
+                        "description": "These will be passed",
+                        "schema": {
+                            "$ref": "#/definitions/SendForgot"
+                        }
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Found"
+                    },
+                    "401": {
+                        "description": "The driver was not found"
+                    },
+                    "400": {
+                        "description": "Please, inspect all parameters"
+                    },
+                    "500": {
+                        "description": "An unexpected error occured"
+                    }
+                }
+            }
+        },
+        "/api/v1/driver/forgot_password": {
+            "post": {
+                "tags": [
+                    "Drivers"
+                ],
+                "description": "Changes the driver's password after forgotten email verification has been received",
+                "summary": "Used to change the driver's password, just after the forgotten verification message has been received",
+                "parameters": [
+                    {
+                        "name": "driver",
+                        "in": "body",
+                        "description": "These will be passed",
+                        "schema": {
+                            "$ref": "#/definitions/ChangePass"
+                        }
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "The password have been changed successfully"
+                    },
+                    "401": {
+                        "description": "The driver was not found"
+                    },
+                    "400": {
+                        "description": "Please, inspect all parameters"
+                    },
+                    "500": {
+                        "description": "An unexpected error occured"
+                    }
+                }
+            }
+        },
+        "/api/v1/driver/getInfo": {
+            "post": {
+                "tags": [
+                    "Drivers"
+                ],
+                "description": "Gets all the details for a particular driver",
+                "summary": "Used to get all details for a specific driver",
+                "parameters": [
+                    {
+                        "name": "driver",
+                        "in": "body",
+                        "description": "Only the driver's token should be passed as header"
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "The details have been returned successfully"
+                    },
+                    "404": {
+                        "description": "The driver was not found"
+                    },
+                    "500": {
+                        "description": "An unexpected error occured"
+                    }
+                }
+            }
+        },
+        "/api/v1/driver/sendOtp": {
+            "post": {
+                "tags": [
+                    "Drivers"
+                ],
+                "description": "Sends otp to verify the driver's phone number",
+                "summary": "Used to send otp to driver's phone number",
+                "parameters": [
+                    {
+                        "name": "driver",
+                        "in": "body",
+                        "description": "Only the driver's token should be passed as header",
+                        "schema": {
+                            "$ref": "#/definitions/SendOTP"
+                        }
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "The OTP have been sent successfully"
+                    },
+                    "401": {
+                        "description": "The driver with this phone number is not found"
+                    },
+                    "500": {
+                        "description": "An unexpected error occured"
+                    }
+                }
+            }
+        },
+        "/api/v1/driver/verifyPhoneNumber": {
+            "post": {
+                "tags": [
+                    "Drivers"
+                ],
+                "description": "Verifies the driver's phone number with the otp passed",
+                "summary": "Used to verify the driver's phone number with the OTP received",
+                "parameters": [
+                    {
+                        "name": "driver",
+                        "in": "body",
+                        "description": "Only the driver's token should be passed as header",
+                        "schema": {
+                            "$ref": "#/definitions/VerifyPhoneNumber"
+                        }
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Driver's phone number have been verified"
+                    },
+                    "401": {
+                        "description": "The driver with this phone number is not found"
+                    },
+                    "500": {
+                        "description": "An unexpected error occured"
+                    }
+                }
+            }
+        },
+        "/api/v1/driver/all": {
+            "get": {
+                "tags": [
+                    "Drivers"
+                ],
+                "summary": "Get all drivers",
+                "responses": {
+                    "200": {
+                        "description": "Succesfully gotten the list of drivers"
+                    },
+                    "500": {
+                        "description": "Unable to get the list of all drivers"
+                    }
+                }
+            }
         }
     },
     "definitions": {
@@ -2287,6 +2609,53 @@
                     "type": "string"
                 },
                 "card_type": {
+                    "type": "string"
+                }
+            }
+        },
+        "DriverRegister": {
+            "required": [
+                "firstname",
+                "lastname",
+                "address",
+                "email",
+                "password",
+                "phone",
+                "drivers_license",
+                "id_card",
+                "account_number",
+                "photo"
+            ],
+            "properties": {
+                "firstname": {
+                    "type": "string"
+                },
+                "lastname": {
+                    "type": "string"
+                },
+                "address": {
+                    "type": "string"
+                },
+                "email": {
+                    "type": "string",
+                    "uniqueItems": true
+                },
+                "password": {
+                    "type": "string"
+                },
+                "phone": {
+                    "type": "string"
+                },
+                "drivers_license": {
+                    "type": "string"
+                },
+                "id_card": {
+                    "type": "string"
+                },
+                "account_number": {
+                    "type": "string"
+                },
+                "photo": {
                     "type": "string"
                 }
             }
