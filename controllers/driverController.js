@@ -43,7 +43,7 @@ let signUser = (user) => {
 };
 
 driverController.register = (req, res) => {
-    const { firstname, lastname, address, email, phone, password, drivers_license, id_card, account_number, photo } = req.body;
+    const { firstname, lastname, address, email, phone, password, drivers_license, front_id_card, back_id_card, bank, account_number, photo, mode_of_transportation } = req.body;
 
     db.Driver.findOne({ $or: [{  phone: phone }, { email: email }] }).then((d) => {
         if (!d) {
@@ -62,9 +62,12 @@ driverController.register = (req, res) => {
                             password: hash,
                             phone,
                             drivers_license,
-                            id_card,
+                            front_id_card,
+                            back_id_card,
+                            bank,
                             account_number,
-                            photo
+                            photo,
+                            mode_of_transportation
                         });
                         const otp = authenticator.generate(secret);
                         driver.save().then((courier) => {
@@ -163,10 +166,10 @@ driverController.confirmationPost = (req, res) => {
             db.Driver.findOne({ _id: tokens._userId, email: email }).then(driver => {
                 // Check of driver is found
                 if (driver) {
-                    if (driver.is_verified) {
+                    if (driver.is_email_verified) {
                         res.status(400).json({ status: false, message: 'This driver has already been verified' });
                     } else {
-                        driver.is_verified = true;
+                        driver.is_email_verified = true;
                         driver.save().then(courier => {
                             signUser(courier._id).then((token) => {
                                 res.status(200).json({ status: true, message: "The driver's account has been verified", data: courier, token });

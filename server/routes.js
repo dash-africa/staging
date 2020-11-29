@@ -41,6 +41,7 @@ routes.get('/', (req, res) => {
 // admin routes
 routes.post('/admin/login', controllers.adminController.login);
 routes.post('/admin/register', controllers.adminController.register);
+routes.post('/admin/verifyDriver', controllers.adminController.verifyDriver);
 
 // user routes
 routes.post('/user/login', controllers.userController.loginUser);

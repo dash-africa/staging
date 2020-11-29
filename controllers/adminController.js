@@ -74,4 +74,31 @@ adminController.login = (req, res) => {
     });
 };
 
+adminController.verifyDriver = (req, res) => {
+    const { driver_id, email } = req.body;
+
+    db.Admin.findOne({ email: email }).then(admin => {
+        if (!admin) {
+            res.status(404).json({ status: false, message: 'The admin account was not found' });
+        } else {
+            db.Driver.findById(driver_id).then(driver => {
+                if (!driver) {
+                    res.status(404).json({ status: false, message: 'The driver account was not found' });
+                } else {
+                    driver.is_verified = true;
+                    driver.save().then(verified => {
+                        res.status(200).json({ status: true, message: 'The driver has been successfully verified', data: verified });
+                    }).catch(err => {
+                        res.status(500).json({ status: false, message: err.message });
+                    });
+                }
+            }).catch(err => {
+                res.status(500).json({ status: false, message: err.message });
+            });
+        }
+    }).catch(err => {
+        res.status(500).json({ status: false, message: err.message });
+    });
+}
+
 export default adminController;

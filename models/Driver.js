@@ -37,7 +37,17 @@ const driverSchema = new Schema({
         required: true,
         help: 'This field is required'
     },
-    id_card: {
+    front_id_card: {
+        type: String,
+        required: true,
+        help: 'This field is required'
+    },
+    back_id_card: {
+        type: String,
+        required: true,
+        help: 'This field is required'
+    },
+    bank: {
         type: String,
         required: true,
         help: 'This field is required'
@@ -48,6 +58,11 @@ const driverSchema = new Schema({
         help: 'This field is required'
     },
     photo: {
+        type: String,
+        required: true,
+        help: 'This field is required'
+    },
+    mode_of_transportation: {
         type: String,
         required: true,
         help: 'This field is required'
