@@ -2659,8 +2659,11 @@
                 "back_id_card": {
                     "type": "string"
                 },
-                "bank": {
+                "bank_name": {
                     "type": "string"
+                },
+                "bank_code": {
+                    "type": "number"
                 },
                 "account_number": {
                     "type": "string"
