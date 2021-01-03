@@ -45,8 +45,13 @@ const driverSchema = new Schema({
         required: true,
         help: 'This field is required'
     },
-    bank: {
+    bank_name: {
         type: String,
+        required: true,
+        help: 'This field is required'
+    },
+    bank_code: {
+        type: Number,
         required: true,
         help: 'This field is required'
     },

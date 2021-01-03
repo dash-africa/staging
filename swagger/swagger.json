@@ -2624,7 +2624,8 @@
                 "drivers_license",
                 "front_id_card",
                 "back_id_card",
-                "bank",
+                "bank_name",
+                "bank_code",
                 "account_number",
                 "photo",
                 "mode_of_transportation"

@@ -43,7 +43,7 @@ let signUser = (user) => {
 };
 
 driverController.register = (req, res) => {
-    const { firstname, lastname, address, email, phone, password, drivers_license, front_id_card, back_id_card, bank, account_number, photo, mode_of_transportation } = req.body;
+    const { firstname, lastname, address, email, phone, password, drivers_license, front_id_card, back_id_card, bank_name, bank_code, account_number, photo, mode_of_transportation } = req.body;
 
     db.Driver.findOne({ $or: [{  phone: phone }, { email: email }] }).then((d) => {
         if (d) {
@@ -64,7 +64,8 @@ driverController.register = (req, res) => {
                             drivers_license,
                             front_id_card,
                             back_id_card,
-                            bank,
+                            bank_name,
+                            bank_code,
                             account_number,
                             photo,
                             mode_of_transportation
