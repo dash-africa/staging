@@ -74,7 +74,7 @@ addOnController.removeItem = (req, res) => {
 };
 
 addOnController.editAddOn = (req, res) => {
-    const { addOn_id, name, isRequired, canBuyMultiple, items } = req.body;
+    const { addOn_id, name, isRequired, isFree, canBuyMultiple, items } = req.body;
     db.AddOns.findOneAndUpdate({ _id: addOn_id }, { $set: { name, isRequired, isFree, canBuyMultiple, items } }, { new: true }, (err, updated) => {
         if (err) {
             res.status(500).json({ status: false, message: err.message });
@@ -84,7 +84,7 @@ addOnController.editAddOn = (req, res) => {
     });
 };
 
-addOnController.delete = (re1, res) => {
+addOnController.delete = (req, res) => {
     const id = req.params.id;
     db.AddOns.findByIdAndDelete(id, (err, deleted) => {
         if (err) {

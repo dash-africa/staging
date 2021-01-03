@@ -14,22 +14,14 @@ categoryController.createCategory = (req, res) => {
                 _storeId: store_id
             });
 
-            db.Category.find({ name }).then(cat => {
-                if (cat.length) {
-                    res.status(409).json({ status: false, message: 'This category already exists' });
+            db.Category.create(category, (err, stored) => {
+                if (err) {
+                    res.status(500).json({ status: false, message: 'An error occured while creating the category' });
                 } else {
-                    db.Category.create(category, (err, stored) => {
-                        if (err) {
-                            res.status(500).json({ status: false, message: 'An error occured while creating the category' });
-                        } else {
-                            store.categories.push(stored._id);
-                            store.save();
-                            res.status(200).json({ status: true, message: 'Created the category', data: stored });
-                        }
-                    });
+                    store.categories.push(stored._id);
+                    store.save();
+                    res.status(200).json({ status: true, message: 'Created the category', data: stored });
                 }
-            }).catch(err => {
-                res.status(500).json({ status: false, message: err.message });
             });
         }
     }).catch(err => {
@@ -63,7 +55,9 @@ categoryController.addItem = (req, res) => {
 };
 
 categoryController.allCategories = (req, res) => {
-    db.Category.find().populate('items').then(categories => {
+    const { populate } = req.query;
+
+    db.Category.find().populate(populate ? ['items', '_storeId'] : ['items']).then(categories => {
         if (categories === null || categories.length === 0) {
             res.status(404).json({ status: false, message: 'No item was found' });
         } else {

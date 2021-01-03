@@ -63,7 +63,7 @@ routes.get('/cart/getCart/:id', controllers.cartController.fetchCart);
 routes.post('/cart/addItem', controllers.cartController.addItems);
 
 // Category Routes
-routes.post('/category/create', verifyToken, controllers.categoryController.createCategory);
+routes.post('/category/create', controllers.categoryController.createCategory);
 routes.post('/category/addItem', controllers.categoryController.addItem);
 routes.get('/category/all', controllers.categoryController.allCategories);
 routes.put('/category/edit', controllers.categoryController.editCategory);

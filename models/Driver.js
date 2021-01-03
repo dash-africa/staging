@@ -33,9 +33,7 @@ const driverSchema = new Schema({
         help: 'This field is required'
     },
     drivers_license: {
-        type: String,
-        required: true,
-        help: 'This field is required'
+        type: String
     },
     front_id_card: {
         type: String,

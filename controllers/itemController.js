@@ -97,7 +97,15 @@ itemController.fetchItem = (req, res) => {
 };
 
 itemController.getAll = (req, res) => {
-    db.Item.find().then(items => {
+    const { populate } = req.query;
+
+    db.Item.find().populate(populate ? {
+        path: '_categoryId',
+        populate: {
+            path: '_storeId',
+            select: 'name'
+        },
+    }: null).populate(populate ? 'addOns' : null).then(items => {
         if (items === null || items.length === 0) {
             res.status(404).json({ status: false, message: 'No item was found' });
         } else {
@@ -107,15 +115,49 @@ itemController.getAll = (req, res) => {
 };
 
 itemController.editItem = (req, res) => {
-    const { item_id, price, image, name, description, isAddOn, isSellable } = req.body;
+    const { item_id, price, image, name, description, category_id, isAddOn, isSellable, addOns } = req.body;
 
-    db.Item.findOneAndUpdate({ _id: item_id }, { $set: { name, image, price, description, isAddOn, isSellable } }, { new: true }, (err, updated) => {
-        if (err) {
-            res.status(500).json({ status: false, message: err.message });
+    db.Item.findById(item_id).then(item => {
+        if (!item) {
+            res.status(404).json({ status: false, message: 'The item was not found' });
         } else {
-            res.status(200).json({ status: true, message: 'Successfully updated the item', data: updated });
+            if (item._categoryId !== category_id) {
+                db.Category.findById(item._categoryId).then(prev_category => {
+                    if (!prev_category) {
+                        return res.status(404).json({ status: false, message: 'The category of this item was not found' });
+                    } else {
+                        db.Category.findById(category_id).then(new_category => {
+                            if (!new_category) {
+                                return res.status(404).json({ status: false, message: 'The category of this item was not found' });
+                            } else {
+                                const idx = prev_category.items.indexOf(item_id);
+                                if (idx !== -1) {
+                                    prev_category.items.splice(idx, 1);
+                                    prev_category.save();
+                                }
+
+                                new_category.items.push(item_id);
+                                new_category.save();
+                            }
+                        }).catch(err => res.status(500).json({ status: false, message: err.message }));
+                    }
+                }).catch(err => res.status(500).json({ status: false, message: err.message }));
+            }
+
+            item.price = price;
+            item.name = name;
+            item.image = image;
+            item.description = description;
+            item.isAddOn = isAddOn;
+            item.isSellable = isSellable;
+            item._categoryId = category_id;
+            item.addOns = addOns;
+
+            item.save().then(saved => {
+                res.status(200).json({ status: true, message: 'Successful', data: saved });
+            }).catch(err => res.status(500).json({ status: false, message: err.message }));
         }
-    });
+    }).catch(err => res.status(500).json({ status: false, message: err.message }));
 };
 
 itemController.deleteItem = (req, res) => {

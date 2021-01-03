@@ -49,7 +49,9 @@ storeController.createStore = (req, res) => {
 };
 
 storeController.allStores = (req, res) => {
-    db.Store.find().then(stores => {
+    const { populate } = req.query;
+
+    db.Store.find().populate(populate ? ['_storeTypeId', '_cityId'] : null).then(stores => {
         if (stores === null || stores.length === 0) {
             res.status(404).json({ status: false, message: 'No store was found' });
         } else {
@@ -83,8 +85,8 @@ storeController.allCategorized = (req, res) => {
 };
 
 storeController.editStore = (req, res) => {
-    const { store_id, name, delivery_time, tags, image, coordinates } = req.body;
-    db.Store.findOneAndUpdate({ _id: store_id }, { $set: { name, delivery_time, tags, image, coordinates } }, { new: true }, (err, updated) => {
+    const { store_id, name, delivery_time, tags, image, schedule } = req.body;
+    db.Store.findOneAndUpdate({ _id: store_id }, { $set: { name, delivery_time, tags, image, schedule } }, { new: true }, (err, updated) => {
         if (err) {
             res.status(500).json({ status: false, message: err.message });
         } else {
