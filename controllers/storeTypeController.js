@@ -69,7 +69,14 @@ storeTypeController.addStore = (req, res) => {
 };
 
 storeTypeController.getStores = (req, res) => {
-    db.StoreType.findById(req.params.storeType_id).populate('stores').then(storeType => {
+    const { populate } = req.query;
+
+    db.StoreType.findById(req.params.storeType_id).populate(populate ? {
+        path: 'stores',
+        populate: [{
+            path: '_storeTypeId'
+        }, {path: '_cityId'}]
+    } :'stores').then(storeType => {
         if (storeType === null) {
             res.status(404).json({ status: false, message: 'No store was found' });
         } else {

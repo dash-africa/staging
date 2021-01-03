@@ -141,7 +141,19 @@ storeController.getStore = (req, res) => {
 };
 
 storeController.getCategoryItems = (req, res) => {
-    db.Store.findById(req.params.id).populate({ path: 'categories', populate: { path: 'items' } }).then(store => {
+    const { populate } = req.query;
+
+    db.Store.findById(req.params.id).populate({ path: 'categories', populate: { path: 'items',
+        ...(populate && {
+            populate: {
+                path: '_categoryId',
+                populate: {
+                    path: '_storeId',
+                    select: 'name'
+                },
+            }
+        })
+    } }).then(store => {
         if (store === null) {
             res.status(404).json({ status: false, message: 'The store was not found' });
         } else {

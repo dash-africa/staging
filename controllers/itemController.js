@@ -121,7 +121,7 @@ itemController.editItem = (req, res) => {
         if (!item) {
             res.status(404).json({ status: false, message: 'The item was not found' });
         } else {
-            if (item._categoryId !== category_id) {
+            if (!category_id.includes(item._categoryId)) {
                 db.Category.findById(item._categoryId).then(prev_category => {
                     if (!prev_category) {
                         return res.status(404).json({ status: false, message: 'The category of this item was not found' });

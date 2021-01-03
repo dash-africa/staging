@@ -49,9 +49,16 @@ cityController.allCities = (req, res) => {
     });
 };
 
-cityController.fetchCity = (req, res) => {
+cityController.fetchStores = (req, res) => {
     const cityId = req.params.cityId;
-    db.City.findById(cityId).populate('stores').then(city => {
+    const { populate } = req.query;
+
+    db.City.findById(cityId).populate(populate ? {
+        path: 'stores',
+        populate: [{
+            path: '_storeTypeId'
+        }, {path: '_cityId'}]
+    } : 'stores').then(city => {
         if (city === null) {
             res.status(404).json({ status: false, message: 'The city with this id was not found' });
         } else {
