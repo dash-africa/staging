@@ -2666,7 +2666,7 @@
                     "type": "number"
                 },
                 "account_number": {
-                    "type": "string"
+                    "type": "number"
                 },
                 "photo": {
                     "type": "string"
