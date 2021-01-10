@@ -42,6 +42,7 @@ routes.get('/', (req, res) => {
 routes.post('/admin/login', controllers.adminController.login);
 routes.post('/admin/register', controllers.adminController.register);
 routes.post('/admin/verifyDriver', controllers.adminController.verifyDriver);
+routes.delete('/admin/deleteDriver', controllers.adminController.deleteDriver);
 
 // user routes
 routes.post('/user/login', controllers.userController.loginUser);

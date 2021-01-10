@@ -1,10 +1,6 @@
 import db from '../models';
-import jwt from 'jsonwebtoken';
 import bcrypt from 'bcryptjs';
-import nodemailer from 'nodemailer';
-import ejs from 'ejs';
-import path from 'path';
-import controllers from './index';
+import { sendMail, signUser, createTransporter } from './../utils';
 
 import { google } from 'googleapis';
 import crypto from 'crypto';
@@ -17,30 +13,6 @@ authenticator.options = {
 const driverController = {};
 
 const secret = process.env.SECRET;
-
-let sendMail = (dir_path, object) => {
-    return new Promise((resolve, reject) => {
-        ejs.renderFile(path.join(__dirname, '../templates/' + dir_path), object, (err, data) => {
-            if (err) {
-                reject(err);
-            } else {
-                resolve(data);
-            }
-        });
-    });
-};
-
-let signUser = (user) => {
-    return new Promise((resolve, reject) => {
-        jwt.sign({ user: user }, process.env.SECRET_KEY, { expiresIn: '1yr' }, (err, token) => {
-            if (err) {
-                reject(err);
-            } else {
-                resolve(token);
-            }
-        });
-    });
-};
 
 driverController.register = (req, res) => {
     const { firstname, lastname, address, email, phone, password, drivers_license, front_id_card, back_id_card, bank_name, bank_code, account_number, photo, mode_of_transportation } = req.body;
@@ -80,26 +52,17 @@ driverController.register = (req, res) => {
                             tokenise.save((err) => {
                                 if (err) { return res.status(500).send({ msg: err.message }); }
 
-                                // Send the email
-                                const transporter = nodemailer.createTransport({
-                                    service: 'gmail',
-                                    host: 'smtp.gmail.com',
-                                    auth: {
-                                        user: process.env.GMAIL_USERNAME,
-                                        pass: process.env.GMAIL_PASSWORD
-                                    }
-                                });
-                                // const mailOptions = { from: 'kana-insight@yourwebapplication.com', to: User.email, subject: 'Account Verification Token', text: 'Hello,\n\n' + 'Please verify your account by clicking the link: \nhttps:\/\/' + req.headers.host + '\/confirmation\/' + tokenise.token + '.\n' };
-
-                                sendMail('verification.ejs', { lastname: courier.lastname, token: tokenise.token, host: req.headers.host, protocol: req.protocol }).then(data => {
+                                sendMail('verification.ejs', { lastname: courier.lastname, token: tokenise.token, host: req.headers.host, protocol: req.protocol }).then(async data => {
                                     const mailOptions = {
-                                        from: 'dash@yourwebapplication.com',
                                         to: courier.email,
                                         subject: 'Account Verification Token',
-                                        html: data
+                                        html: data,
+                                        from: 'dash@yourwebapplication.com',
                                     };
 
-                                    transporter.sendMail(mailOptions, (err) => {
+                                    const transporter = await createTransporter();
+
+                                    transporter.sendMail(mailOptions, (err, info) => {
                                         if (err) {
                                             return res.status(500).send({
                                                 msg: err.message
@@ -109,7 +72,7 @@ driverController.register = (req, res) => {
                                             status: true,
                                             message: 'A verification email has been sent to ' + courier.email + '.',
                                             token: tokenise.token,
-                                            data: courier.email
+                                            data: info
                                         });
                                     });
                                 });
@@ -210,22 +173,15 @@ driverController.resendTokenPost = (req, res) => {
         // Check if user returned is not null
         if (driver) {
             // Generate jwt for email confirmation token
-            const transporter = nodemailer.createTransport({
-                service: 'gmail',
-                host: 'smtp.gmail.com',
-                auth: {
-                    user: process.env.GMAIL_USERNAME,
-                    pass: process.env.GMAIL_PASSWORD
-                }
-            });
-
-            sendMail('verification.ejs', { lastname: driver.lastname, token, host: req.headers.host, protocol: req.protocol }).then(data => {
+            sendMail('verification.ejs', { lastname: driver.lastname, token, host: req.headers.host, protocol: req.protocol }).then(async data => {
                 const mailOptions = {
                     from: 'dash@yourwebapplication.com',
                     to: user.email,
                     subject: 'Account Verification Token',
                     html: data
                 };
+
+                const transporter = await createTransporter();
 
                 transporter.sendMail(mailOptions, (err) => {
                     if (err) {
@@ -264,22 +220,16 @@ driverController.resendForgottenToken = (req, res) => {
 
                 // If no error is generated
                 // Send the confirmation email
-                const transporter = nodemailer.createTransport({
-                    service: 'gmail',
-                    host: 'smtp.gmail.com',
-                    auth: {
-                        user: process.env.GMAIL_USERNAME,
-                        pass: process.env.GMAIL_PASSWORD
-                    }
-                });
 
-                sendMail('forgotten.ejs', { lastname: driver.lastname, token: tokenise.token, host: req.headers.host, protocol: req.protocol }).then(data => {
+                sendMail('forgotten.ejs', { lastname: driver.lastname, token: tokenise.token, host: req.headers.host, protocol: req.protocol }).then(async data => {
                     const mailOptions = {
                         from: 'dash@yourwebapplication.com',
                         to: user.email,
                         subject: 'Forgotten Password Token',
                         html: data
                     };
+
+                    const transporter = await createTransporter();
 
                     transporter.sendMail(mailOptions, (err) => {
                         if (err) {

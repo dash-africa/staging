@@ -1,13 +1,9 @@
 import db from '../models';
-import jwt from 'jsonwebtoken';
 import bcrypt from 'bcryptjs';
-import nodemailer from 'nodemailer';
-import ejs from 'ejs';
-import path from 'path';
-// import otplib from 'otplib';
 import { google } from 'googleapis';
 import crypto from 'crypto';
 import authenticator from 'otplib/authenticator';
+import { sendMail, signUser, createTransporter } from './../utils';
 
 authenticator.options = {
     crypto
@@ -15,18 +11,6 @@ authenticator.options = {
 
 const userController = {};
 const secret = process.env.SECRET;
-
-let sendMail = (dir_path, object) => {
-    return new Promise((resolve, reject) => {
-        ejs.renderFile(path.join(__dirname, '../templates/' + dir_path), object, (err, data) => {
-            if (err) {
-                reject(err);
-            } else {
-                resolve(data);
-            }
-        });
-    });
-};
 
 
 userController.registerUser = (req, res) => {
@@ -60,22 +44,15 @@ userController.registerUser = (req, res) => {
                                 if (err) { return res.status(500).send({ msg: err.message }); }
 
                                 // Send the email
-                                const transporter = nodemailer.createTransport({
-                                    service: 'gmail',
-                                    host: 'smtp.gmail.com',
-                                    auth: {
-                                        user: process.env.GMAIL_USERNAME,
-                                        pass: process.env.GMAIL_PASSWORD
-                                    }
-                                });
-
-                                sendMail('verification.ejs', { lastname: User.lastname, token: tokenise.token, host: req.headers.host, protocol: req.protocol }).then(data => {
+                                sendMail('verification.ejs', { lastname: User.lastname, token: tokenise.token, host: req.headers.host, protocol: req.protocol }).then(async data => {
                                     const mailOptions = {
                                         from: 'dash@yourwebapplication.com',
                                         to: User.email,
                                         subject: 'Account Verification Token',
                                         html: data
                                     };
+
+                                    const transporter = await createTransporter();
 
                                     transporter.sendMail(mailOptions, (err) => {
                                         if (err) {
@@ -132,18 +109,6 @@ userController.loginUser = (req, res) => {
         }
     }).catch(err => {
         res.status(500).json({ status: false, message: err.message });
-    });
-};
-
-let signUser = (user) => {
-    return new Promise((resolve, reject) => {
-        jwt.sign({ user: user }, process.env.SECRET_KEY, { expiresIn: '1yr' }, (err, token) => {
-            if (err) {
-                reject(err);
-            } else {
-                resolve(token);
-            }
-        });
     });
 };
 
@@ -204,22 +169,15 @@ userController.resendTokenPost = (req, res) => {
         // Check if user returned is not null
         if (user !== null) {
             // Generate jwt for email confirmation token
-            const transporter = nodemailer.createTransport({
-                service: 'gmail',
-                host: 'smtp.gmail.com',
-                auth: {
-                    user: process.env.GMAIL_USERNAME,
-                    pass: process.env.GMAIL_PASSWORD
-                }
-            });
-
-            sendMail('verification.ejs', { lastname: user.lastname, token, host: req.headers.host, protocol: req.protocol }).then(data => {
+            sendMail('verification.ejs', { lastname: user.lastname, token, host: req.headers.host, protocol: req.protocol }).then(async data => {
                 const mailOptions = {
                     from: 'dash@yourwebapplication.com',
                     to: user.email,
                     subject: 'Account Verification Token',
                     html: data
                 };
+
+                const transporter = await createTransporter();
 
                 transporter.sendMail(mailOptions, (err) => {
                     if (err) {
@@ -259,22 +217,16 @@ userController.resendForgottenToken = (req, res) => {
 
                 // If no error is generated
                 // Send the confirmation email
-                const transporter = nodemailer.createTransport({
-                    service: 'gmail',
-                    host: 'smtp.gmail.com',
-                    auth: {
-                        user: process.env.GMAIL_USERNAME,
-                        pass: process.env.GMAIL_PASSWORD
-                    }
-                });
 
-                sendMail('forgotten.ejs', { lastname: user.lastname, token: tokenise.token, host: req.headers.host, protocol: req.protocol }).then(data => {
+                sendMail('forgotten.ejs', { lastname: user.lastname, token: tokenise.token, host: req.headers.host, protocol: req.protocol }).then(async data => {
                     const mailOptions = {
                         from: 'dash@yourwebapplication.com',
                         to: user.email,
                         subject: 'Forgotten Password Token',
                         html: data
                     };
+
+                    const transporter = await createTransporter();
 
                     transporter.sendMail(mailOptions, (err) => {
                         if (err) {

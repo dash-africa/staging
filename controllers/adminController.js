@@ -1,21 +1,8 @@
 import db from '../models';
-import jwt from 'jsonwebtoken';
 import bcrypt from 'bcryptjs';
-import { admin } from 'googleapis/build/src/apis/admin';
+import { signUser } from './../utils';
 
 const adminController = {};
-
-let signUser = (user) => {
-    return new Promise((resolve, reject) => {
-        jwt.sign({ user: user }, process.env.SECRET_KEY, { expiresIn: '1yr' }, (err, token) => {
-            if (err) {
-                reject(err);
-            } else {
-                resolve(token);
-            }
-        });
-    });
-};
 
 adminController.register = (req, res) => {
     const { email, password } = req.body;
@@ -99,6 +86,17 @@ adminController.verifyDriver = (req, res) => {
     }).catch(err => {
         res.status(500).json({ status: false, message: err.message });
     });
-}
+};
+
+adminController.deleteDriver = (req, res) => {
+    const id = req.params.id;
+    db.Driver.findByIdAndDelete(id, (err, deleted) => {
+        if (err) {
+            res.status(500).json({ status: false, message: err.message });
+        } else {
+            res.status(200).json({ status: true, message: 'Successfully deleted this driver', data: deleted });
+        }
+    });
+};
 
 export default adminController;
