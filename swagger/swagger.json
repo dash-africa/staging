@@ -9,7 +9,7 @@
             "url": "https://dash-africa-staging.herokuapp.com/api-docs/#/"
         }
     },
-    "host": "https://dash-africa-staging.herokuapp.com",
+    "host": "dash-africa-staging.herokuapp.com",
     "basePath": "/api/v1",
     "tags": [
         {
