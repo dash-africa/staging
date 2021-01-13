@@ -94,14 +94,22 @@ driverController.login = (req, res) => {
             // The driver has registered
             bcrypt.genSalt(10, function (err, salt) {
                 bcrypt.hash(password, salt, function (err, hash) {
-                    bcrypt.compare(password, user.password, function (err, response) {
+                    bcrypt.compare(password, driver.password, function (err, response) {
                         if (response === true) {
                             // Check if the user is verified
                             if (!driver.is_verified && !driver.is_email_verified && !driver.is_phone_verified) {
                                 res.status(401).json({ status: false, message: 'This account has not been verified' });
                             } else {
-                                signUser(user._id).then((token) => {
-                                    res.status(200).json({ status: true, message: "Driver logged in succesfully", data: user, token });
+                                const driverData = {
+                                    firstname: driver.firstname,
+                                    lastname: driver.lastname,
+                                    email: driver.email,
+                                    phone: driver.phone,
+                                    address: driver.address,
+                                };
+
+                                signUser(driver._id).then((token) => {
+                                    res.status(200).json({ status: true, message: "Driver logged in succesfully", data: driverData, token });
                                 }).catch((err) => {
                                     res.status(500).json({ status: false, message: err.message });
                                 });

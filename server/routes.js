@@ -166,7 +166,7 @@ routes.post('/driver/forgot_password', controllers.driverController.changePasswo
 routes.post('/driver/sendOtp', verifyDriverToken, controllers.driverController.sendOtpToPhone);
 routes.post('/driver/verifyPhoneNumber', verifyDriverToken, controllers.driverController.verifyPhoneNumber);
 routes.get('/driver/all', controllers.driverController.getAllDrivers);
-routes.post('/driver/getInfo', verifyDriverToken, controllers.driverController.getDriverInfo);
+routes.get('/driver/getInfo', verifyDriverToken, controllers.driverController.getDriverInfo);
 routes.post('/driver/acceptOrder', verifyDriverToken, controllers.driverController.acceptOrder);
 routes.post('/driver/pickOrder', verifyDriverToken, controllers.driverController.pickUpOrder);
 routes.post('/driver/deliverOrder', verifyDriverToken, controllers.driverController.deliverOrder);

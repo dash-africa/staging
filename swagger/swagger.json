@@ -1875,31 +1875,17 @@
             }
         },
         "/api/v1/driver/getInfo": {
-            "post": {
+            "get": {
                 "tags": [
                     "Drivers"
                 ],
-                "description": "Gets all the details for a particular driver",
-                "summary": "Used to get all details for a specific driver",
-                "parameters": [
-                    {
-                        "name": "driver",
-                        "in": "body",
-                        "description": "Only the driver's token should be passed as header"
-                    }
-                ],
-                "produces": [
-                    "application/json"
-                ],
+                "summary": "Get driver info by passing driver token as authorization header",
                 "responses": {
                     "200": {
-                        "description": "The details have been returned successfully"
-                    },
-                    "404": {
-                        "description": "The driver was not found"
+                        "description": "Succesfully gotten the list of drivers"
                     },
                     "500": {
-                        "description": "An unexpected error occured"
+                        "description": "Unable to get the list of all drivers"
                     }
                 }
             }
