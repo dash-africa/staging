@@ -170,5 +170,6 @@ routes.get('/driver/getInfo', verifyDriverToken, controllers.driverController.ge
 routes.post('/driver/acceptOrder', verifyDriverToken, controllers.driverController.acceptOrder);
 routes.post('/driver/pickOrder', verifyDriverToken, controllers.driverController.pickUpOrder);
 routes.post('/driver/deliverOrder', verifyDriverToken, controllers.driverController.deliverOrder);
+routes.get('/driver/earnings', verifyDriverToken, controllers.driverController.getAllEarnings);
 
 export default routes;

@@ -1882,10 +1882,26 @@
                 "summary": "Get driver info by passing driver token as authorization header",
                 "responses": {
                     "200": {
-                        "description": "Succesfully gotten the list of drivers"
+                        "description": "Succesfully gotten driver's info"
                     },
                     "500": {
-                        "description": "Unable to get the list of all drivers"
+                        "description": "Unable to get the driver's info"
+                    }
+                }
+            }
+        },
+        "/api/v1/driver/earnings": {
+            "get": {
+                "tags": [
+                    "Drivers"
+                ],
+                "summary": "Get driver earnings by passing driver token as authorization header",
+                "responses": {
+                    "200": {
+                        "description": "Succesfully gotten driver's earnings"
+                    },
+                    "500": {
+                        "description": "Unable to get the driver's earnings"
                     }
                 }
             }

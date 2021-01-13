@@ -457,4 +457,14 @@ driverController.deliverOrder = (req, res) => {
     }).catch(err => res.status(500).json({ status: false, message: err.message }));
 }
 
+driverController.getAllEarnings = (req, res) => {
+    db.Earning.find({ driver: req.user }).then(earnings => {
+        if (!earnings) {
+            res.status(404).json({ status: false, message: 'This driver has no earnings', data: [] });
+        } else {
+            res.status(200).json({ status: true, message: 'Driver earnings are fetched', data: earnings });
+        }
+    }).catch(err => res.status(500).json({ status: false, message: err.message }));
+}
+
 export default driverController;
