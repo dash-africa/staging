@@ -88,6 +88,7 @@ routes.get('/user/fetchCards', verifyToken, controllers.userController.fetchUser
 routes.get('/user/getOrders', verifyToken, controllers.userController.getAllOrders);
 routes.get('/user/getPendingOrders', verifyToken, controllers.userController.getAllPendingOrders);
 routes.post('/user/completeOrder', verifyToken, controllers.userController.completeOrder);
+routes.post('/user/rateDriver', verifyToken, controllers.userController.rateDriver);
 
 // Cart Routes
 routes.post('/cart/create', verifyToken, controllers.cartController.createCart);

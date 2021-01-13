@@ -480,4 +480,29 @@ userController.completeOrder = (req, res) => {
     }).catch(err => res.status(500).json({ status: false, message: err.message }));
 }
 
+userController.rateDriver = (req, res) => {
+    const { driverId, rating } = req.body;
+
+    db.User.findById(req.user).then(user => {
+        if (!user) {
+            res.status(404).json({ status: false, message: 'This user was not found' });
+        } else {
+            db.Driver.findById(driverId).then(driver => {
+                if (!driver) {
+                    res.status(404).json({ status: false, message: 'Driver with this id was not found' });
+                } else {
+                    driver.overall_rating += rating;
+                    driver.number_of_ratings += 1;
+                    driver.last_rating = rating;
+                    driver.average_rating = driver.overall_rating / driver.number_of_ratings;
+
+                    driver.save().then(driverSaved => {
+                        res.status(200).json({ status: true, message: 'User has succcessfully rated driver' });
+                    })
+                }
+            }).catch(err => res.status(500).json({ status: false, message: err.message }));
+        }
+    }).catch(err => res.status(500).json({ status: false, message: err.message }));
+}
+
 export default userController;

@@ -94,6 +94,18 @@ const driverSchema = new Schema({
         type: Number,
         default: 0
     },
+    overall_rating: {
+        type: Number,
+        default: 0
+    },
+    number_of_ratings: {
+        type: Number,
+        default: 0
+    },
+    last_rating: {
+        type: Number,
+        default: 0
+    },
     average_rating: {
         type: Number,
         default: 0

@@ -434,6 +434,42 @@
                 }
             }
         },
+        "/api/v1/user/rateDriver": {
+            "post": {
+                "tags": [
+                    "Users"
+                ],
+                "description": "Allows users rate driver after order completion",
+                "summary": "Used to allow users rate drivers",
+                "parameters": [
+                    {
+                        "name": "user",
+                        "in": "body",
+                        "description": "Only the user's token should be passed as header",
+                        "schema": {
+                            "$ref": "#/definitions/Rating"
+                        }
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Rating has been completed"
+                    },
+                    "401": {
+                        "description": "The user with credential not authorized"
+                    },
+                    "404": {
+                        "description": "The user with credential not found"
+                    },
+                    "500": {
+                        "description": "An unexpected error occured"
+                    }
+                }
+            }
+        },
         "/api/v1/cart/create": {
             "post": {
                 "tags": [
@@ -2178,6 +2214,21 @@
                 "orderId": {
                     "type": "string",
                     "uniqueItems": true
+                }
+            }
+        },
+        "Rating": {
+            "required": [
+                "driverId",
+                "rating"
+            ],
+            "properties": {
+                "driverId": {
+                    "type": "string",
+                    "uniqueItems": true
+                },
+                "rating": {
+                    "type": "number"
                 }
             }
         },
