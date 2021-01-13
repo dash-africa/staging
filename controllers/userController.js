@@ -3,7 +3,9 @@ import bcrypt from 'bcryptjs';
 import { google } from 'googleapis';
 import crypto from 'crypto';
 import authenticator from 'otplib/authenticator';
-import { sendMail, signUser, createTransporter } from './../utils';
+import { sendMail, signUser, createTransporter, removeItem } from './../utils';
+import { OrderStatus } from './../constants';
+import controllers from '.';
 
 authenticator.options = {
     crypto
@@ -92,8 +94,17 @@ userController.loginUser = (req, res) => {
                             if (user.is_verified === false) {
                                 res.status(401).json({ status: false, message: 'This account has not been verified' });
                             } else {
+                                const data = {
+                                    firstname: user.firstname,
+                                    lastname: user.lastname,
+                                    email: user.email,
+                                    phone: user.phone,
+                                    is_verified: user.is_verified,
+                                    is_phone_verified: user.is_phone_verified
+                                };
+
                                 signUser(user._id).then((token) => {
-                                    res.status(200).json({ status: true, message: "User logged in succesfully", data: user, token });
+                                    res.status(200).json({ status: true, message: "User logged in succesfully", data, token });
                                 }).catch((err) => {
                                     res.status(500).json({ status: false, message: err.message });
                                 });
@@ -353,7 +364,7 @@ userController.getUserInfo = (req, res) => {
 
 userController.fetchUserCart = (req, res) => {
     db.User.findById(req.user).populate('carts').then(user => {
-        if (user === null) {
+        if (!user) {
             res.status(404).json({ status: false, message: 'User not found' })
         } else {
             res.status(200).json({ status: true, message: 'Found', data: user.carts });
@@ -373,6 +384,100 @@ userController.fetchUserCards = (req, res) => {
     }).catch(err => {
         res.status(500).json({ status: false, message: err.message });
     });
+}
+
+userController.getAllOrders = (req, res) => {
+    db.User.findById(req.user).populate({
+        path: 'history', model: 'History', populate: [{
+            path: 'items',
+            model: 'Item'
+        },{
+            path: 'store',
+            model: 'Store'
+        }]
+    }).then(user => {
+        if (user !== null) {
+            res.status(200).json({ status: true, message: 'Found', data: user.history });
+        } else {
+            res.status(404).json({ status: false, message: 'This user has no orders' });
+        }
+    }).catch(err => res.status(500).json({ status: false, message: err.message }));
+}
+
+userController.getAllPendingOrders = (req, res) => {
+    db.History.find({ user: req.user, status: 'new' }).populate(['items', 'store']).then(history => {
+        if (!history) {
+            res.status(404).json({ status: false, message: 'This user has no pending orders' });
+        } else {
+            res.status(200).json({ status: true, message: 'Found', data: history });
+        }
+    }).catch(err => res.status(500).json({ status: false, message: err.message }));
+}
+
+userController.completeOrder = (req, res) => {
+    const { orderId } = req.body;
+    const status = OrderStatus.COMPLETED;
+
+    db.User.findById(req.user).then(user => {
+        if (!user) {
+            res.status(404).json({ status: false, message: 'This user was not found' });
+        } else {
+            if (user.new_order_firebase_uid.includes(orderId)) {
+                controllers.firebaseController.changeStatus(orderId, null, status).then(firebaseObj => {
+                    if (firebaseObj) {
+                        db.History.findById(firebaseObj.history_id).then(history => {
+                            if (!history) {
+                                res.status(404).json({ status: false, message: 'Could not find history to this order' });
+                            } else {
+                                history.status = status;    
+    
+                                history.save().then(saved => {
+                                    // Find driver and give earnings
+                                    db.Driver.findById(firebaseObj.assignedDriver).then(driver => {
+                                        if (!driver) {
+                                            res.status(404).json({ status: false, message: 'Could not find driver assigned to this order' });
+                                        } else {
+                                            driver.successful_deliveries += 1;
+                                            driver.overall_earnings += firebaseObj.delivery_fee;
+
+                                            driver.save(driverSaved => {
+                                                // Create earning for driver
+                                                const earning = new db.Earning({
+                                                    driver,
+                                                    amount: firebaseObj.delivery_fee,
+                                                    history,
+                                                });
+
+                                                earning.save().then(earningSaved => {
+                                                    // remove order from user's list of new orders
+                                                    removeItem(user.new_order_firebase_uid, orderId);
+                                                    user.save(userSaved => {
+                                                        // delete firebase entry and completed process
+                                                        controllers.firebaseController.deleteEntry(orderId).then(removed => {
+                                                            if (removed) {
+                                                                res.status(200).json({ status: true, message: 'Order has been completed by the user' });
+                                                            } else {
+                                                                res.status(500).json({ status: false, message: 'Firebase failed to remove entry' });
+                                                            }
+                                                        }).catch(err => res.status(500).json({ status: false, message: err.message }));
+                                                    });
+                                                });
+
+                                            });
+                                        }
+                                    }).catch(err => res.status(500).json({ status: false, message: err.message }));
+                                });
+                            }
+                        }).catch(err => res.status(500).json({ status: false, message: err.message }));
+                    } else {
+                        res.status(500).json({ status: false, message: 'Internal Server Error' });
+                    }
+                }).catch(err => res.status(500).json({ status: false, message: err.message }));
+            } else {
+                res.status(404).json({ status: false, message: 'This order does not belong to this user' });
+            }
+        }
+    }).catch(err => res.status(500).json({ status: false, message: err.message }));
 }
 
 export default userController;

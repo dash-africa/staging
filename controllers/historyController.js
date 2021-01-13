@@ -1,6 +1,6 @@
 import db from '../models';
 import controllers from './index';
-import { verifyPayment, chargeCard } from './../utils';
+import { addPaystackChargeToamount, createTransporter, chargeCard, formatItems, sendMail, verifyPayment, removeItem } from './../utils';
 
 const historyController = {};
 
@@ -76,7 +76,7 @@ historyController.addToHistory = (req, res) => {
                         // get card
                         await db.Card.findOne({ user: user_id, last4 }).then(async card => {
                             if (card) {
-                                const charge = await chargeCard(card.authorization_code, card.email, amount);
+                                const charge = await chargeCard(card.authorization_code, card.email, addPaystackChargeToamount(amount));
 
                                 if (charge.status) {
                                     paymentRef = charge.data.reference;
@@ -103,17 +103,52 @@ historyController.addToHistory = (req, res) => {
                         status
                     });
         
-                    history.save().then(saved => {
-                        cart.items = [];
-                        cart.save().then(empty => {
-                            controllers.firebaseController.createNewOrder(store_id, delivery_fee, delivery_address, service_fee, amount, history.id, status, user_id).then(uid => {
-                                user.new_order_firebase_uid.push(uid);
-                                user.history.push(history.id);
-                                user.save().then(saves => {
-                                    res.status(200).json({status: true, message: 'Successfully, added to history and firebase', data: saved});
+                    controllers.firebaseController.createNewOrder(store_id, delivery_fee, delivery_address, service_fee, amount, history.id, status, user_id).then(uid => {
+                        user.new_order_firebase_uid.push(uid);
+                        user.history.push(history.id);
+
+                        history.orderId = uid;
+
+                        // Generate jwt for email confirmation token
+                        sendMail('order.ejs', { 
+                            lastname: user.lastname, 
+                            orderNo: uid,
+                            items: formatItems(cart.items),
+                            host: req.headers.host, 
+                            protocol: req.protocol 
+                        }).then(async data => {
+                            const mailOptions = {
+                                from: 'dash@yourwebapplication.com',
+                                to: user.email,
+                                subject: `Your order ${uid} has been confirmed.`,
+                                html: data
+                            };
+
+                            const transporter = await createTransporter();
+
+                            transporter.sendMail(mailOptions, (err) => {
+                                if (err) {
+                                    return res.status(500).send({
+                                        msg: err.message
+                                    });
+                                }
+
+                                // Empty cart
+                                cart.items = [];
+                                cart.save().then(empty => {  
+                                    history.save().then(saved => {
+                                        // remove cart from user
+                                        removeItem(user.carts, cart_id);
+
+                                        user.save().then(saves => {
+                                            res.status(200).json({status: true, message: 'Successfully, added to history and firebase', data: saved});
+                                        });
+                                    })                                          
                                 });
+
                             });
-                        });
+                        })
+
                     });
                 }
             }).catch(err => {

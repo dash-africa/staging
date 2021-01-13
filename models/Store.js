@@ -60,7 +60,23 @@ const storeSchema = new Schema({
     top_categories: [{
         type: Schema.Types.ObjectId,
         ref: 'TopCategories'
-    }]
+    }],
+    successful_deliveries: {
+        type: Number,
+        default: 0
+    },
+    failed_deliveries: {
+        type: Number,
+        default: 0
+    },
+    overall_earnings: {
+        type: Number,
+        default: 0
+    },
+    created_at: {
+        type: Date,
+        default: Date.now
+    }
 });
 
 const Store = mongoose.model('Store', storeSchema);

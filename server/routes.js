@@ -33,6 +33,34 @@ function verifyToken(req, res, next) {
     }
 }
 
+function verifyDriverToken(req, res, next) {
+    // GET THE AUTH HEADER VALUE
+    const bearerHeader = req.headers['authorization'];
+    // check if bearer is undefined
+    if (typeof bearerHeader !== 'undefined') {
+        // verify jwt
+        jwt.verify(bearerHeader, process.env.SECRET_KEY, (err, data) => {
+            if (data) {
+                db.Driver.findById(data.user).then((user) => {
+                    if (user) {
+                        req.user = data.user;
+                        next();
+                    } else {
+                        res.status(403).json({ status: false, message: 'Unauthorized' });
+                    }
+                }).catch((err) => {
+                    if (err) { res.status(403).json({ status: false, message: 'Unauthorized' }); }
+                });
+            } else {
+                res.status(403).json({ status: false, message: 'Unauthorized' });
+            }
+        });
+    } else {
+        //forbiden
+        res.status(403).json({ status: false, message: 'Unauthorized' });
+    }
+}
+
 
 routes.get('/', (req, res) => {
     res.json({ status: true });
@@ -42,7 +70,7 @@ routes.get('/', (req, res) => {
 routes.post('/admin/login', controllers.adminController.login);
 routes.post('/admin/register', controllers.adminController.register);
 routes.post('/admin/verifyDriver', controllers.adminController.verifyDriver);
-routes.delete('/admin/deleteDriver', controllers.adminController.deleteDriver);
+routes.delete('/admin/deleteDriver/:id', controllers.adminController.deleteDriver);
 
 // user routes
 routes.post('/user/login', controllers.userController.loginUser);
@@ -57,6 +85,9 @@ routes.get('/user/all', controllers.userController.getAllUsers);
 routes.post('/user/getInfo', verifyToken, controllers.userController.getUserInfo);
 routes.get('/user/fetchCart', verifyToken, controllers.userController.fetchUserCart);
 routes.get('/user/fetchCards', verifyToken, controllers.userController.fetchUserCards);
+routes.get('/user/getOrders', verifyToken, controllers.userController.getAllOrders);
+routes.get('/user/getPendingOrders', verifyToken, controllers.userController.getAllPendingOrders);
+routes.post('/user/completeOrder', verifyToken, controllers.userController.completeOrder);
 
 // Cart Routes
 routes.post('/cart/create', verifyToken, controllers.cartController.createCart);
@@ -131,9 +162,12 @@ routes.post('/driver/confirmation', controllers.driverController.confirmationPos
 routes.post('/driver/resend', controllers.driverController.resendTokenPost);
 routes.post('/driver/sendForget', controllers.driverController.resendForgottenToken);
 routes.post('/driver/forgot_password', controllers.driverController.changePassword);
-routes.post('/driver/sendOtp', verifyToken, controllers.driverController.sendOtpToPhone);
-routes.post('/driver/verifyPhoneNumber', verifyToken, controllers.driverController.verifyPhoneNumber);
+routes.post('/driver/sendOtp', verifyDriverToken, controllers.driverController.sendOtpToPhone);
+routes.post('/driver/verifyPhoneNumber', verifyDriverToken, controllers.driverController.verifyPhoneNumber);
 routes.get('/driver/all', controllers.driverController.getAllDrivers);
-routes.post('/driver/getInfo', verifyToken, controllers.driverController.getDriverInfo);
+routes.post('/driver/getInfo', verifyDriverToken, controllers.driverController.getDriverInfo);
+routes.post('/driver/acceptOrder', verifyDriverToken, controllers.driverController.acceptOrder);
+routes.post('/driver/pickOrder', verifyDriverToken, controllers.driverController.pickUpOrder);
+routes.post('/driver/deliverOrder', verifyDriverToken, controllers.driverController.deliverOrder);
 
 export default routes;

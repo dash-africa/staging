@@ -1,6 +1,8 @@
 import db from '../models';
 import bcrypt from 'bcryptjs';
+import controllers from './index';
 import { sendMail, signUser, createTransporter } from './../utils';
+import { OrderStatus } from './../constants';
 
 import { google } from 'googleapis';
 import crypto from 'crypto';
@@ -62,7 +64,7 @@ driverController.register = (req, res) => {
 
                                     const transporter = await createTransporter();
 
-                                    transporter.sendMail(mailOptions, (err, info) => {
+                                    transporter.sendMail(mailOptions, (err) => {
                                         if (err) {
                                             return res.status(500).send({
                                                 msg: err.message
@@ -72,7 +74,7 @@ driverController.register = (req, res) => {
                                             status: true,
                                             message: 'A verification email has been sent to ' + courier.email + '.',
                                             token: tokenise.token,
-                                            data: info
+                                            data: courier.email
                                         });
                                     });
                                 });
@@ -350,6 +352,99 @@ driverController.getDriverInfo = (req, res) => {
             res.status(200).json({ status: true, message: 'Found', data: driver });
         } else {
             res.status(404).json({ status: false, message: 'This driver was not found' });
+        }
+    }).catch(err => res.status(500).json({ status: false, message: err.message }));
+}
+
+driverController.acceptOrder = (req, res) => {
+    const { orderId } = req.body;
+    const status = OrderStatus.DRIVER_ACCEPTED;
+
+    db.Driver.findById(req.user).then(driver => {
+        if (!driver) {
+            res.status(404).json({ status: false, message: 'This driver was not found' });
+        } else {
+            controllers.firebaseController.changeStatus(orderId, driverId, status).then(firebaseObj => {
+                if (firebaseObj) {
+                    db.History.findById(firebaseObj.history_id).then(history => {
+                        if (!history) {
+                            res.status(404).json({ status: false, message: 'Could not find history to this order' });
+                        } else {
+                            history.status = status;
+                            history.driverAcceptedTime = new Date()
+                            history.assignedDriver = driverId;
+
+                            history.save().then(saved => {
+                                res.status(200).json({ status: true, message: 'Driver successfully accepts order' });
+                            });
+                        }
+                    }).catch(err => res.status(500).json({ status: false, message: err.message }));
+                } else {
+                    res.status(500).json({ status: false, message: 'Internal Server Error' });
+                }
+            }).catch(err => res.status(500).json({ status: false, message: err.message }));
+        }
+    }).catch(err => res.status(500).json({ status: false, message: err.message }));
+}
+
+driverController.pickUpOrder = (req, res) => {
+    const { orderId } = req.body;
+    const status = OrderStatus.PICKED;
+
+    controllers.firebaseController.changeStatus(orderId, null, status).then(firebaseObj => {
+        if (firebaseObj) {
+            db.History.findById(firebaseObj.history_id).then(history => {
+                if (!history) {
+                    res.status(404).json({ status: false, message: 'Could not find history to this order' });
+                } else {
+                    history.status = status;
+                    history.pickUpTime = new Date();
+
+                    history.save().then(saved => {
+                        db.Store.findById(firebaseObj.store).then(store => {
+                            if (!store) {
+                                res.status(404).json({ status: false, message: 'Could not find the store to this order' });
+                            } else {
+                                const store_charge = Number(firebaseObj.amount) * 0.2;
+                                const store_earning = firebaseObj.amount - store_charge;
+
+                                store.successful_deliveries += 1;
+                                store.overall_earnings += store_earning;
+
+                                store.save().then(saving => {
+                                    res.status(200).json({ status: true, message: 'Driver successfully picked order' });
+                                })
+                            }
+                        }).catch(err => res.status(500).json({ status: false, message: err.message }));
+                    });
+                }
+            }).catch(err => res.status(500).json({ status: false, message: err.message }));
+        } else {
+            res.status(500).json({ status: false, message: 'Internal Server Error' });
+        }
+    }).catch(err => res.status(500).json({ status: false, message: err.message }));
+}
+
+driverController.deliverOrder = (req, res) => {
+    const { orderId } = req.body;
+    const status = OrderStatus.DELIVERED;
+
+    controllers.firebaseController.changeStatus(orderId, null, status).then(firebaseObj => {
+        if (firebaseObj) {
+            db.History.findById(firebaseObj.history_id).then(history => {
+                if (!history) {
+                    res.status(404).json({ status: false, message: 'Could not find history to this order' });
+                } else {
+                    history.status = status;
+                    history.deliveryTime = new Date();
+
+                    history.save().then(saved => {
+                        res.status(200).json({ status: true, message: 'Driver successfully delivered the order' });
+                    });
+                }
+            }).catch(err => res.status(500).json({ status: false, message: err.message }));
+        } else {
+            res.status(500).json({ status: false, message: 'Internal Server Error' });
         }
     }).catch(err => res.status(500).json({ status: false, message: err.message }));
 }

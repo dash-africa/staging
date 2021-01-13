@@ -27,4 +27,17 @@ const chargeCard = async (authorization_code, email, amount) => {
     return response.data;
 };
 
-export { verifyPayment, chargeCard };
+const addPaystackChargeToamount = (amount) => {
+    let newAmount = 0;
+    const charge = amount * 0.015;
+
+    newAmount = amount + charge;
+
+    if (amount > 2500) {
+        newAmount += 100;
+    }
+
+    return newAmount;
+};
+
+export { verifyPayment, chargeCard, addPaystackChargeToamount };

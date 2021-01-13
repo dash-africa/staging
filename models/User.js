@@ -54,7 +54,11 @@ const userSchema = new Schema({
     new_order_firebase_uid: [{
         type: String,
         default: ''
-    }]
+    }],
+    created_at: {
+        type: Date,
+        default: Date.now
+    }
 });
 
 const User = mongoose.model('User', userSchema);

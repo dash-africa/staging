@@ -47,6 +47,22 @@ const historySchema = new Schema({
         type: String,
         default: null
     },
+    pickUpTime: {
+        type: String,
+        default: null
+    },
+    cancellationTime: {
+        type: String,
+        default: null
+    },
+    orderId: {
+        type: String,
+        default: null
+    },
+    assignedDriver: {
+        type: Schema.Types.ObjectId,
+        ref: 'Driver'
+    },
     status: {
         type: String,
         required: true,

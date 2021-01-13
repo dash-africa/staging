@@ -37,4 +37,35 @@ firebaseController.createNewOrder = (store, delivery_fee, delivery_address, serv
     });
 };
 
+firebaseController.changeStatus = (firebase_uid, driverId, status) => {
+    return new Promise((resolve, reject) => {
+        let ref = firebase.database().ref("/newOrder/" + firebase_uid);
+        ref.once('value').then(function (snap) {
+            ref.update({
+                status,
+                ...(driverId & { assignedDriver: driverId })
+            }, (error) => {
+                if (error) {
+                    reject(error);
+                } else {
+                    resolve(snap.val());
+                }
+            });
+        });
+    });
+};
+
+firebaseController.deleteEntry = (firebase_uid) => {
+    return new Promise((resolve, reject) => {
+        let ref = firebase.database().ref("/newOrder/" + firebase_uid);
+        ref.remove().then(() => {
+            resolve(true);
+        }).catch(() => {
+            reject(false);
+        });
+    });
+};
+
+
+
 export default firebaseController;

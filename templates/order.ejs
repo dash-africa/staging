@@ -16,8 +16,8 @@
                     <tr>
                         <td style="vertical-align: top; padding-bottom:30px;" align="center">
                             <a href="javascript:void(0)" target="_blank">
-                                <img src="https://dash-africa.herokuapp.com/assets/images/logos/Dash%20Logo%20White.png"
-                                    width="200" height="80" alt="" style="border:none">
+                                <img src="https://dash-africa.herokuapp.com/assets/images/logos/Dash%20Logo%20White.png" width="200" height="80" alt=""
+                                    style="border:none">
                             </a>
                         </td>
                     </tr>
@@ -31,26 +31,33 @@
                                 <h1 style="font-size:14px; font-family:arial; margin:0px; font-weight:bold;">Hello
                                     <%- lastname %>
                                 </h1>
-                                <p style="margin-top:0px; color:#bbbbbb;">Please verify your account to continue</p>
+                                <p style="margin-top:0px; color:#bbbbbb;">Your order has been confirmed.</p>
+                                <p style="margin-top:0px;">Thank you for your purchase. Your order <strong><%- orderNo %></strong> has been confirmed.</p>
+                                <p style="margin-top:0px;">
+                                    It will be delivered as soon as possible. Once the item(s) is out for delivery or available for pick-up you
+                                    will receive a notification from us.
+                                </p>
                             </td>
                         </tr>
                         <tr>
                             <td style="padding:10px 0 30px 0;">
-                                <p>A request to verify your account has been made. If you did not make this request,
-                                    simply ignore this
-                                    email. If you did make this request, please verify by entering the otp below in the
-                                    application:
-                                </p>
-                                <center>
-                                    <!-- <a href="https://<%= host %>/confirmation/<%= token %>"
-                                        style="display: inline-block; padding: 11px 30px; margin: 20px 0px 30px; font-size: 15px; color: #fff; background: #00c0c8; border-radius: 60px; text-decoration:none;">
-                                        Verification Link
-                                    </a> -->
-                                    <p
-                                        style="display: inline-block; padding: 11px 30px; margin: 20px 0px 30px; font-size: 15px; color: #fff; background: #00c0c8; border-radius: 60px; text-decoration:none;">
-                                        <%= token %>
-                                    </p>
-                                </center>
+                                <table border="1" cellpadding="0" cellspacing="0" style="width: 100%; margin-bottom: 30px;">
+                                    <thead>
+                                        <tr>
+                                            <th>ITEM</th>
+                                            <th>PRICE</th>
+                                        </tr>
+                                    </thead>
+
+                                    <tbody>
+                                        <% for(var i=0; i < items.length; i++) { %>
+                                            <tr>
+                                                <td style="text-align: center;"><%= items[i].name %></td>
+                                                <td style="text-align: center;"><%= items[i].price %></td>
+                                            </tr>
+                                        <% } %>
+                                    </tbody>
+                                </table>
                                 <b>Regards, <br>Dash.</b>
                             </td>
                         </tr>
