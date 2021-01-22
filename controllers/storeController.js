@@ -196,10 +196,10 @@ storeController.login = (req, res) => {
 }
 
 storeController.acceptOrder = (req, res) => {
-    const { orderId, storeId } = req.body;
+    const { orderId } = req.body;
     const status = OrderStatus.RESTAURANT_ACCEPTED;
 
-    db.Store.findById(storeId).then(store => {
+    db.Store.findById(req.user).then(store => {
         if (!store) {
             res.status(404).json({ status: false, message: 'The store account was not found' });
         } else {
@@ -228,10 +228,10 @@ storeController.acceptOrder = (req, res) => {
 }
 
 storeController.cancelOrder = (req, res) => {
-    const { historyId, storeId } = req.body;
+    const { historyId } = req.body;
     const status = OrderStatus.RESTAURANT_DECLINED;
 
-    db.Store.findById(storeId).then(store => {
+    db.Store.findById(req.user).then(store => {
         if (!store) {
             res.status(404).json({ status: false, message: 'The store account was not found' });
         } else {
@@ -323,9 +323,7 @@ storeController.getHistory = (req, res) => {
 }
 
 storeController.withdrawEarnings = (req, res) => {
-    const { storeId } = req.body;
-
-    db.Store.findById(storeId).then(async store => {
+    db.Store.findById(req.user).then(async store => {
         if (!store) {
             res.status(404).json({ status: false, message: 'The store was not found' });
         } else {

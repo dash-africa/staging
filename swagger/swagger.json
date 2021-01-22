@@ -1390,7 +1390,7 @@
                     {
                         "name": "store",
                         "in": "body",
-                        "description": "These should be passed",
+                        "description": "These should be passed, together with the store token",
                         "schema": {
                             "$ref": "#/definitions/StoreAccepts"
                         }
@@ -1423,7 +1423,7 @@
                     {
                         "name": "store",
                         "in": "body",
-                        "description": "These should be passed",
+                        "description": "These should be passed, together with the store token",
                         "schema": {
                             "$ref": "#/definitions/StoreCancels"
                         }
@@ -1456,10 +1456,7 @@
                     {
                         "name": "store",
                         "in": "body",
-                        "description": "These should be passed",
-                        "schema": {
-                            "$ref": "#/definitions/StoreById"
-                        }
+                        "description": "These should be passed, together with the store token"
                     }
                 ],
                 "produces": [
@@ -2930,15 +2927,10 @@
         },
         "StoreAccepts": {
             "required": [
-                "orderId",
-                "storeId"
+                "orderId"
             ],
             "properties": {
                 "orderId": {
-                    "type": "string",
-                    "uniqueItems": true
-                },
-                "storeId": {
                     "type": "string",
                     "uniqueItems": true
                 }
@@ -2946,26 +2938,10 @@
         },
         "StoreCancels": {
             "required": [
-                "historyId",
-                "storeId"
+                "historyId"
             ],
             "properties": {
                 "historyId": {
-                    "type": "string",
-                    "uniqueItems": true
-                },
-                "storeId": {
-                    "type": "string",
-                    "uniqueItems": true
-                }
-            }
-        },
-        "StoreById": {
-            "required": [
-                "storeId"
-            ],
-            "properties": {
-                "storeId": {
                     "type": "string",
                     "uniqueItems": true
                 }

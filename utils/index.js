@@ -2,7 +2,7 @@ import { addPaystackChargeToamount, chargeCard, verifyPayment, createTransferRec
 import { sendMail, signUser, createTransporter } from './Email';
 import { formatItems } from './Order';
 import { removeItem } from './Misc';
-import { verifyToken, verifyDriverToken, verifyAdminToken } from './Verification';
+import { verifyToken, verifyDriverToken, verifyAdminToken, verifyStoreToken } from './Verification';
 import { hashPassword } from './Authentication';
 
 export {
@@ -20,5 +20,6 @@ export {
     verifyPayment,
     verifyToken,
     verifyAdminToken,
-    verifyDriverToken
+    verifyDriverToken,
+    verifyStoreToken
 };

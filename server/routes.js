@@ -1,6 +1,6 @@
 import express from 'express';
 import controllers from '../controllers';
-import { verifyToken, verifyDriverToken, verifyAdminToken } from './../utils';
+import { verifyToken, verifyDriverToken, verifyAdminToken, verifyStoreToken } from './../utils';
 
 const routes = express();
 
@@ -79,10 +79,10 @@ routes.post('/store/login', controllers.storeController.login);
 routes.get('/store/:id', controllers.storeController.getStore);
 routes.get('/store/items/:id', controllers.storeController.getCategoryItems);
 routes.get('/store/allCategorized/:city_id/:storeType_id', controllers.storeController.allCategorized);
-routes.post('/store/acceptOrder', controllers.storeController.acceptOrder);
-routes.post('/store/cancelOrder', controllers.storeController.cancelOrder);
+routes.post('/store/acceptOrder', verifyStoreToken, controllers.storeController.acceptOrder);
+routes.post('/store/cancelOrder', verifyStoreToken, controllers.storeController.cancelOrder);
 routes.get('/store/history/:id', controllers.storeController.getHistory);
-routes.post('/store/withdrawEarnings', controllers.storeController.withdrawEarnings);
+routes.post('/store/withdrawEarnings', verifyStoreToken, controllers.storeController.withdrawEarnings);
 
 // Store Type Routes
 routes.post('/storeType/create', verifyAdminToken, controllers.storeTypeController.create);
