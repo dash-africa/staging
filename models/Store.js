@@ -8,14 +8,10 @@ const storeSchema = new Schema({
         help: 'This field is required'
     },
     username: {
-        type: String,
-        required: true,
-        help: 'This field is required'
+        type: String
     },
     password: {
-        type: String,
-        required: true,
-        help: 'This field is required'
+        type: String
     },
     image: {
         type: String,
@@ -89,12 +85,12 @@ const storeSchema = new Schema({
         help: 'This field is required'
     },
     bank_code: {
-        type: Number,
+        type: String,
         required: true,
         help: 'This field is required'
     },
     account_number: {
-        type: Number,
+        type: String,
         required: true,
         help: 'This field is required'
     },

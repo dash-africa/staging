@@ -2859,10 +2859,10 @@
                     "type": "string"
                 },
                 "bank_code": {
-                    "type": "number"
+                    "type": "string"
                 },
                 "account_number": {
-                    "type": "number"
+                    "type": "string"
                 }
             }
         },
@@ -3128,10 +3128,10 @@
                     "type": "string"
                 },
                 "bank_code": {
-                    "type": "number"
+                    "type": "string"
                 },
                 "account_number": {
-                    "type": "number"
+                    "type": "string"
                 },
                 "photo": {
                     "type": "string"

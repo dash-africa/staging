@@ -34,7 +34,7 @@ storeController.createStore = (req, res) => {
 
                     db.Store.create(store, (err, created) => {
                         if (err) {
-                            res.status(500).json({ status: false, message: 'An error while creating the store' });
+                            res.status(500).json({ status: false, message: `An error while creating the store ${err}` });
                         } else {
                             storeType.stores.push(created._id);
                             storeType.save().then(stored => {

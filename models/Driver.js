@@ -51,12 +51,12 @@ const driverSchema = new Schema({
         help: 'This field is required'
     },
     bank_code: {
-        type: Number,
+        type: String,
         required: true,
         help: 'This field is required'
     },
     account_number: {
-        type: Number,
+        type: String,
         required: true,
         help: 'This field is required'
     },
