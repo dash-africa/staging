@@ -2809,7 +2809,10 @@
                 "image",
                 "address",
                 "schedule",
-                "coordinates"
+                "coordinates",
+                "account_number",
+                "bank_code",
+                "bank_name"
             ],
             "properties": {
                 "name": {
@@ -2851,6 +2854,15 @@
                             "type": "string"
                         }
                     }
+                },
+                "bank_name": {
+                    "type": "string"
+                },
+                "bank_code": {
+                    "type": "number"
+                },
+                "account_number": {
+                    "type": "number"
                 }
             }
         },
