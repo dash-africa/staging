@@ -43,6 +43,10 @@ const historySchema = new Schema({
         type: String,
         default: null
     },
+    restaurantAcceptedTime: {
+        type: String,
+        default: null
+    },
     deliveryTime: {
         type: String,
         default: null

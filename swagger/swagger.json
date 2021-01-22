@@ -470,6 +470,42 @@
                 }
             }
         },
+        "/api/v1/user/cancelOrder": {
+            "post": {
+                "tags": [
+                    "Users"
+                ],
+                "description": "Allows users cancel an order",
+                "summary": "Used to allow users cancel their orders",
+                "parameters": [
+                    {
+                        "name": "user",
+                        "in": "body",
+                        "description": "Only the user's token should be passed as header",
+                        "schema": {
+                            "$ref": "#/definitions/UserCancel"
+                        }
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Order has been successfully cancelled"
+                    },
+                    "401": {
+                        "description": "The user with credential not authorized"
+                    },
+                    "404": {
+                        "description": "The user with credential not found"
+                    },
+                    "500": {
+                        "description": "An unexpected error occured"
+                    }
+                }
+            }
+        },
         "/api/v1/cart/create": {
             "post": {
                 "tags": [
@@ -1343,6 +1379,105 @@
                 }
             }
         },
+        "/api/v1/store/acceptOrder": {
+            "post": {
+                "tags": [
+                    "Stores"
+                ],
+                "description": "Allows a store to accept an order",
+                "summary": "Used to enable stores accept orders",
+                "parameters": [
+                    {
+                        "name": "store",
+                        "in": "body",
+                        "description": "These should be passed",
+                        "schema": {
+                            "$ref": "#/definitions/StoreAccepts"
+                        }
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "The store has been able to accept the order"
+                    },
+                    "404": {
+                        "description": "The city/store was not found"
+                    },
+                    "500": {
+                        "description": "Unable to add the store, an unexpected error occured"
+                    }
+                }
+            }
+        },
+        "/api/v1/store/cancelOrder": {
+            "post": {
+                "tags": [
+                    "Stores"
+                ],
+                "description": "Allows a store to cancel an order",
+                "summary": "Used to enable stores cancel orders",
+                "parameters": [
+                    {
+                        "name": "store",
+                        "in": "body",
+                        "description": "These should be passed",
+                        "schema": {
+                            "$ref": "#/definitions/StoreCancels"
+                        }
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "The store has been able to cancel the order"
+                    },
+                    "404": {
+                        "description": "The store was not found"
+                    },
+                    "500": {
+                        "description": "Unable to add the store, an unexpected error occured"
+                    }
+                }
+            }
+        },
+        "/api/v1/store/withdrawEarnings": {
+            "post": {
+                "tags": [
+                    "Stores"
+                ],
+                "description": "Allows a store to withdraw their earnings",
+                "summary": "Used to enable stores withdraw earnings",
+                "parameters": [
+                    {
+                        "name": "store",
+                        "in": "body",
+                        "description": "These should be passed",
+                        "schema": {
+                            "$ref": "#/definitions/StoreById"
+                        }
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "The store has been able to withdraw earnings"
+                    },
+                    "404": {
+                        "description": "The store was not found"
+                    },
+                    "500": {
+                        "description": "Unable to add the store, an unexpected error occured"
+                    }
+                }
+            }
+        },
         "/api/v1/store/all": {
             "get": {
                 "tags": [
@@ -1355,6 +1490,22 @@
                     },
                     "500": {
                         "description": "Unable to get the list of all stores"
+                    }
+                }
+            }
+        },
+        "/api/v1/store//history/{store_id}": {
+            "get": {
+                "tags": [
+                    "Stores"
+                ],
+                "summary": "Get all store history",
+                "responses": {
+                    "200": {
+                        "description": "Succesfully gotten the list of store history"
+                    },
+                    "500": {
+                        "description": "Unable to get the list of all store history"
                     }
                 }
             }
@@ -1874,6 +2025,39 @@
                 }
             }
         },
+        "/api/v1/driver/withdrawEarnings": {
+            "post": {
+                "tags": [
+                    "Drivers"
+                ],
+                "description": "Enables drivers to withdraw their total earnings",
+                "summary": "Used to enable drivers to withdraw their overall earnings",
+                "parameters": [
+                    {
+                        "name": "driver",
+                        "in": "body",
+                        "description": "Please pass the driver's token as authorization header"
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Withrawal was successful"
+                    },
+                    "401": {
+                        "description": "The driver was not found"
+                    },
+                    "400": {
+                        "description": "Please, inspect all parameters"
+                    },
+                    "500": {
+                        "description": "An unexpected error occured"
+                    }
+                }
+            }
+        },
         "/api/v1/driver/getInfo": {
             "get": {
                 "tags": [
@@ -2231,6 +2415,17 @@
                 },
                 "rating": {
                     "type": "number"
+                }
+            }
+        },
+        "UserCancel": {
+            "required": [
+                "historyId"
+            ],
+            "properties": {
+                "historyId": {
+                    "type": "string",
+                    "uniqueItems": true
                 }
             }
         },
@@ -2718,6 +2913,49 @@
                 },
                 "image": {
                     "type": "string"
+                }
+            }
+        },
+        "StoreAccepts": {
+            "required": [
+                "orderId",
+                "storeId"
+            ],
+            "properties": {
+                "orderId": {
+                    "type": "string",
+                    "uniqueItems": true
+                },
+                "storeId": {
+                    "type": "string",
+                    "uniqueItems": true
+                }
+            }
+        },
+        "StoreCancels": {
+            "required": [
+                "historyId",
+                "storeId"
+            ],
+            "properties": {
+                "historyId": {
+                    "type": "string",
+                    "uniqueItems": true
+                },
+                "storeId": {
+                    "type": "string",
+                    "uniqueItems": true
+                }
+            }
+        },
+        "StoreById": {
+            "required": [
+                "storeId"
+            ],
+            "properties": {
+                "storeId": {
+                    "type": "string",
+                    "uniqueItems": true
                 }
             }
         },

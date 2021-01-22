@@ -3,7 +3,7 @@ import bcrypt from 'bcryptjs';
 import { google } from 'googleapis';
 import crypto from 'crypto';
 import authenticator from 'otplib/authenticator';
-import { sendMail, signUser, createTransporter, removeItem } from './../utils';
+import { sendMail, signUser, createTransporter, removeItem, createRefund } from './../utils';
 import { OrderStatus } from './../constants';
 import controllers from '.';
 
@@ -86,34 +86,30 @@ userController.loginUser = (req, res) => {
         if (user !== null) {
             // The user has registered
             // Check user password against the hashed
-            bcrypt.genSalt(10, function (err, salt) {
-                bcrypt.hash(password, salt, function (err, hash) {
-                    bcrypt.compare(password, user.password, function (err, response) {
-                        if (response === true) {
-                            // Check if the user is verified
-                            if (user.is_verified === false) {
-                                res.status(401).json({ status: false, message: 'This account has not been verified' });
-                            } else {
-                                const data = {
-                                    firstname: user.firstname,
-                                    lastname: user.lastname,
-                                    email: user.email,
-                                    phone: user.phone,
-                                    is_verified: user.is_verified,
-                                    is_phone_verified: user.is_phone_verified
-                                };
+            bcrypt.compare(password, user.password, function (err, response) {
+                if (response === true) {
+                    // Check if the user is verified
+                    if (user.is_verified === false) {
+                        res.status(401).json({ status: false, message: 'This account has not been verified' });
+                    } else {
+                        const data = {
+                            firstname: user.firstname,
+                            lastname: user.lastname,
+                            email: user.email,
+                            phone: user.phone,
+                            is_verified: user.is_verified,
+                            is_phone_verified: user.is_phone_verified
+                        };
 
-                                signUser(user._id).then((token) => {
-                                    res.status(200).json({ status: true, message: "User logged in succesfully", data, token });
-                                }).catch((err) => {
-                                    res.status(500).json({ status: false, message: err.message });
-                                });
-                            }
-                        } else {
-                            res.status(400).json({ status: false, message: 'Wrong login details' });
-                        }
-                    });
-                });
+                        signUser(user._id).then((token) => {
+                            res.status(200).json({ status: true, message: "User logged in succesfully", data, token });
+                        }).catch((err) => {
+                            res.status(500).json({ status: false, message: err.message });
+                        });
+                    }
+                } else {
+                    res.status(400).json({ status: false, message: 'Wrong login details' });
+                }
             });
         } else {
             res.status(400).json({ status: false, message: 'Wrong login details' });
@@ -499,6 +495,48 @@ userController.rateDriver = (req, res) => {
                     driver.save().then(driverSaved => {
                         res.status(200).json({ status: true, message: 'User has succcessfully rated driver' });
                     })
+                }
+            }).catch(err => res.status(500).json({ status: false, message: err.message }));
+        }
+    }).catch(err => res.status(500).json({ status: false, message: err.message }));
+}
+
+userController.cancelOrder = (req, res) => {
+    const { historyId } = req.body;
+
+    db.User.findById(req.user).then(user => {
+        if (!user) {
+            res.status(404).json({ status: false, message: 'This user was not found' });
+        } else {
+            db.History.findById(historyId).then(async history => {
+                if (!history) {
+                    res.status(404).json({ status: false, message: 'Order history was not found' });
+                } else {
+                    if (history.status !== 'new') {
+                        res.status(401).json({ status: false, message: 'User cannot cancel this order since it is being processed' })
+                    } else {
+                        const response = await createRefund(history.paymentRef);
+    
+                        if (response.status) {
+                            removeItem(user.new_order_firebase_uid, orderId);
+    
+                            controllers.firebaseController.deleteEntry(orderId).then(removed => {
+                                if (removed) {
+                                    history.cancellationTime = new Date();
+    
+                                    history.save(saved => {
+                                        user.save(saving => {
+                                            res.status(200).json({ status: true, message: 'User has successfully gotten refund' })
+                                        })
+                                    });
+                                } else {
+                                    res.status(500).json({ status: false, message: 'Firebase failed to remove entry' });
+                                }
+                            }).catch(err => res.status(500).json({ status: false, message: err.message }));
+                        } else {
+                            return res.status(409).json({ status: false, message: 'An error occured from paystack while trying to refund customer' });
+                        }
+                    }
                 }
             }).catch(err => res.status(500).json({ status: false, message: err.message }));
         }

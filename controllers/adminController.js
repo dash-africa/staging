@@ -1,6 +1,6 @@
 import db from '../models';
 import bcrypt from 'bcryptjs';
-import { signUser } from './../utils';
+import { hashPassword, signUser } from './../utils';
 
 const adminController = {};
 
@@ -12,20 +12,17 @@ adminController.register = (req, res) => {
             // The account already exists
             res.status(409).json({ status: false, message: "Admin already exists" });
         } else {
-            bcrypt.genSalt(10, function (err, salt) {
-                bcrypt.hash(password, salt, function (err, hash) {
-                    if (err) {
-                        res.status(500).json({ status: false, message: 'There was an error setting up your password' });
-                    } else {
-                        const admin = new db.Admin({
-                            email,
-                            password: hash
-                        });
-                        admin.save().then((saved) => {
-                            res.status(200).json({ status: true, message: 'The admin account has been created' });
-                        });
-                    }
+            hashPassword(password).then(hashedPassword => {
+                const admin = new db.Admin({
+                    email,
+                    password: hashedPassword
                 });
+                
+                admin.save().then((saved) => {
+                    res.status(200).json({ status: true, message: 'The admin account has been created' });
+                });
+            }).catch(err => {
+                res.status(500).json({ status: false, message: 'There was an error setting up your password' });
             });
         }
     }).catch(err => {
@@ -40,20 +37,16 @@ adminController.login = (req, res) => {
         if (!admin) {
             res.status(404).json({ status: false, message: 'The admin account was not found' });
         } else {
-            bcrypt.genSalt(10, function (err, salt) {
-                bcrypt.hash(password, salt, function (err, hash) {
-                    bcrypt.compare(password, admin.password, function (err, response) {
-                        if (response === true) {
-                            signUser(admin._id).then((token) => {
-                                res.status(200).json({ status: true, message: "Admin logged in succesfully", token });
-                            }).catch((err) => {
-                                res.status(500).json({ status: false, message: err.message });
-                            });
-                        } else {
-                            res.status(400).json({ status: false, message: 'Wrong login details' });
-                        }
+            bcrypt.compare(password, admin.password, function (err, response) {
+                if (response === true) {
+                    signUser(admin._id).then((token) => {
+                        res.status(200).json({ status: true, message: "Admin logged in succesfully", token });
+                    }).catch((err) => {
+                        res.status(500).json({ status: false, message: err.message });
                     });
-                });
+                } else {
+                    res.status(400).json({ status: false, message: 'Wrong login details' });
+                }
             });
         }
     }).catch(err => {
@@ -98,5 +91,51 @@ adminController.deleteDriver = (req, res) => {
         }
     });
 };
+
+adminController.assignStoreCredentials = (req, res) => {
+    const { username, password, store_id } = req.body;
+
+    db.Admin.findById(req.user).then(admin => {
+        if (!admin) {
+            res.status(404).json({ status: false, message: 'The admin account was not found' });
+        } else {
+            db.Store.findById(store_id).then(store => {
+                if (!store) {
+                    res.status(404).json({ status: false, message: 'The store was not found' });
+                } else {
+                    hashPassword(password).then(hash => {
+                        store.username = username;
+                        store.password = hash;
+
+                        store.save(saved => {
+                            res.status(200).json({ status: true, message: 'Username and password has been assigned to the store' });
+                        });
+                    }).catch(err => res.status(500).json({ status: false, message: err.message }));
+                }
+            });
+        }
+    }).catch(err => res.status(500).json({ status: false, message: err.message }));
+};
+
+adminController.disableDriver = (req, res) => {
+    const { driverId } = req.body;
+
+    db.Admin.findById(req.user).then(admin => {
+        if (!admin) {
+            res.status(404).json({ status: false, message: 'The admin account was not found' });
+        } else {
+            db.Driver.findById(driverId).then(driver => {
+                if (!driver) {
+                    res.status(404).json({ status: false, message: 'The driver account was not found' });
+                } else {
+                    driver.is_verified = false;
+                    driver.save(savedDriver => {
+                        res.status(200).json({ status: true, message: 'The driver has been disabled' });
+                    });
+                }
+            }).catch(err => res.status(500).json({ status: false, message: err.message }));
+        }
+    }).catch(err => res.status(500).json({ status: false, message: err.message }));
+}
 
 export default adminController;

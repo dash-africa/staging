@@ -1,7 +1,7 @@
 import db from '../models';
 import bcrypt from 'bcryptjs';
 import controllers from './index';
-import { sendMail, signUser, createTransporter } from './../utils';
+import { sendMail, signUser, createTransporter, createTransferRecipient, initiateTransfer } from './../utils';
 import { OrderStatus } from './../constants';
 
 import { google } from 'googleapis';
@@ -92,33 +92,29 @@ driverController.login = (req, res) => {
     db.Driver.findOne({ email: email }).then((driver) => {
         if (driver) {
             // The driver has registered
-            bcrypt.genSalt(10, function (err, salt) {
-                bcrypt.hash(password, salt, function (err, hash) {
-                    bcrypt.compare(password, driver.password, function (err, response) {
-                        if (response === true) {
-                            // Check if the user is verified
-                            if (!driver.is_verified && !driver.is_email_verified && !driver.is_phone_verified) {
-                                res.status(401).json({ status: false, message: 'This account has not been verified' });
-                            } else {
-                                const driverData = {
-                                    firstname: driver.firstname,
-                                    lastname: driver.lastname,
-                                    email: driver.email,
-                                    phone: driver.phone,
-                                    address: driver.address,
-                                };
+            bcrypt.compare(password, driver.password, function (err, response) {
+                if (response === true) {
+                    // Check if the user is verified
+                    if (!driver.is_verified && !driver.is_email_verified && !driver.is_phone_verified) {
+                        res.status(401).json({ status: false, message: 'This account has not been verified' });
+                    } else {
+                        const driverData = {
+                            firstname: driver.firstname,
+                            lastname: driver.lastname,
+                            email: driver.email,
+                            phone: driver.phone,
+                            address: driver.address,
+                        };
 
-                                signUser(driver._id).then((token) => {
-                                    res.status(200).json({ status: true, message: "Driver logged in succesfully", data: driverData, token });
-                                }).catch((err) => {
-                                    res.status(500).json({ status: false, message: err.message });
-                                });
-                            }
-                        } else {
-                            res.status(400).json({ status: false, message: 'Wrong login details' });
-                        }
-                    });
-                });
+                        signUser(driver._id).then((token) => {
+                            res.status(200).json({ status: true, message: "Driver logged in succesfully", data: driverData, token });
+                        }).catch((err) => {
+                            res.status(500).json({ status: false, message: err.message });
+                        });
+                    }
+                } else {
+                    res.status(400).json({ status: false, message: 'Wrong login details' });
+                }
             });
         } else {
             res.status(400).json({ status: false, message: 'Wrong login details' });
@@ -367,30 +363,35 @@ driverController.getDriverInfo = (req, res) => {
 driverController.acceptOrder = (req, res) => {
     const { orderId } = req.body;
     const status = OrderStatus.DRIVER_ACCEPTED;
+    const driverId = req.user;
 
-    db.Driver.findById(req.user).then(driver => {
+    db.Driver.findById(driverId).then(driver => {
         if (!driver) {
             res.status(404).json({ status: false, message: 'This driver was not found' });
         } else {
-            controllers.firebaseController.changeStatus(orderId, driverId, status).then(firebaseObj => {
-                if (firebaseObj) {
-                    db.History.findById(firebaseObj.history_id).then(history => {
-                        if (!history) {
-                            res.status(404).json({ status: false, message: 'Could not find history to this order' });
-                        } else {
-                            history.status = status;
-                            history.driverAcceptedTime = new Date()
-                            history.assignedDriver = driverId;
-
-                            history.save().then(saved => {
-                                res.status(200).json({ status: true, message: 'Driver successfully accepts order' });
-                            });
-                        }
-                    }).catch(err => res.status(500).json({ status: false, message: err.message }));
-                } else {
-                    res.status(500).json({ status: false, message: 'Internal Server Error' });
-                }
-            }).catch(err => res.status(500).json({ status: false, message: err.message }));
+            if (driver.is_verified) {
+                controllers.firebaseController.changeStatus(orderId, driverId, status).then(firebaseObj => {
+                    if (firebaseObj) {
+                        db.History.findById(firebaseObj.history_id).then(history => {
+                            if (!history) {
+                                res.status(404).json({ status: false, message: 'Could not find history to this order' });
+                            } else {
+                                history.status = status;
+                                history.driverAcceptedTime = new Date()
+                                history.assignedDriver = driverId;
+    
+                                history.save().then(saved => {
+                                    res.status(200).json({ status: true, message: 'Driver successfully accepts order' });
+                                });
+                            }
+                        }).catch(err => res.status(500).json({ status: false, message: err.message }));
+                    } else {
+                        res.status(500).json({ status: false, message: 'Internal Server Error' });
+                    }
+                }).catch(err => res.status(500).json({ status: false, message: err.message }));
+            } else {
+                res.status(401).json({ status: false, message: 'Driver not verified' });
+            }
         }
     }).catch(err => res.status(500).json({ status: false, message: err.message }));
 }
@@ -416,7 +417,7 @@ driverController.pickUpOrder = (req, res) => {
                                 const store_charge = Number(firebaseObj.amount) * 0.2;
                                 const store_earning = firebaseObj.amount - store_charge;
 
-                                store.successful_deliveries += 1;
+                                store.successful_orders += 1;
                                 store.overall_earnings += store_earning;
 
                                 store.save().then(saving => {
@@ -463,6 +464,43 @@ driverController.getAllEarnings = (req, res) => {
             res.status(404).json({ status: false, message: 'This driver has no earnings', data: [] });
         } else {
             res.status(200).json({ status: true, message: 'Driver earnings are fetched', data: earnings });
+        }
+    }).catch(err => res.status(500).json({ status: false, message: err.message }));
+}
+
+driverController.withdrawEarnings = (req, res) => {
+    db.Driver.findById(req.user).then(async driver => {
+        if (!driver) {
+            res.status(404).json({ status: false, message: 'The driver was not found' });
+        } else {
+            let recipientCode = '';
+            if (!driver.recipient_code) {
+               const response = await createTransferRecipient(`${driver.lastname} ${driver.firstname}`, driver.account_number, driver.bank_code);
+
+               if (response.status) {
+                   recipientCode = response.data.recipient_code;
+               } else {
+                    res.status(409).json({ status: false, message: 'There was an issue retrieving driver recipient code' });
+               }
+            } else {
+                recipientCode = driver.recipient_code;
+            }
+
+            if (driver.overall_earnings <= 0) {
+                res.status(400).json({ status: false, message: 'Driver has no earnings, so withdrawal was skipped' });
+            } else {
+                const transferResponse = await initiateTransfer(driver.overall_earnings, recipientCode);
+    
+                if (transferResponse.status) {
+                    driver.overall_earnings = 0;
+    
+                    driver.save(saved => {
+                        res.status(200).json({ status: true, message: 'The transfer was successful', data: transferResponse.data });
+                    });
+                } else {
+                    res.status(500).json({ status: false, message: 'An error occured while transfer was being processed' });
+                }
+            }
         }
     }).catch(err => res.status(500).json({ status: false, message: err.message }));
 }

@@ -7,6 +7,16 @@ const storeSchema = new Schema({
         required: true,
         help: 'This field is required'
     },
+    username: {
+        type: String,
+        required: true,
+        help: 'This field is required'
+    },
+    password: {
+        type: String,
+        required: true,
+        help: 'This field is required'
+    },
     image: {
         type: String,
         required: true,
@@ -61,17 +71,36 @@ const storeSchema = new Schema({
         type: Schema.Types.ObjectId,
         ref: 'TopCategories'
     }],
-    successful_deliveries: {
+    successful_orders: {
         type: Number,
         default: 0
     },
-    failed_deliveries: {
+    failed_orders: {
         type: Number,
         default: 0
     },
     overall_earnings: {
         type: Number,
         default: 0
+    },
+    bank_name: {
+        type: String,
+        required: true,
+        help: 'This field is required'
+    },
+    bank_code: {
+        type: Number,
+        required: true,
+        help: 'This field is required'
+    },
+    account_number: {
+        type: Number,
+        required: true,
+        help: 'This field is required'
+    },
+    recipient_code: {
+        type: String,
+        default: null
     },
     created_at: {
         type: Date,

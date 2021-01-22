@@ -158,7 +158,40 @@ historyController.addToHistory = (req, res) => {
     }).catch(err => {
         res.status(500).json({status: false, message: err.message});
     });
-
 };
+
+historyController.fetchHistory = (req, res) => {
+    const { id } = req.params;
+
+    db.History.findById(id).populate([
+        { path: 'user', select: ['firstname', 'lastname', 'email'] },
+        { path: 'items', select: 'name' },
+        { path: 'store', select: 'name' }
+    ]).then(history => {
+        if (!history) {
+            res.status(404).json({ status: false, message: 'The order history was not found' });
+        } else {
+            res.status(200).json({ status: true, message: 'History', data: history });
+        }
+    }).catch(err => {
+        res.status(500).json({status: false, message: err.message});
+    });
+}
+
+historyController.fetchAllHistory = (req, res) => {
+    db.History.find().populate([
+        { path: 'user', select: ['firstname', 'lastname', 'email'] },
+        { path: 'items', select: 'name' },
+        { path: 'store', select: 'name' }
+    ]).then(histories => {
+        if (!histories || !histories.length) {
+            res.status(404).json({ status: false, message: 'No history was found', data: [] })
+        } else {
+            res.status(200).json({ status: true, message: 'Found histories', data: histories });
+        }
+    }).catch(err => {
+        res.status(500).json({status: false, message: err.message});
+    });
+}
 
 export default historyController;

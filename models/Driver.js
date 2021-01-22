@@ -114,6 +114,10 @@ const driverSchema = new Schema({
         type: Number,
         default: 0
     },
+    recipient_code: {
+        type: String,
+        default: null
+    },
     created_at: {
         type: Date,
         default: Date.now
