@@ -346,15 +346,33 @@ storeController.withdrawEarnings = (req, res) => {
                 const transferResponse = await initiateTransfer(store.overall_earnings, recipientCode);
     
                 if (transferResponse.status) {
+                    const storeEarning = new db.StoreEarning({
+                        store,
+                        amount: store.overall_earnings,
+                        withdrawal: false,
+                    });
+
                     store.overall_earnings = 0;
     
-                    store.save(saved => {
-                        res.status(200).json({ status: true, message: 'The transfer was successful', data: transferResponse.data });
+                    store.save(() => {
+                        storeEarning.save().then(() => {
+                            res.status(200).json({ status: true, message: 'The transfer was successful', data: transferResponse.data });
+                        });
                     });
                 } else {
                     res.status(500).json({ status: false, message: 'An error occured while transfer was being processed' });
                 }
             }
+        }
+    }).catch(err => res.status(500).json({ status: false, message: err.message }));
+}
+
+storeController.getAllEarnings = (req, res) => {
+    db.StoreEarning.find({ driver: req.user }).then(earnings => {
+        if (!earnings) {
+            res.status(404).json({ status: false, message: 'This store has no earnings', data: [] });
+        } else {
+            res.status(200).json({ status: true, message: 'Store earnings are fetched', data: earnings });
         }
     }).catch(err => res.status(500).json({ status: false, message: err.message }));
 }

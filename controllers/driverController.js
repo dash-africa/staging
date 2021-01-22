@@ -417,11 +417,19 @@ driverController.pickUpOrder = (req, res) => {
                                 const store_charge = Number(firebaseObj.amount) * 0.2;
                                 const store_earning = firebaseObj.amount - store_charge;
 
+                                const storeEarning = new db.StoreEarning({
+                                    store,
+                                    amount: store_earning,
+                                    history
+                                });
+
                                 store.successful_orders += 1;
                                 store.overall_earnings += store_earning;
 
-                                store.save().then(saving => {
-                                    res.status(200).json({ status: true, message: 'Driver successfully picked order' });
+                                store.save().then(() => {
+                                    storeEarning.save().then(() => {
+                                        res.status(200).json({ status: true, message: 'Driver successfully picked order' });
+                                    })
                                 })
                             }
                         }).catch(err => res.status(500).json({ status: false, message: err.message }));
@@ -493,9 +501,17 @@ driverController.withdrawEarnings = (req, res) => {
     
                 if (transferResponse.status) {
                     driver.overall_earnings = 0;
+
+                    const earning = new db.Earning({
+                        driver,
+                        amount: driver.overall_earnings,
+                        withdrawal: true
+                    });
     
                     driver.save(saved => {
-                        res.status(200).json({ status: true, message: 'The transfer was successful', data: transferResponse.data });
+                        earning.save().then(saving => {
+                            res.status(200).json({ status: true, message: 'The transfer was successful', data: transferResponse.data });
+                        });
                     });
                 } else {
                     res.status(500).json({ status: false, message: 'An error occured while transfer was being processed' });

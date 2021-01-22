@@ -1603,6 +1603,22 @@
                 }
             }
         },
+        "/api/v1/store/earnings": {
+            "get": {
+                "tags": [
+                    "Stores"
+                ],
+                "summary": "Get store earnings by passing store token as authorization header",
+                "responses": {
+                    "200": {
+                        "description": "Succesfully gotten store's earnings"
+                    },
+                    "500": {
+                        "description": "Unable to get the store's earnings"
+                    }
+                }
+            }
+        },
         "/api/v1/storeType/create": {
             "post": {
                 "tags": [

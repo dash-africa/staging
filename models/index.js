@@ -10,6 +10,7 @@ import Earning from './Earning';
 import History from './History';
 import Item from './Item';
 import Store from './Store';
+import StoreEarning from './StoreEarning';
 import StoreType from './StoreType';
 import Token from './Token';
 import TopCategories from './TopCategories';
@@ -30,5 +31,6 @@ export default {
     Admin,
     Card,
     Driver,
-    Earning
+    Earning,
+    StoreEarning
 };

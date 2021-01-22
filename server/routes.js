@@ -83,6 +83,7 @@ routes.post('/store/acceptOrder', verifyStoreToken, controllers.storeController.
 routes.post('/store/cancelOrder', verifyStoreToken, controllers.storeController.cancelOrder);
 routes.get('/store/history/:id', controllers.storeController.getHistory);
 routes.post('/store/withdrawEarnings', verifyStoreToken, controllers.storeController.withdrawEarnings);
+routes.get('/store/earnings', verifyStoreToken, controllers.storeController.getAllEarnings);
 
 // Store Type Routes
 routes.post('/storeType/create', verifyAdminToken, controllers.storeTypeController.create);

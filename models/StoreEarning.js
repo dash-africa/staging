@@ -1,10 +1,10 @@
 import mongoose from 'mongoose';
 const { Schema } = mongoose;
 
-const earningSchema = new Schema({
-    driver: {
+const storeEarningSchema = new Schema({
+    store: {
         type: Schema.Types.ObjectId,
-        ref: 'Driver'
+        ref: 'Store'
     },
     amount: {
         type: Number,
@@ -25,5 +25,5 @@ const earningSchema = new Schema({
     }
 });
 
-const Earning = mongoose.model('Earning', earningSchema);
-export default Earning;
+const StoreEarning = mongoose.model('StoreEarning', storeEarningSchema);
+export default StoreEarning;
