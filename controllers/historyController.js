@@ -5,8 +5,10 @@ import { addPaystackChargeToamount, createTransporter, chargeCard, formatItems, 
 const historyController = {};
 
 historyController.addToHistory = (req, res) => {
-    const {store_id, cart_id, user_id, status, amount, delivery_fee, service_fee, delivery_address, is_new_payment, last4, card_type} = req.body;
+    const {store_id, cart_id, status, amount, delivery_fee, service_fee, delivery_address, is_new_payment, last4, card_type} = req.body;
     let { paymentRef } = req.body;
+
+    const user_id = req.user;
 
     db.User.findById(user_id).then(user => {
         if (user === null) {

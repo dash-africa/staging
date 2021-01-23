@@ -1806,7 +1806,7 @@
                     {
                         "name": "history",
                         "in": "body",
-                        "description": "These should be passed",
+                        "description": "These should be passed, together with the user's token as Authorization header",
                         "schema": {
                             "$ref": "#/definitions/History"
                         }
@@ -3017,7 +3017,6 @@
             "required": [
                 "store_id",
                 "cart_id",
-                "user_id",
                 "paymentRef",
                 "status",
                 "amount",
@@ -3034,10 +3033,6 @@
                     "uniqueItems": true
                 },
                 "cart_id": {
-                    "type": "string",
-                    "uniqueItems": true
-                },
-                "user_id": {
                     "type": "string",
                     "uniqueItems": true
                 },

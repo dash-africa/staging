@@ -98,7 +98,8 @@ userController.loginUser = (req, res) => {
                             email: user.email,
                             phone: user.phone,
                             is_verified: user.is_verified,
-                            is_phone_verified: user.is_phone_verified
+                            is_phone_verified: user.is_phone_verified,
+                            _id: user._id
                         };
 
                         signUser(user._id).then((token) => {
