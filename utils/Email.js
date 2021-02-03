@@ -1,46 +1,47 @@
 import path from 'path';
 import nodemailer from 'nodemailer';
+import mg from 'nodemailer-mailgun-transport';
 import ejs from 'ejs';
 import jwt from 'jsonwebtoken';
 
-import { google } from 'googleapis';
+// import { google } from 'googleapis';
 
-const OAuth2 = google.auth.OAuth2;
+// const OAuth2 = google.auth.OAuth2;
 
-const createTransporter = async () => {
-    const oauth2Client = new OAuth2(
-        process.env.GMAIL_CLIENT_ID,
-        process.env.GMAIL_CLIENT_SECRET_KEY,
-        "https://developers.google.com/oauthplayground"
-    );
+// const createTransporter = async () => {
+//     const oauth2Client = new OAuth2(
+//         process.env.GMAIL_CLIENT_ID,
+//         process.env.GMAIL_CLIENT_SECRET_KEY,
+//         "https://developers.google.com/oauthplayground"
+//     );
 
-    oauth2Client.setCredentials({
-        refresh_token: process.env.GMAIL_REFRESH_TOKEN
-    });
+//     oauth2Client.setCredentials({
+//         refresh_token: process.env.GMAIL_REFRESH_TOKEN
+//     });
 
-    const accessToken = await new Promise((resolve, reject) => {
-        oauth2Client.getAccessToken((err, token) => {
-            if (err) {
-                reject("Failed to create access token :(");
-            }
-            resolve(token);
-        });
-    });
+//     const accessToken = await new Promise((resolve, reject) => {
+//         oauth2Client.getAccessToken((err, token) => {
+//             if (err) {
+//                 reject("Failed to create access token :(");
+//             }
+//             resolve(token);
+//         });
+//     });
 
-    const transporter = nodemailer.createTransport({
-        service: "gmail",
-        auth: {
-            type: "OAuth2",
-            user: process.env.GMAIL_USERNAME,
-            accessToken,
-            clientId: process.env.GMAIL_CLIENT_ID,
-            clientSecret: process.env.GMAIL_CLIENT_SECRET_KEY,
-            refreshToken: process.env.GMAIL_REFRESH_TOKEN
-        }
-    });
+//     const transporter = nodemailer.createTransport({
+//         service: "gmail",
+//         auth: {
+//             type: "OAuth2",
+//             user: process.env.GMAIL_USERNAME,
+//             accessToken,
+//             clientId: process.env.GMAIL_CLIENT_ID,
+//             clientSecret: process.env.GMAIL_CLIENT_SECRET_KEY,
+//             refreshToken: process.env.GMAIL_REFRESH_TOKEN
+//         }
+//     });
 
-    return transporter;
-};
+//     return transporter;
+// };
 
 
 const sendMail = (dir_path, object) => {
@@ -67,12 +68,13 @@ const signUser = (user) => {
     });
 };
 
-// const transporter = nodemailer.createTransport({
-//     service: 'SendGrid',
-//     auth: {
-//         user: process.env.SENDGRID_USER,
-//         pass: process.env.SENDGRID_PASS
-//     }
-// });
+const auth = {
+    auth: {
+        api_key: process.env.MAILGUN_API_KEY,
+        domain: process.env.MAILGUN_DOMAIN
+    }
+};
 
-export { sendMail, signUser, createTransporter };
+const transporter = nodemailer.createTransport(mg(auth));
+
+export { sendMail, signUser, transporter };

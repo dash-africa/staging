@@ -3,7 +3,7 @@ import bcrypt from 'bcryptjs';
 import { google } from 'googleapis';
 import crypto from 'crypto';
 import authenticator from 'otplib/authenticator';
-import { sendMail, signUser, createTransporter, removeItem, createRefund } from './../utils';
+import { sendMail, signUser, transporter, removeItem, createRefund } from './../utils';
 import { OrderStatus } from './../constants';
 import controllers from '.';
 
@@ -48,13 +48,11 @@ userController.registerUser = (req, res) => {
                                 // Send the email
                                 sendMail('verification.ejs', { lastname: User.lastname, token: tokenise.token, host: req.headers.host, protocol: req.protocol }).then(async data => {
                                     const mailOptions = {
-                                        from: 'dash@yourwebapplication.com',
+                                        from: 'dashdeliveryapp@gmail.com',
                                         to: User.email,
                                         subject: 'Account Verification Token',
                                         html: data
                                     };
-
-                                    const transporter = await createTransporter();
 
                                     transporter.sendMail(mailOptions, (err) => {
                                         if (err) {
@@ -179,13 +177,11 @@ userController.resendTokenPost = (req, res) => {
             // Generate jwt for email confirmation token
             sendMail('verification.ejs', { lastname: user.lastname, token, host: req.headers.host, protocol: req.protocol }).then(async data => {
                 const mailOptions = {
-                    from: 'dash@yourwebapplication.com',
+                    from: 'dashdeliveryapp@gmail.com',
                     to: user.email,
                     subject: 'Account Verification Token',
                     html: data
                 };
-
-                const transporter = await createTransporter();
 
                 transporter.sendMail(mailOptions, (err) => {
                     if (err) {
@@ -228,13 +224,11 @@ userController.resendForgottenToken = (req, res) => {
 
                 sendMail('forgotten.ejs', { lastname: user.lastname, token: tokenise.token, host: req.headers.host, protocol: req.protocol }).then(async data => {
                     const mailOptions = {
-                        from: 'dash@yourwebapplication.com',
+                        from: 'dashdeliveryapp@gmail.com',
                         to: user.email,
                         subject: 'Forgotten Password Token',
                         html: data
                     };
-
-                    const transporter = await createTransporter();
 
                     transporter.sendMail(mailOptions, (err) => {
                         if (err) {

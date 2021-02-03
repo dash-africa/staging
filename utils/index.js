@@ -1,5 +1,5 @@
 import { addPaystackChargeToamount, chargeCard, verifyPayment, createTransferRecipient, createRefund, initiateTransfer } from './Paystack';
-import { sendMail, signUser, createTransporter } from './Email';
+import { sendMail, signUser, transporter } from './Email';
 import { formatItems } from './Order';
 import { removeItem } from './Misc';
 import { verifyToken, verifyDriverToken, verifyAdminToken, verifyStoreToken } from './Verification';
@@ -10,13 +10,13 @@ export {
     chargeCard,
     createRefund,
     createTransferRecipient,
-    createTransporter,
     formatItems,
     hashPassword,
     initiateTransfer,
     removeItem,
     sendMail,
     signUser,
+    transporter,
     verifyPayment,
     verifyToken,
     verifyAdminToken,

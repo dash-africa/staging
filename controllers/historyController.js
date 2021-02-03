@@ -1,6 +1,6 @@
 import db from '../models';
 import controllers from './index';
-import { addPaystackChargeToamount, createTransporter, chargeCard, formatItems, sendMail, verifyPayment, removeItem } from './../utils';
+import { addPaystackChargeToamount, transporter, chargeCard, formatItems, sendMail, verifyPayment, removeItem } from './../utils';
 
 const historyController = {};
 
@@ -118,15 +118,13 @@ historyController.addToHistory = (req, res) => {
                             items: formatItems(cart.items),
                             host: req.headers.host, 
                             protocol: req.protocol 
-                        }).then(async data => {
+                        }).then(data => {
                             const mailOptions = {
-                                from: 'dash@yourwebapplication.com',
+                                from: 'dashdeliveryapp@gmail.com',
                                 to: user.email,
                                 subject: `Your order ${uid} has been confirmed.`,
                                 html: data
                             };
-
-                            const transporter = await createTransporter();
 
                             transporter.sendMail(mailOptions, (err) => {
                                 if (err) {
@@ -166,9 +164,10 @@ historyController.fetchHistory = (req, res) => {
     const { id } = req.params;
 
     db.History.findById(id).populate([
-        { path: 'user', select: ['firstname', 'lastname', 'email'] },
-        { path: 'items', select: 'name' },
-        { path: 'store', select: 'name' }
+        { path: 'user', select: ['firstname', 'lastname', 'email', 'phone'] },
+        { path: 'items', populate: 'addOns' },
+        { path: 'store', select: 'name' },
+        { path: 'assignedDriver', model: 'Driver', select: ['firstname', 'lastname', 'email', 'phone', 'mode_of_transportation'] }
     ]).then(history => {
         if (!history) {
             res.status(404).json({ status: false, message: 'The order history was not found' });
@@ -182,9 +181,10 @@ historyController.fetchHistory = (req, res) => {
 
 historyController.fetchAllHistory = (req, res) => {
     db.History.find().populate([
-        { path: 'user', select: ['firstname', 'lastname', 'email'] },
-        { path: 'items', select: 'name' },
-        { path: 'store', select: 'name' }
+        { path: 'user', select: ['firstname', 'lastname', 'email', 'phone'] },
+        { path: 'items', populate: 'addOns' },
+        { path: 'store', select: 'name' },
+        { path: 'assignedDriver', model: 'Driver', select: ['firstname', 'lastname', 'email', 'phone', 'mode_of_transportation'] }
     ]).then(histories => {
         if (!histories || !histories.length) {
             res.status(404).json({ status: false, message: 'No history was found', data: [] })

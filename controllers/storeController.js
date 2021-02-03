@@ -1,6 +1,6 @@
 import db from '../models';
 import bcrypt from 'bcryptjs';
-import { signUser, sendMail, createTransporter } from './../utils';
+import { signUser, sendMail, transporter, createRefund, removeItem } from './../utils';
 import controllers from '.';
 import { OrderStatus } from './../constants';
 
@@ -181,7 +181,7 @@ storeController.login = (req, res) => {
             bcrypt.compare(password, store.password, function (err, response) {
                 if (response === true) {
                     signUser(store._id).then((token) => {
-                        res.status(200).json({ status: true, message: "Store logged in succesfully", token });
+                        res.status(200).json({ status: true, message: "Store logged in successfully", data: { token, id: store._id } });
                     }).catch((err) => {
                         res.status(500).json({ status: false, message: err.message });
                     });
@@ -262,21 +262,22 @@ storeController.cancelOrder = (req, res) => {
                                                     protocol: req.protocol 
                                                 }).then(async data => {
                                                     const mailOptions = {
-                                                        from: 'dash@yourwebapplication.com',
+                                                        from: 'dashdeliveryapp@gmail.com',
                                                         to: user.email,
                                                         subject: `Your order has been cancelled.`,
                                                         html: data
                                                     };
-                
-                                                    const transporter = await createTransporter();
-                
+                                
                                                     transporter.sendMail(mailOptions, err => {
                                                         if (err) res.status(500).json({ status: false, message: 'An error occured while sending cancellation email' });
             
                                                         removeItem(user.new_order_firebase_uid, history.orderId);
+                                                        store.failed_deliveries += 1;
                                                         
-                                                        user.save(saved => {
-                                                            res.status(200).json({ status: true, message: 'Store has declined order, and user has been refunded successfully' });
+                                                        user.save(() => {
+                                                            store.save(() => {
+                                                                res.status(200).json({ status: true, message: 'Store has declined order, and user has been refunded successfully' });
+                                                            })
                                                         });
                                                     })
                                                 })

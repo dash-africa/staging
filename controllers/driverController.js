@@ -1,7 +1,7 @@
 import db from '../models';
 import bcrypt from 'bcryptjs';
 import controllers from './index';
-import { sendMail, signUser, createTransporter, createTransferRecipient, initiateTransfer } from './../utils';
+import { sendMail, signUser, createTransferRecipient, initiateTransfer, transporter } from './../utils';
 import { OrderStatus } from './../constants';
 
 import { google } from 'googleapis';
@@ -59,10 +59,8 @@ driverController.register = (req, res) => {
                                         to: courier.email,
                                         subject: 'Account Verification Token',
                                         html: data,
-                                        from: 'dash@yourwebapplication.com',
+                                        from: 'dashdeliveryapp@gmail.com',
                                     };
-
-                                    const transporter = await createTransporter();
 
                                     transporter.sendMail(mailOptions, (err) => {
                                         if (err) {
@@ -181,13 +179,11 @@ driverController.resendTokenPost = (req, res) => {
             // Generate jwt for email confirmation token
             sendMail('verification.ejs', { lastname: driver.lastname, token, host: req.headers.host, protocol: req.protocol }).then(async data => {
                 const mailOptions = {
-                    from: 'dash@yourwebapplication.com',
+                    from: 'dashdeliveryapp@gmail.com',
                     to: user.email,
                     subject: 'Account Verification Token',
                     html: data
                 };
-
-                const transporter = await createTransporter();
 
                 transporter.sendMail(mailOptions, (err) => {
                     if (err) {
@@ -229,13 +225,11 @@ driverController.resendForgottenToken = (req, res) => {
 
                 sendMail('forgotten.ejs', { lastname: driver.lastname, token: tokenise.token, host: req.headers.host, protocol: req.protocol }).then(async data => {
                     const mailOptions = {
-                        from: 'dash@yourwebapplication.com',
+                        from: 'dashdeliveryapp@gmail.com',
                         to: user.email,
                         subject: 'Forgotten Password Token',
                         html: data
                     };
-
-                    const transporter = await createTransporter();
 
                     transporter.sendMail(mailOptions, (err) => {
                         if (err) {
