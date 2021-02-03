@@ -104,52 +104,58 @@ historyController.addToHistory = (req, res) => {
                         deliveryAddress: delivery_address,
                         status
                     });
-        
-                    controllers.firebaseController.createNewOrder(store_id, delivery_fee, delivery_address, service_fee, amount, history.id, status, user_id).then(uid => {
-                        user.new_order_firebase_uid.push(uid);
-                        user.history.push(history.id);
 
-                        history.orderId = uid;
+                    db.Store.findById(store_id).then(store => {
+                        if (!store) {
+                            res.status(404).json({status: false, message: 'Store not found'});
+                        } else {
+                            controllers.firebaseController.createNewOrder(store_id, store.name, delivery_fee, delivery_address, service_fee, amount, history.id, status, user_id).then(uid => {
+                            user.new_order_firebase_uid.push(uid);
+                            user.history.push(history.id);
 
-                        // Generate jwt for email confirmation token
-                        sendMail('order.ejs', { 
-                            lastname: user.lastname, 
-                            orderNo: uid,
-                            items: formatItems(cart.items),
-                            host: req.headers.host, 
-                            protocol: req.protocol 
-                        }).then(data => {
-                            const mailOptions = {
-                                from: 'dashdeliveryapp@gmail.com',
-                                to: user.email,
-                                subject: `Your order ${uid} has been confirmed.`,
-                                html: data
-                            };
+                            history.orderId = uid;
 
-                            transporter.sendMail(mailOptions, (err) => {
-                                if (err) {
-                                    return res.status(500).send({
-                                        msg: err.message
-                                    });
-                                }
+                            // Generate jwt for email confirmation token
+                            sendMail('order.ejs', { 
+                                lastname: user.lastname, 
+                                orderNo: uid,
+                                items: formatItems(cart.items),
+                                host: req.headers.host, 
+                                protocol: req.protocol 
+                            }).then(data => {
+                                const mailOptions = {
+                                    from: 'dashdeliveryapp@gmail.com',
+                                    to: user.email,
+                                    subject: `Your order ${uid} has been confirmed.`,
+                                    html: data
+                                };
 
-                                // Empty cart
-                                cart.items = [];
-                                cart.save().then(empty => {  
-                                    history.save().then(saved => {
-                                        // remove cart from user
-                                        removeItem(user.carts, cart_id);
-
-                                        user.save().then(saves => {
-                                            res.status(200).json({status: true, message: 'Successfully, added to history and firebase', data: saved});
+                                transporter.sendMail(mailOptions, (err) => {
+                                    if (err) {
+                                        return res.status(500).send({
+                                            msg: err.message
                                         });
-                                    })                                          
+                                    }
+
+                                    // Empty cart
+                                    cart.items = [];
+                                    cart.save().then(empty => {  
+                                        history.save().then(saved => {
+                                            // remove cart from user
+                                            removeItem(user.carts, cart_id);
+
+                                            user.save().then(saves => {
+                                                res.status(200).json({status: true, message: 'Successfully, added to history and firebase', data: saved});
+                                            });
+                                        })                                          
+                                    });
+
                                 });
+                            })
 
-                            });
-                        })
-
-                    });
+                        });
+                        }
+                    }).catch(err => res.status(500).json({status: false, message: err.message}));
                 }
             }).catch(err => {
                 res.status(500).json({status: false, message: err.message});

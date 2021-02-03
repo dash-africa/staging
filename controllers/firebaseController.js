@@ -12,7 +12,7 @@ firebase.initializeApp(config);
 
 const firebaseController = {};
 
-firebaseController.createNewOrder = (store, delivery_fee, delivery_address, service_fee, amount, history_id, status, user) => {
+firebaseController.createNewOrder = (store, storeName, delivery_fee, delivery_address, service_fee, amount, history_id, status, user) => {
     return new Promise((resolve, reject) => {
         const firebase_id = uniqid();
         let ref = firebase.database().ref("/orders/" + firebase_id);
@@ -20,12 +20,14 @@ firebaseController.createNewOrder = (store, delivery_fee, delivery_address, serv
             ref.set({
                 user,
                 store,
+                storeName,
                 history_id,
                 delivery_fee,
                 service_fee,
                 delivery_address,
                 amount,
-                status
+                status,
+                date: new Date()
             }, (error) => {
                 if (error) {
                     reject(error);
