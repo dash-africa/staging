@@ -102,6 +102,7 @@ historyController.addToHistory = (req, res) => {
                         serviceFee: service_fee,
                         totalItemAmount: amount,
                         deliveryAddress: delivery_address,
+                        assignedDriver: null,
                         status
                     });
 

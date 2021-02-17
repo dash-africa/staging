@@ -97,6 +97,7 @@ driverController.login = (req, res) => {
                         res.status(401).json({ status: false, message: 'This account has not been verified' });
                     } else {
                         const driverData = {
+                            _id: driver._id,
                             firstname: driver.firstname,
                             lastname: driver.lastname,
                             email: driver.email,
