@@ -12,23 +12,12 @@ firebase.initializeApp(config);
 
 const firebaseController = {};
 
-firebaseController.createNewOrder = (store, storeName, delivery_fee, delivery_address, service_fee, amount, history_id, status, user) => {
+firebaseController.createNewOrder = (obj) => {
     return new Promise((resolve, reject) => {
         const firebase_id = uniqid();
         let ref = firebase.database().ref("/orders/" + firebase_id);
         ref.once('value').then(function (snap) {
-            ref.set({
-                user,
-                store,
-                storeName,
-                history_id,
-                delivery_fee,
-                service_fee,
-                delivery_address,
-                amount,
-                status,
-                date: new Date()
-            }, (error) => {
+            ref.set(obj, (error) => {
                 if (error) {
                     reject(error);
                 } else {

@@ -110,7 +110,22 @@ historyController.addToHistory = (req, res) => {
                         if (!store) {
                             res.status(404).json({status: false, message: 'Store not found'});
                         } else {
-                            controllers.firebaseController.createNewOrder(store_id, store.name, delivery_fee, delivery_address, service_fee, amount, history.id, status, user_id).then(uid => {
+                            controllers.firebaseController.createNewOrder({
+                                user: user_id,
+                                store: store_id, 
+                                storeName: store.name, 
+                                history_id: history.id, 
+                                delivery_fee: delivery_fee, 
+                                service_fee: service_fee, 
+                                delivery_address: delivery_address, 
+                                amount: amount, 
+                                status: status, 
+                                date_created: new Date(),
+                                customer_name: `${user.lastname} ${user.firstname}`,
+                                customer_phone: user.phone,
+                                items: JSON.stringify(cart.items),
+                                assignedDriver: null
+                            }).then(uid => {
                             user.new_order_firebase_uid.push(uid);
                             user.history.push(history.id);
 
