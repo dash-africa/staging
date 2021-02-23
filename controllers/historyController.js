@@ -113,7 +113,8 @@ historyController.addToHistory = (req, res) => {
                             controllers.firebaseController.createNewOrder({
                                 user: user_id,
                                 store: store_id, 
-                                storeName: store.name, 
+                                storeName: store.name,
+                                storeAddress: store.address,
                                 history_id: history.id, 
                                 delivery_fee: delivery_fee, 
                                 service_fee: service_fee, 
