@@ -28,6 +28,21 @@ firebaseController.createNewOrder = (obj) => {
     });
 };
 
+firebaseController.driverAccept = (firebase_uid, obj) => {
+    return new Promise((resolve, reject) => {
+        let ref = firebase.database().ref("/orders/" + firebase_uid);
+        ref.once('value').then(function (snap) {
+            ref.update(obj, (error) => {
+                if (error) {
+                    reject(error);
+                } else {
+                    resolve(snap.val());
+                }
+            });
+        });
+    });
+};
+
 firebaseController.changeStatus = (firebase_uid, driverId, status) => {
     return new Promise((resolve, reject) => {
         let ref = firebase.database().ref("/orders/" + firebase_uid);

@@ -365,7 +365,13 @@ driverController.acceptOrder = (req, res) => {
             res.status(404).json({ status: false, message: 'This driver was not found' });
         } else {
             if (driver.is_verified) {
-                controllers.firebaseController.changeStatus(orderId, driverId, status).then(firebaseObj => {
+                controllers.firebaseController.driverAccept(orderId, { 
+                    driverId,
+                    driverName: `${driver.lastname} ${driver.firstname}`,
+                    driverImage: driver.photo,
+                    driverPhone: driver.phone,
+                    status
+                }).then(firebaseObj => {
                     if (firebaseObj) {
                         db.History.findById(firebaseObj.history_id).then(history => {
                             if (!history) {
@@ -462,7 +468,7 @@ driverController.deliverOrder = (req, res) => {
 }
 
 driverController.getAllEarnings = (req, res) => {
-    db.Earning.find({ driver: req.user }).then(earnings => {
+    db.Earning.find({ driver: req.user }).populate('history').then(earnings => {
         if (!earnings) {
             res.status(404).json({ status: false, message: 'This driver has no earnings', data: [] });
         } else {
