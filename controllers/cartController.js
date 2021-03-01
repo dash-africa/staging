@@ -56,4 +56,28 @@ cartController.addItems = (req, res) => {
     });
 };
 
+cartController.removeItem = (req, res) => {
+    const { cart_id, item_id } = req.body;
+    let cartIndex = 0;
+
+    db.Cart.findById(cart_id).then(cart => {
+        if (cart === null) {
+            res.status(404).json({ status: false, message: 'Cart not found' });
+        } else {
+            cart.items.forEach((cartItem, index) => {
+                if (String(cartItem.id) === String(item_id)) {
+                    cartIndex = index;
+                }
+            });
+
+            cart.items.splice(cartIndex, 1);
+            cart.save().then(saved => {
+                res.status(200).json({ status: true, message: 'Removed item from cart', data: cart });
+            });
+        }
+    }).catch(err => {
+        res.status(500).json({ status: false, message: err.message });
+    });
+}
+
 export default cartController;

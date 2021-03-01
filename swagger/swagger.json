@@ -588,6 +588,39 @@
                 }
             }
         },
+        "/api/v1/cart/removeItem": {
+            "post": {
+                "tags": [
+                    "Carts"
+                ],
+                "description": "Adds new items to the cart",
+                "summary": "Used to add items to the cart",
+                "parameters": [
+                    {
+                        "name": "cart",
+                        "in": "body",
+                        "description": "These should be passed",
+                        "schema": {
+                            "$ref": "#/definitions/CartItems"
+                        }
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "The item has been removed from the cart"
+                    },
+                    "404": {
+                        "description": "The cart was not found"
+                    },
+                    "500": {
+                        "description": "Unable to find cart, an unexpected error occured"
+                    }
+                }
+            }
+        },
         "/api/v1/category/create": {
             "post": {
                 "tags": [
@@ -2468,6 +2501,22 @@
                     "items": {
                         "$ref": "#/definitions/CartItemsAddons"
                     }
+                }
+            }
+        },
+        "CartRemoveItems": {
+            "required": [
+                "cart_id",
+                "item"
+            ],
+            "properties": {
+                "cart_id": {
+                    "type": "string",
+                    "uniqueItems": true
+                },
+                "item_id": {
+                    "type": "string",
+                    "uniqueItems": true
                 }
             }
         },

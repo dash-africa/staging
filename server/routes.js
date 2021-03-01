@@ -40,6 +40,7 @@ routes.post('/user/cancelOrder', verifyToken, controllers.userController.cancelO
 routes.post('/cart/create', verifyToken, controllers.cartController.createCart);
 routes.get('/cart/getCart/:id', controllers.cartController.fetchCart);
 routes.post('/cart/addItem', controllers.cartController.addItems);
+routes.post('/cart/removeItem', controllers.cartController.removeItem);
 
 // Category Routes
 routes.post('/category/create', verifyAdminToken, controllers.categoryController.createCategory);
