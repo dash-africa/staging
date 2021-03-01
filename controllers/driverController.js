@@ -366,6 +366,7 @@ driverController.acceptOrder = (req, res) => {
         } else {
             if (driver.is_verified) {
                 controllers.firebaseController.driverAccept(orderId, { 
+                    assignedDriverId: driverId,
                     driverId,
                     driverName: `${driver.lastname} ${driver.firstname}`,
                     driverImage: driver.photo,

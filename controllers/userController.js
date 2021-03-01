@@ -424,7 +424,7 @@ userController.completeOrder = (req, res) => {
     
                                 history.save().then(saved => {
                                     // Find driver and give earnings
-                                    db.Driver.findById(firebaseObj.assignedDriver).then(driver => {
+                                    db.Driver.findById(firebaseObj.driverId).then(driver => {
                                         if (!driver) {
                                             res.status(404).json({ status: false, message: 'Could not find driver assigned to this order' });
                                         } else {
