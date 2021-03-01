@@ -205,4 +205,31 @@ itemController.removeAddOn = (req, res) => {
     });
 };
 
+itemController.search = (req, res) => {
+    const { query } = req.params;
+
+    db.Store.find({
+        name: { $regex: '.*' + query + '.*', $options: 'i' }
+    }).then(store => {
+        if (!store || !store.length) {
+            // search items
+            db.Item.find({
+                name: { $regex: '.*' + query + '.*', $options: 'i' }
+            }).then(item => {
+                if (!item || !item.length) {
+                    res.status(400).json({ status: false, message: 'Neither store nor item was found with this query' })
+                } else {
+                    res.status(200).json({ status: true, message: 'Found Item', data: item });
+                }
+            }).catch(err => {
+                res.status(500).json({ status: false, message: err.message });
+            });
+        } else {
+            res.status(200).json({ status: true, message: 'Found Store', data: store });
+        }
+    }).catch(err => {
+        res.status(500).json({ status: false, message: err.message });
+    });
+}
+
 export default itemController;

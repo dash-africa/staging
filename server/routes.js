@@ -67,6 +67,7 @@ routes.post('/item/addAddOn', verifyAdminToken, controllers.itemController.addAd
 routes.post('/item/removeAddOn', verifyAdminToken, controllers.itemController.removeAddOn);
 routes.get('/item/getItem/:itemId', controllers.itemController.fetchItem);
 routes.get('/item/all', controllers.itemController.getAll);
+routes.get('/item/search/:query', controllers.itemController.search);
 routes.put('/item/edit', verifyAdminToken, controllers.itemController.editItem);
 routes.delete('/item/delete/:id', verifyAdminToken, controllers.itemController.deleteItem);
 

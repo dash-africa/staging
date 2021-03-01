@@ -1115,6 +1115,22 @@
                 }
             }
         },
+        "/api/v1/item/search/:query": {
+            "get": {
+                "tags": [
+                    "Items"
+                ],
+                "summary": "Get all items based on search query",
+                "responses": {
+                    "200": {
+                        "description": "Succesfully gotten the item or query"
+                    },
+                    "500": {
+                        "description": "Unable to get the item nor query"
+                    }
+                }
+            }
+        },
         "/api/v1/item/getItem/{itemId}": {
             "get": {
                 "tags": [
