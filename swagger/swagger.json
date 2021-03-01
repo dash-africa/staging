@@ -2512,11 +2512,9 @@
                     "type": "string",
                     "uniqueItems": true
                 },
-                "items": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/CartItemsAddons"
-                    }
+                "item_id": {
+                    "type": "string",
+                    "uniqueItems": true
                 }
             }
         },
