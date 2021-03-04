@@ -121,7 +121,7 @@ historyController.addToHistory = (req, res) => {
                                 delivery_address: delivery_address, 
                                 amount: amount, 
                                 status: status, 
-                                date_created: new Date(),
+                                date_created: `${new Date()}`,
                                 customer_name: `${user.lastname} ${user.firstname}`,
                                 customer_phone: user.phone,
                                 items: JSON.stringify(cart.items),
