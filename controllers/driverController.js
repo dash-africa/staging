@@ -371,6 +371,7 @@ driverController.acceptOrder = (req, res) => {
                     driverName: `${driver.lastname} ${driver.firstname}`,
                     driverImage: driver.photo,
                     driverPhone: driver.phone,
+                    driverModeOfTransportation: driver.mode_of_transportation,
                     status
                 }).then(firebaseObj => {
                     if (firebaseObj) {
@@ -420,7 +421,7 @@ driverController.pickUpOrder = (req, res) => {
                                 const store_earning = firebaseObj.amount - store_charge;
 
                                 const storeEarning = new db.StoreEarning({
-                                    store,
+                                    store: store._id,
                                     amount: store_earning,
                                     history
                                 });

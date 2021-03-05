@@ -81,17 +81,17 @@ const storeSchema = new Schema({
     },
     bank_name: {
         type: String,
-        required: true,
+        // required: true,
         help: 'This field is required'
     },
     bank_code: {
         type: String,
-        required: true,
+        // required: true,
         help: 'This field is required'
     },
     account_number: {
         type: String,
-        required: true,
+        // required: true,
         help: 'This field is required'
     },
     recipient_code: {

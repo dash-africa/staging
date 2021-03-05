@@ -73,19 +73,19 @@ routes.delete('/item/delete/:id', verifyAdminToken, controllers.itemController.d
 
 // Store Routes
 routes.post('/store/create', verifyAdminToken, controllers.storeController.createStore);
+routes.get('/store/earnings', verifyStoreToken, controllers.storeController.getAllEarnings);
 routes.get('/store/all', controllers.storeController.allStores);
 routes.put('/store/edit', verifyAdminToken, controllers.storeController.editStore);
 routes.delete('/store/delete/:id', verifyAdminToken, controllers.storeController.deleteStore);
 routes.post('/store/addCategory', verifyAdminToken, controllers.storeController.addCategory);
 routes.post('/store/login', controllers.storeController.login);
-routes.get('/store/:id', controllers.storeController.getStore);
-routes.get('/store/items/:id', controllers.storeController.getCategoryItems);
 routes.get('/store/allCategorized/:city_id/:storeType_id', controllers.storeController.allCategorized);
+routes.get('/store/history/:id', controllers.storeController.getHistory);
+routes.get('/store/items/:id', controllers.storeController.getCategoryItems);
+routes.get('/store/:id', controllers.storeController.getStore);
 routes.post('/store/acceptOrder', verifyStoreToken, controllers.storeController.acceptOrder);
 routes.post('/store/cancelOrder', verifyStoreToken, controllers.storeController.cancelOrder);
-routes.get('/store/history/:id', controllers.storeController.getHistory);
 routes.post('/store/withdrawEarnings', verifyStoreToken, controllers.storeController.withdrawEarnings);
-routes.get('/store/earnings', verifyStoreToken, controllers.storeController.getAllEarnings);
 
 // Store Type Routes
 routes.post('/storeType/create', verifyAdminToken, controllers.storeTypeController.create);

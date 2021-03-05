@@ -1,6 +1,6 @@
 import db from '../models';
 import bcrypt from 'bcryptjs';
-import { signUser, sendMail, transporter, createRefund, removeItem } from './../utils';
+import { signUser, sendMail, transporter, createTransferRecipient, initiateTransfer, createRefund, removeItem } from './../utils';
 import controllers from '.';
 import { OrderStatus } from './../constants';
 
@@ -307,12 +307,21 @@ storeController.getHistory = (req, res) => {
         if (!store) {
             res.status(404).json({ status: false, message: 'The store account was not found' });
         } else {
-            db.History.find({ store: storeId }).then(storeHistories => {
+            db.History.find({ store: storeId }).populate([
+                { path: 'user', select: ['firstname', 'lastname', 'email', 'phone'] },
+                { path: 'items', populate: 'addOns' },
+                { path: 'store', select: 'name' },
+                { path: 'assignedDriver', model: 'Driver', select: ['firstname', 'lastname', 'email', 'phone', 'mode_of_transportation'] }
+            ]).then(storeHistories => {
                 if (!storeHistories) {
                     res.status(404).json({ status: true, message: 'This store has no histories yet', data: [] });
                 } else {
-                    let filteredHistory = storeHistories.filter(history => history.status === OrderStatus.PICKED);
-                    filteredHistory = filteredHistory.filter(history => history.status === OrderStatus.RESTAURANT_DECLINED);
+                    const pickedOrders = storeHistories.filter(history => history.status === OrderStatus.PICKED);
+                    const declinedOrders = storeHistories.filter(history => history.status === OrderStatus.RESTAURANT_DECLINED);
+                    const acceptedOrders = storeHistories.filter(history => history.status === OrderStatus.RESTAURANT_ACCEPTED);
+
+                    let filteredHistory = [...pickedOrders, ...declinedOrders, ...acceptedOrders];
+                    filteredHistory = filteredHistory.sort((a, b) => b.created_at - a.created_at);
 
                     res.status(200).json({ status: true, message: 'Store history', data: filteredHistory });
                 }
@@ -344,13 +353,13 @@ storeController.withdrawEarnings = (req, res) => {
             if (store.overall_earnings <= 0) {
                 res.status(400).json({ status: false, message: 'Store has no earnings, so withdrawal was skipped' });
             } else {
-                const transferResponse = await initiateTransfer(store.overall_earnings, recipientCode);
+                const transferResponse = await initiateTransfer((store.overall_earnings * 100), recipientCode);
     
                 if (transferResponse.status) {
                     const storeEarning = new db.StoreEarning({
                         store,
                         amount: store.overall_earnings,
-                        withdrawal: false,
+                        withdrawal: true,
                     });
 
                     store.overall_earnings = 0;
@@ -369,7 +378,10 @@ storeController.withdrawEarnings = (req, res) => {
 }
 
 storeController.getAllEarnings = (req, res) => {
-    db.StoreEarning.find({ driver: req.user }).then(earnings => {
+    db.StoreEarning.find({ store: req.user }).populate([
+        { path: 'history', populate: ['store', 'items', 'user'] },
+        { path: 'store' }
+    ]).then(earnings => {
         if (!earnings) {
             res.status(404).json({ status: false, message: 'This store has no earnings', data: [] });
         } else {
