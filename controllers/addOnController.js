@@ -68,7 +68,9 @@ addOnController.removeItem = (req, res) => {
             const idx = addOn.items.indexOf(item_id);
             if (idx !== -1) addOn.items.splice(idx, 1);
 
-            res.status(200).json({ status: true, message: 'The item has been successfully removed', data: addOn });
+            addOn.save().then(saved => {
+                res.status(200).json({ status: true, message: 'The item has been successfully removed', data: addOn });
+            });
         }
     }).catch(err => res.status(500).json({ status: false, message: err.message }));
 };

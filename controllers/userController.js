@@ -538,4 +538,38 @@ userController.cancelOrder = (req, res) => {
     }).catch(err => res.status(500).json({ status: false, message: err.message }));
 }
 
+userController.deleteCard = (req, res) => {
+    const cardId = req.params.id;
+    db.User.findById(req.user).then(user => {
+        if (!user) {
+            res.status(404).json({ status: false, message: 'This user was not found' });
+        } else {
+            db.Card.findById(cardId).populate('user').then(card => {
+                if (!card) {
+                    res.status(404).json({ status: false, message: 'This card was not found' });
+                } else {
+                    if (card.user._id === req.user) {
+                        const idx = user.cards.indexOf(cardId);
+                        if (idx !== -1) user.cards.splice(idx, 1);
+
+                        user.save().then(saved => {
+                            db.Card.findByIdAndDelete(cardId, (err, deleted) => {
+                                if (err) {
+                                    res.status(500).json({ status: false, message: err.message });
+                                } else {
+                                    res.status(200).json({ status: true, message: 'Successfully deleted the card', data: deleted });
+                                }
+                            });
+                        }).catch(err => res.status(500).json({ status: false, message: `An error occured while deleting user card ${error.message}` }));
+                    } else {
+                        res.status(401).json({ status: false, message: 'Delete failed, this card does not belong to this user!' });
+                    }
+                }
+            })
+        }
+    }).catch(err => {
+        res.status(500).json({ status: false, message: err.message });
+    });
+}
+
 export default userController;

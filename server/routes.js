@@ -35,6 +35,7 @@ routes.get('/user/getPendingOrders', verifyToken, controllers.userController.get
 routes.post('/user/completeOrder', verifyToken, controllers.userController.completeOrder);
 routes.post('/user/rateDriver', verifyToken, controllers.userController.rateDriver);
 routes.post('/user/cancelOrder', verifyToken, controllers.userController.cancelOrder);
+routes.delete('/user/delete/:id', verifyToken, controllers.userController.deleteCard);
 
 // Cart Routes
 routes.post('/cart/create', verifyToken, controllers.cartController.createCart);
